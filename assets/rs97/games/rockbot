@@ -1,0 +1,7 @@
+title=Rockbot
+description=Rockbot Game
+icon=skin:icons/rockbot.png
+exec=/mnt/int_sd/games/rockbot/run.dge
+clock=600
+volume=1
+wrapper=true

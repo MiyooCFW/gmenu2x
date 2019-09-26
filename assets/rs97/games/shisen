@@ -1,0 +1,7 @@
+title=Shisen
+description=Shisen Seki Game
+icon=skin:icons/shisen.png
+exec=/mnt/int_sd/games/shisen/run.dge
+clock=600
+volume=1
+wrapper=true

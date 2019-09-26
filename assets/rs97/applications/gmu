@@ -1,0 +1,7 @@
+title=GMU
+description=Music Player
+icon=skin:icons/gmu.png
+exec=/mnt/int_sd/games/bard/run.dge
+clock=600
+volume=1
+wrapper=true

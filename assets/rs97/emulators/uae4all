@@ -1,0 +1,7 @@
+title=UAE4ALL
+description=Amiga500 Emulator
+icon=skin:icons/uae4all.png
+exec=/mnt/int_sd/emus/uae4all/uae4all.dge
+clock=600
+volume=1
+wrapper=true

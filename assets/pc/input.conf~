@@ -1,0 +1,13 @@
+up=keyboard,273
+down=keyboard,274
+left=keyboard,276
+right=keyboard,275
+modifier=keyboard,97
+confirm=keyboard,120
+cancel=keyboard,122
+manual=keyboard,115
+section_prev=keyboard,49
+section_next=keyboard,50
+settings=keyboard,13
+menu=keyboard,27
+backlight=keyboard,113

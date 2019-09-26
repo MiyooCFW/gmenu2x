@@ -1,0 +1,8 @@
+title=ReGBA
+description=GBA Emulator
+icon=skin:icons/regba.png
+exec=/mnt/int_sd/emus/regba/regba
+volume=1
+selectorbrowser=true
+selectordir=/mnt/
+wrapper=true

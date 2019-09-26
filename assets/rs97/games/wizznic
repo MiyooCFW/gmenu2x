@@ -1,0 +1,7 @@
+title=Wizznic
+description=Wizznic Game
+icon=skin:icons/wizznic.png
+exec=/mnt/int_sd/games/wizznic/run.dge
+clock=600
+volume=1
+wrapper=true

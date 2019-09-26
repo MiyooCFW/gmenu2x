@@ -1,0 +1,7 @@
+title=Triple
+description=Triple Trapled Game
+icon=skin:icons/triple.png
+exec=/mnt/int_sd/games/triple/run.dge
+clock=600
+volume=1
+wrapper=true

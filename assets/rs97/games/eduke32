@@ -1,0 +1,7 @@
+title=EDuke32
+description=EDuke32 Game
+icon=skin:icons/eduke32.png
+exec=/mnt/int_sd/games/eduke32/run.dge
+clock=600
+volume=1
+wrapper=true

@@ -1,0 +1,7 @@
+title=ASCII
+description=ASCIIpOrtal Game
+icon=skin:icons/asciiportal.png
+exec=/mnt/int_sd/games/asciiportal/run.dge
+clock=600
+volume=1
+wrapper=true

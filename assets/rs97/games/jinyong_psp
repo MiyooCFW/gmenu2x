@@ -1,0 +1,7 @@
+title=JinYong
+description=JinYong v1.2 Game
+icon=skin:icons/jinyong_psp.png
+exec=/mnt/int_sd/games/jinyong_psp/run.dge
+clock=600
+volume=1
+wrapper=true

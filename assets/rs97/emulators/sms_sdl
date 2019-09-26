@@ -1,0 +1,9 @@
+title=SMS
+description=SMS/GG Emulator
+icon=skin:icons/sms.png
+exec=/mnt/int_sd/emus/sms_sdl/sms_sdl
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/

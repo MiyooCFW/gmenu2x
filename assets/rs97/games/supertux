@@ -1,0 +1,7 @@
+title=SuperTux
+description=SuperTux Game
+icon=skin:icons/supertux.png
+exec=/mnt/int_sd/games/supertux/run.dge
+clock=600
+volume=1
+wrapper=true

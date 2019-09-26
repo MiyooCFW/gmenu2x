@@ -1,0 +1,7 @@
+title=Vice
+description=Commodore Emulator
+icon=skin:icons/vice.png
+exec=/mnt/int_sd/emus/vice/x64.dge
+clock=600
+volume=1
+wrapper=true

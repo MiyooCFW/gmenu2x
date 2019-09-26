@@ -1,0 +1,7 @@
+title=Arkanoid
+description=Arkanoid Game
+icon=skin:icons/arkanoid.png
+exec=/mnt/int_sd/games/arkanoid/run.dge
+clock=600
+volume=1
+wrapper=true

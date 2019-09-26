@@ -1,0 +1,7 @@
+title=Wolf3D
+description=Wolfenstein 3D Game
+icon=skin:icons/wolf3d.png
+exec=/mnt/int_sd/games/wolf3d/run.dge
+clock=600
+volume=1
+wrapper=true

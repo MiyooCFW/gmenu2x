@@ -1,0 +1,7 @@
+title=SORR
+description=SORR Game
+icon=skin:icons/sorr.png
+exec=/mnt/int_sd/games/sorr/run.dge
+clock=600
+volume=1
+wrapper=true

@@ -1,0 +1,7 @@
+title=Zelda
+description=Zelda Roth Game
+icon=skin:icons/zelda_roth.png
+exec=/mnt/int_sd/games/zelda_roth/run.dge
+clock=600
+volume=1
+wrapper=true

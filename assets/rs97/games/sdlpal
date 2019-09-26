@@ -1,0 +1,7 @@
+title=SDLPAL
+description=SDLPAL Game
+icon=skin:icons/sdlpal.png
+exec=/mnt/int_sd/games/sdlpal/run.dge
+clock=600
+volume=1
+wrapper=true

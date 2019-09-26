@@ -1,0 +1,9 @@
+title=FCEUX
+description=FC/NES Emulator
+icon=skin:icons/fceux.png
+exec=/mnt/int_sd/emus/fceux/fceux
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/

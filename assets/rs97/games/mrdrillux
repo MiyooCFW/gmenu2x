@@ -1,0 +1,7 @@
+title=Drillux
+description=Mr. Driller Game
+icon=skin:icons/mrdrillux.png
+exec=/mnt/int_sd/games/mrdrillux/run.dge
+clock=600
+volume=1
+wrapper=true

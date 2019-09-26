@@ -1,0 +1,7 @@
+title=Profa
+description=ProfaDeluxe Game
+icon=skin:icons/profadeluxe.png
+exec=/mnt/int_sd/games/profadeluxe/run.dge
+clock=600
+volume=1
+wrapper=true

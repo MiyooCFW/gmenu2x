@@ -1,0 +1,7 @@
+title=Puzzletube
+description=Puzzletube Game
+icon=skin:icons/puzzletube.png
+exec=/mnt/int_sd/games/puzzletube/run.dge
+clock=600
+volume=1
+wrapper=true

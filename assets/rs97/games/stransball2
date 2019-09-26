@@ -1,0 +1,7 @@
+title=Transball
+description=Super Transball 2 Game
+icon=skin:icons/stransball2.png
+exec=/mnt/int_sd/games/stransball2/run.dge
+clock=600
+volume=1
+wrapper=true

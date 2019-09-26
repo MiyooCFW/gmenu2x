@@ -1,0 +1,7 @@
+title=Just4Qix
+description=Just4Qix Game
+icon=skin:icons/just4qix.png
+exec=/mnt/int_sd/games/just4qix/run.dge
+clock=600
+volume=1
+wrapper=true

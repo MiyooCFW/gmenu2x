@@ -1,0 +1,7 @@
+title=Noiz2sa
+description=Noiz2sa Game
+icon=skin:icons/noiz2sa.png
+exec=/mnt/int_sd/games/noiz2sa/run.dge
+clock=600
+volume=1
+wrapper=true

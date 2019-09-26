@@ -1,0 +1,7 @@
+title=FBA
+description=Arcade Emulator(GCW0)
+icon=skin:icons/fba.png
+exec=/mnt/int_sd/emus/fba_gcw0/fbasdl.dge
+clock=600
+volume=1
+wrapper=true

@@ -1,0 +1,9 @@
+title=Handy
+description=Atari Lynx Emulator
+icon=skin:icons/handy.png
+exec=/mnt/int_sd/emus/handy/handy320.dge
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/

@@ -1,0 +1,7 @@
+title=Snowman
+description=Snowman Game
+icon=skin:icons/snowman.png
+exec=/mnt/int_sd/games/snowman/run.dge
+clock=600
+volume=1
+wrapper=true

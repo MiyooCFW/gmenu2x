@@ -1,0 +1,7 @@
+title=jzIntv
+description=Intellivision Emulator
+icon=skin:icons/jzintv.png
+exec=/mnt/int_sd/emus/jzintv/run.dge
+clock=600
+volume=1
+wrapper=true

@@ -1,0 +1,7 @@
+title=Apricots
+description=Apricots Game
+icon=skin:icons/apricots.png
+exec=/mnt/int_sd/games/apricots/run.dge
+clock=600
+volume=1
+wrapper=true

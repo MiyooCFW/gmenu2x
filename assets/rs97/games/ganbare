@@ -1,0 +1,7 @@
+title=Ganbare
+description=Ganbare-Natsuki-San Game
+icon=skin:icons/ganbare.png
+exec=/mnt/int_sd/games/ganbare/run.dge
+clock=600
+volume=1
+wrapper=true

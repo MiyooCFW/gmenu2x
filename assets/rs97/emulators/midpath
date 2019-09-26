@@ -1,0 +1,9 @@
+title=MIDPath
+description=JavaME Emulator
+icon=skin:icons/midpath.png
+exec=/mnt/int_sd/emus/midpath/bin/midlet-launcher.sh
+volume=1
+selectorbrowser=true
+selectordir=/mnt/
+params=-jar $f
+wrapper=true

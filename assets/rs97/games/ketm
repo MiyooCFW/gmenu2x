@@ -1,0 +1,7 @@
+title=KETM
+description=KETM Game
+icon=skin:icons/ketm.png
+exec=/mnt/int_sd/games/ketm/run.dge
+clock=600
+volume=1
+wrapper=true

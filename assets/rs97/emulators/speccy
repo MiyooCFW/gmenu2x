@@ -1,0 +1,9 @@
+title=Speccy
+description=ZX Spectrum Emulator
+icon=skin:icons/speccy.png
+exec=/mnt/int_sd/emus/speccy/speccy
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/

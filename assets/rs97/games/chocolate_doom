@@ -1,0 +1,10 @@
+title=CCDoom
+description=Chocolate Doom Game
+icon=skin:icons/chocolate_doom.png
+exec=/mnt/int_sd/games/chocolate_doom/run.dge
+clock=600
+volume=1
+selectorbrowser=true
+selectordir=/mnt/
+params=$f
+wrapper=true

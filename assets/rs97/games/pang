@@ -1,0 +1,7 @@
+title=Pang
+description=Pang Game
+icon=skin:icons/pang.png
+exec=/mnt/int_sd/games/pang/run.dge
+clock=600
+volume=1
+wrapper=true

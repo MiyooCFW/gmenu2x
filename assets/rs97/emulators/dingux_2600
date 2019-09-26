@@ -1,0 +1,7 @@
+title=2600
+description=Atari 2600 Emulator
+icon=skin:icons/dingux_2600.png
+exec=/mnt/int_sd/emus/dingux_2600/run.dge
+clock=600
+volume=1
+wrapper=true

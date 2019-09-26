@@ -1,0 +1,8 @@
+title=Temper
+description=PCE Emulator
+icon=skin:icons/temper.png
+exec=/mnt/int_sd/emus/temper/temper
+volume=1
+selectorbrowser=true
+selectordir=/mnt/
+wrapper=true

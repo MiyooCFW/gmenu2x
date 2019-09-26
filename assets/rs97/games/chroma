@@ -1,0 +1,7 @@
+title=Chroma
+description=Chroma Game
+icon=skin:icons/chroma.png
+exec=/mnt/int_sd/games/chroma/run.dge
+clock=600
+volume=1
+wrapper=true

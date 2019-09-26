@@ -1,0 +1,7 @@
+title=Sonic
+description=Sonic Robo Blast 2 Game
+icon=skin:icons/srb2.png
+exec=/mnt/int_sd/games/srb2/run.dge
+clock=600
+volume=1
+wrapper=true

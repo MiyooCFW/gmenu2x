@@ -1,0 +1,7 @@
+title=Prosystem
+description=Atari 7800 Emulator
+icon=skin:icons/prosystem.png
+exec=/mnt/int_sd/emus/prosystem/prosystem-od.dge
+clock=600
+volume=1
+wrapper=true

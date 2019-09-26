@@ -1,0 +1,7 @@
+title=OpenBOR
+description=Arcade Emulator
+icon=skin:icons/openbor.png
+exec=/mnt/int_sd/emus/openbor/run.dge
+clock=600
+volume=1
+wrapper=true

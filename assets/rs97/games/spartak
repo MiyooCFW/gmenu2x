@@ -1,0 +1,7 @@
+title=Spartak
+description=Spartak Chess Game
+icon=skin:icons/spartak.png
+exec=/mnt/int_sd/games/spartak/run.dge
+clock=600
+volume=1
+wrapper=true

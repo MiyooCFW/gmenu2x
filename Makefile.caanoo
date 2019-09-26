@@ -1,0 +1,57 @@
+# Export a CAANOOSDK environment variable pointing to GPH_SDK
+CHAINPREFIX=$(CAANOOSDK)
+CROSS_COMPILE=$(CHAINPREFIX)/tools/gcc-4.2.4-glibc-2.7-eabi/bin/arm-gph-linux-gnueabi-
+TARGET=caanoo
+
+CC= $(CROSS_COMPILE)gcc
+CXX = $(CROSS_COMPILE)g++
+STRIP = $(CROSS_COMPILE)strip
+
+CFLAGS = -I"$(CHAINPREFIX)/DGE/include" `$(CHAINPREFIX)/DGE/bin/sdl-config --cflags` -DLOG_LEVEL=4 -DTARGET_CAANOO -DTARGET=$(TARGET) -O3 -g -msoft-float -fomit-frame-pointer -ffast-math -funroll-loops -fno-exceptions -Wall -Wno-unknown-pragmas -Wno-format
+CXXFLAGS = $(CFLAGS)
+LDFLAGS = -L$(CHAINPREFIX)/lib -lSDL_image -lSDL_ttf -lfreetype -lSDL_gfx -ljpeg -lpng12 -lSDL -lz -ldl
+
+OBJDIR = objs/$(TARGET)
+DISTDIR = dist/$(TARGET)/gmenu2x
+APPNAME = $(OBJDIR)/gmenu2x
+
+SOURCES := $(wildcard src/*.cpp)
+OBJS := $(patsubst src/%.cpp, $(OBJDIR)/src/%.o, $(SOURCES))
+
+# File types rules
+$(OBJDIR)/src/%.o: src/%.cpp src/%.h
+	$(CXX) $(CFLAGS) -o $@ -c $<
+
+all: build
+
+dir:
+	@if [ ! -d $(OBJDIR)/src ]; then mkdir -p $(OBJDIR)/src; fi
+
+build: dir $(OBJS)
+	@echo "Linking gmenu2x-debug..."
+	$(CXX) -o $(APPNAME)-debug `$(CHAINPREFIX)/DGE/bin/sdl-config --libs` $(LDFLAGS) $(OBJS)
+	$(STRIP) $(APPNAME)-debug -o $(APPNAME)
+
+clean:
+	rm -rf $(OBJDIR) $(DISTDIR) *.gcda *.gcno $(APPNAME)
+
+dist: build
+	install -m755 -D $(APPNAME) $(DISTDIR)/gmenu2x
+	install -m755 -d $(DISTDIR)/sections/applications $(DISTDIR)/sections/emulators $(DISTDIR)/sections/games $(DISTDIR)/sections/settings
+	install -m644 -D README.md $(DISTDIR)/README.txt
+	install -m644 -D COPYING $(DISTDIR)/COPYING
+	install -m644 -D ChangeLog $(DISTDIR)/ChangeLog
+	cp -RH assets/skins assets/translations assets/$(TARGET)/* $(DISTDIR)
+	cp -H "$(CHAINPREFIX)/DGE/lib/libfreetype.so.6" $(DISTDIR)
+	cp -H "$(CHAINPREFIX)/DGE/lib/libSDL_ttf-2.0.so.0" $(DISTDIR)
+	mv $(DISTDIR)/autorun.gpu $(DISTDIR)/..
+	7z x -y -o$(DISTDIR) assets/$(TARGET)/ginge.7z
+
+-include $(patsubst src/%.cpp, $(OBJDIR)/src/%.d, $(SOURCES))
+
+$(OBJDIR)/src/%.d: src/%.cpp
+	@if [ ! -d $(OBJDIR)/src ]; then mkdir -p $(OBJDIR)/src; fi
+	$(CXX) -M $(CXXFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+

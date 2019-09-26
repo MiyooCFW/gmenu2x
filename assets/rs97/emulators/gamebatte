@@ -1,0 +1,9 @@
+title=GameBatte
+description=GB/GBC Emulator
+icon=skin:icons/gamebatte.png
+exec=/mnt/int_sd/emus/gamebatte/gambatte_sdl
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/

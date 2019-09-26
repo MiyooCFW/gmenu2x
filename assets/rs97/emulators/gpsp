@@ -1,0 +1,9 @@
+title=gpSP
+description=GBA Emulator
+icon=skin:icons/gpsp.png
+exec=/mnt/int_sd/emus/gpsp/gpsp
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/

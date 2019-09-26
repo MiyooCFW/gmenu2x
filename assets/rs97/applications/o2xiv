@@ -1,0 +1,7 @@
+title=O2xIV
+description=Image Viewer
+icon=skin:icons/o2xiv.png
+exec=/mnt/int_sd/games/o2xiv/run.dge
+clock=600
+volume=1
+wrapper=true

@@ -1,0 +1,9 @@
+title=Oswan
+description=WS/WSC Emulator
+icon=skin:icons/oswan.png
+exec=/mnt/int_sd/emus/oswan/oswan.dge
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/

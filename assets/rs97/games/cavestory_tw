@@ -1,0 +1,7 @@
+title=CaveStory
+description=Cave Story Game(TW)
+icon=skin:icons/cavestory.png
+exec=/mnt/int_sd/games/cavestory_tw/run.dge
+clock=600
+volume=1
+wrapper=true

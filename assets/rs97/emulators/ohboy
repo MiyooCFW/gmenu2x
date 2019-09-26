@@ -1,0 +1,8 @@
+title=OhBoy
+description=GB/GBC Emulator
+icon=skin:icons/ohboy.png
+exec=/mnt/int_sd/emus/ohboy/ohboy
+volume=1
+selectorbrowser=true
+selectordir=/mnt/
+wrapper=true

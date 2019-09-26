@@ -1,0 +1,11 @@
+title=HHexen
+description=HHexen Game
+icon=skin:icons/hhexen.png
+exec=/mnt/int_sd/games/hhexen/run.dge
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/
+params=$f
+

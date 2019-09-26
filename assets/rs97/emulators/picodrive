@@ -1,0 +1,9 @@
+title=PicoDrive
+description=SMS/SMD Emulator
+icon=skin:icons/picodrive.png
+exec=/mnt/int_sd/emus/picodrive/PicoDrive
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/
+

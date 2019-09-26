@@ -1,0 +1,8 @@
+title=Snes9x4D
+description=SNES Emulator
+icon=skin:icons/snes9x4d.png
+exec=/mnt/int_sd/emus/snes9x4d/snes9x4d.dge
+volume=1
+selectorbrowser=true
+selectordir=/mnt/
+wrapper=true

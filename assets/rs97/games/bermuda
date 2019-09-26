@@ -1,0 +1,7 @@
+title=Bermuda
+description=Bermuda Syndrome Game
+icon=skin:icons/bermuda.png
+exec=/mnt/int_sd/games/bermuda/run.dge
+clock=600
+volume=1
+wrapper=true

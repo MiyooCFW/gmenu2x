@@ -1,0 +1,7 @@
+title=SDLPAL
+description=SDLPAL MHV Game
+icon=skin:icons/sdlpal_mhv.png
+exec=/mnt/int_sd/games/sdlpal_mhv/run.dge
+clock=600
+volume=1
+wrapper=true

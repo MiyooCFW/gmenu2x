@@ -1,0 +1,7 @@
+title=Meritous
+description=Meritous Game
+icon=skin:icons/meritous.png
+exec=/mnt/int_sd/games/meritous/run.dge
+clock=600
+volume=1
+wrapper=true

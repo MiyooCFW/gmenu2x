@@ -1,0 +1,7 @@
+title=Quake
+description=Quake Game
+icon=skin:icons/quake.png
+exec=/mnt/int_sd/games/quake/run.dge
+clock=600
+volume=1
+wrapper=true

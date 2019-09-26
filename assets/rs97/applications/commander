@@ -1,0 +1,7 @@
+title=Command
+description=File Manager
+icon=skin:icons/commander.png
+exec=/mnt/int_sd/apps/commander/commander.dge
+clock=600
+volume=1
+wrapper=true

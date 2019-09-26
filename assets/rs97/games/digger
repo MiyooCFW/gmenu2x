@@ -1,0 +1,7 @@
+title=Digger
+description=Digger Game
+icon=skin:icons/digger.png
+exec=/mnt/int_sd/games/digger/run.dge
+clock=600
+volume=1
+wrapper=true

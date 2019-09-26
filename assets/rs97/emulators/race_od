@@ -1,0 +1,9 @@
+title=Race-OD
+description=Neo Geo Pocket Emulator
+icon=skin:icons/race_od.png
+exec=/mnt/int_sd/emus/race_od/race-od.dge
+clock=600
+volume=1
+wrapper=true
+selectorbrowser=true
+selectordir=/mnt/

@@ -1,0 +1,7 @@
+title=Shifty
+description=Shifty Pills Game
+icon=skin:icons/shifty.png
+exec=/mnt/int_sd/games/shifty/run.dge
+clock=600
+volume=1
+wrapper=true

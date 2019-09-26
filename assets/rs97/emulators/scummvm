@@ -1,0 +1,7 @@
+title=ScummVM
+description=ScummVM Emulator
+icon=skin:icons/scummvm.png
+exec=/mnt/int_sd/emus/scummvm/run.dge
+clock=600
+volume=1
+wrapper=true

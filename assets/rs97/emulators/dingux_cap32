@@ -1,0 +1,7 @@
+title=CAP32
+description=Amstrad CPC Emulator
+icon=skin:icons/dingux_cap32.png
+exec=/mnt/int_sd/emus/dingux_cap32/cap32.dge
+clock=600
+volume=1
+wrapper=true

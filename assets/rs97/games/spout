@@ -1,0 +1,7 @@
+title=Spout
+description=Spout Game
+icon=skin:icons/spout.png
+exec=/mnt/int_sd/games/spout/run.dge
+clock=600
+volume=1
+wrapper=true

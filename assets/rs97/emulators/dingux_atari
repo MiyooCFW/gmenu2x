@@ -1,0 +1,7 @@
+title=Atari
+description=Atari 800/5200 Emulator
+icon=skin:icons/dingux_atari.png
+exec=/mnt/int_sd/emus/dingux_atari/dingux-atari
+clock=600
+volume=1
+wrapper=true
