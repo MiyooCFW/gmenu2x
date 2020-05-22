@@ -863,7 +863,9 @@ void GMenu2X::main(bool autoStart,bool bootLogo) {
 					s->write(titlefont, shortName, ix + linkSpacing + hOffset, iy + titlefont->getHeight()/2, alignment | VAlignMiddle);
 				}
 
-				//sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix, iy, 36, linkHeight}, HAlignCenter | VAlignMiddle);
+				if(!confInt["hideIcons"]){
+					sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix, iy, 36, linkHeight}, HAlignCenter | VAlignMiddle);
+				}
 				if(!confInt["hideDescription"]) {
 					s->write(font, tr.translate(menu->sectionLinks()->at(i)->getDescription()), ix + linkSpacing + hOffset, iy + linkHeight - linkSpacing/2, alignment | VAlignBottom);
 				}
@@ -879,8 +881,9 @@ void GMenu2X::main(bool autoStart,bool bootLogo) {
 
 					if (i == (uint32_t)menu->selLinkIndex())
 						s->box(ix, iy, linkWidth, linkHeight, skinConfColors[COLOR_SELECTION_BG]);
-
-					//sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix + 2, iy + 2, linkWidth - 4, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+					if(!confInt["hideIcons"]){
+						sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix + 2, iy + 2, linkWidth - 4, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+					}
 
 					s->write(font, tr.translate(menu->sectionLinks()->at(i)->getTitle()), ix + linkWidth/2, iy + linkHeight - 2, HAlignCenter | VAlignBottom);
 				}
@@ -1705,7 +1708,7 @@ void GMenu2X::setSkin(const string &skin, bool resetWallpaper, bool clearSC) {
 	evalIntConf( &skinConfInt["previewWidth"], 142, 1, resX);
 	evalIntConf( &skinConfInt["fontSize"], 12, 6, 60);
 	evalIntConf( &skinConfInt["fontSizeTitle"], 20, 6, 60);
-	evalIntConf( &skinConfInt["hideIcons"], 0, 1, 0);
+	evalIntConf( &skinConfInt["hideIcons"], 0, 1, 1);
 	evalIntConf( &skinConfInt["invertSelected"], 0, 0, 1);
 	evalIntConf( &skinConfInt["sectionLetters"], 0, 0, 1);
 	evalIntConf( &skinConfInt["shortNames"], 0, 0, 1);
