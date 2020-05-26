@@ -155,8 +155,9 @@ int Selector::exec(int startSelection) {
 			if (selected - fl.dirCount() < screens.size() && screens[selected - fl.dirCount()] != "") {
 				gmenu2x->s->box(320 - animation, gmenu2x->listRect.y, gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h, gmenu2x->skinConfColors[COLOR_TOP_BAR_BG]);
 
-				gmenu2x->sc[screens[selected - fl.dirCount()]]->softStretch(gmenu2x->skinConfInt["previewWidth"] - 2 * padding, 220 - 2 * padding, 1, 0);
-				gmenu2x->sc[screens[selected - fl.dirCount()]]->blit(gmenu2x->s, {320 - animation + padding, gmenu2x->listRect.y + padding, gmenu2x->skinConfInt["previewWidth"] - 2 * padding, gmenu2x->listRect.h - 2 * padding}, HAlignCenter | VAlignMiddle, 220);
+				gmenu2x->sc[screens[selected - fl.dirCount()]]->softStretch(gmenu2x->skinConfInt["previewWidth"] - 2 * padding, gmenu2x->listRect.h, 1, 1);
+				gmenu2x->sc[screens[selected - fl.dirCount()]]->blit(gmenu2x->s, {320 - animation + padding, gmenu2x->listRect.y, gmenu2x->skinConfInt["previewWidth"] - 2 * padding, gmenu2x->listRect.h}, HAlignCenter | VAlignMiddle, 220);
+
 
 				if (animation < gmenu2x->skinConfInt["previewWidth"]) {
 					animation = intTransition(0, gmenu2x->skinConfInt["previewWidth"], tickStart, 110);
