@@ -59,6 +59,7 @@
 #include "wallpaperdialog.h"
 #include "textdialog.h"
 #include "menusettingint.h"
+#include "menusettingmultiint.h"
 #include "menusettingbool.h"
 #include "menusettingrgba.h"
 #include "menusettingstring.h"
@@ -391,8 +392,10 @@ uint32_t oc_table[] = {
   0x03601110,
   0x03601131,
   0x03801b32,
-  0x03841821,
+  0x03841821
 };
+int oc_choices[] = {408,414,448,450,456,464,468,486,496,512,522,528,558,576,608,640,704,736,800,896};
+int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 #endif
 
 static enum color stringToColor(const string &name) {
@@ -863,7 +866,9 @@ void GMenu2X::main(bool autoStart,bool bootLogo) {
 					s->write(titlefont, shortName, ix + linkSpacing + hOffset, iy + titlefont->getHeight()/2, alignment | VAlignMiddle);
 				}
 
-				//sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix, iy, 36, linkHeight}, HAlignCenter | VAlignMiddle);
+				if(!confInt["hideIcons"]){
+					sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix, iy, 36, linkHeight}, HAlignCenter | VAlignMiddle);
+				}
 				if(!confInt["hideDescription"]) {
 					s->write(font, tr.translate(menu->sectionLinks()->at(i)->getDescription()), ix + linkSpacing + hOffset, iy + linkHeight - linkSpacing/2, alignment | VAlignBottom);
 				}
@@ -879,8 +884,9 @@ void GMenu2X::main(bool autoStart,bool bootLogo) {
 
 					if (i == (uint32_t)menu->selLinkIndex())
 						s->box(ix, iy, linkWidth, linkHeight, skinConfColors[COLOR_SELECTION_BG]);
-
-					//sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix + 2, iy + 2, linkWidth - 4, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+					if(!confInt["hideIcons"]){
+						sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix + 2, iy + 2, linkWidth - 4, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+					}
 
 					s->write(font, tr.translate(menu->sectionLinks()->at(i)->getTitle()), ix + linkWidth/2, iy + linkHeight - 2, HAlignCenter | VAlignBottom);
 				}
@@ -1460,9 +1466,9 @@ void GMenu2X::resetSettings() {
 
 void GMenu2X::cpuSettings() {
 	SettingsDialog sd(this, ts, tr["CPU settings"], "skin:icons/configure.png");
-	sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], 702, 702, 702, 6));
-	sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock "], tr["Maximum overclock for launching links"], &confInt["cpuMax"], 900, 900, 900, 6));
-	sd.addSetting(new MenuSettingInt(this, tr["Minimum CPU clock "], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], 200, 200, 200, 6));
+	sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], confInt["cpuMenu"], confInt["cpuMenu"], confInt["cpuMenu"], 6));
+	sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock "], tr["Maximum overclock for launching links"], &confInt["cpuMax"], confInt["cpuMax"], confInt["cpuMax"], confInt["cpuMax"], 6));
+	sd.addSetting(new MenuSettingInt(this, tr["Minimum CPU clock "], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], confInt["cpuMin"], confInt["cpuMin"], confInt["cpuMin"], 6));
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		setCPU(confInt["cpuMenu"]);
@@ -1705,7 +1711,7 @@ void GMenu2X::setSkin(const string &skin, bool resetWallpaper, bool clearSC) {
 	evalIntConf( &skinConfInt["previewWidth"], 142, 1, resX);
 	evalIntConf( &skinConfInt["fontSize"], 12, 6, 60);
 	evalIntConf( &skinConfInt["fontSizeTitle"], 20, 6, 60);
-	evalIntConf( &skinConfInt["hideIcons"], 0, 1, 0);
+	evalIntConf( &skinConfInt["hideIcons"], 0, 1, 1);
 	evalIntConf( &skinConfInt["invertSelected"], 0, 0, 1);
 	evalIntConf( &skinConfInt["sectionLetters"], 0, 0, 1);
 	evalIntConf( &skinConfInt["shortNames"], 0, 0, 1);
@@ -2402,7 +2408,11 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingString(		this, tr["Description"],	tr["Link description"], &linkDescription, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingMultiString(	this, tr["Section"],		tr["The section this link belongs to"], &newSection, &menu->getSections()));
 	sd.addSetting(new MenuSettingImage(			this, tr["Icon"],			tr["Select a custom icon for the link"], &linkIcon, ".png,.bmp,.jpg,.jpeg,.gif", dir_name(linkIcon), dialogTitle, dialogIcon));
+#if defined(TARGET_MIYOO)
+	sd.addSetting(new MenuSettingMultiInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, oc_choices, oc_choices_size, confInt["cpuMenu"], confInt["cpuMin"], confInt["cpuMax"]));
+#else
 	sd.addSetting(new MenuSettingInt(			this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, confInt["cpuMenu"], confInt["cpuMin"], confInt["cpuMax"], 6));
+#endif
 	sd.addSetting(new MenuSettingString(		this, tr["Parameters"],		tr["Command line arguments to pass to the application"], &linkParams, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingDir(			this, tr["Selector Path"],	tr["Directory to start the selector"], &linkSelDir, CARD_ROOT, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingBool(			this, tr["Show Folders"],	tr["Allow the selector to change directory"], &linkSelBrowser));
