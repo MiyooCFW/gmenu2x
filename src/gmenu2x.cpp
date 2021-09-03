@@ -2553,7 +2553,7 @@ void GMenu2X::deleteSection() {
 		return;
 	}
 
-	MessageBox mb(this, tr["All links in this section will be removed."] + "\n" + tr["Are you sure?"]);
+	MessageBox mb(this, tr["Really delete this menu section?"] + "\n" + tr[menu->selSection()]);
 	mb.setButton(CONFIRM, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() == CONFIRM) {
