@@ -2545,7 +2545,15 @@ void GMenu2X::renameSection() {
 }
 
 void GMenu2X::deleteSection() {
-	MessageBox mb(this, tr["All links in this section will be removed."] + "\n" + tr["Are you sure?"]);
+	// only allow deleting of empty section to reduce accidental deletions
+	if ( menu->sectionLinks()->size() > 0) {
+		MessageBox mb(this, tr["Error: cannot delete menu section with links in it."]);
+		mb.setButton(CONFIRM, tr["OK"]);
+		mb.exec();
+		return;
+	}
+
+	MessageBox mb(this, tr["Really delete this menu section?"] + "\n" + tr[menu->selSection()]);
 	mb.setButton(CONFIRM, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() == CONFIRM) {
