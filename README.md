@@ -1,6 +1,6 @@
 # GMenuNX
 
-[GMenuNX](https://github.com/pingflood/GMenuNX/) is a fork of [GMenu2X](http://mtorromeo.github.com/gmenu2x) developed to Retrogame RS-97, released under the GNU GPL license v2.
+[GMenuNX](https://github.com/pingflood/GMenuNX/) is a fork of [GMenu2X](http://mtorromeo.github.io/gmenu2x) developed to Retrogame RS-97, released under the GNU GPL license v2.
 
 View releases [changelog](ChangeLog.md).
 
