@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-20.04
     container:
       # note: nfriedly/miyoo-toolchain:steward can also be used for an env compatible with miyoo 1.3.3
-      image: nfriedly/miyoo-toolchain:musl
+      image: nfriedly/miyoo-toolchain:latest
     steps:
     - uses: actions/checkout@v2
     - name: build
