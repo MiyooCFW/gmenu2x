@@ -1,0 +1,54 @@
+# based on https://github.com/Arcnor/MiyooCFW/blob/ci/.github/workflows/main.yml
+name: CI Build
+
+on: [push, pull_request]
+
+jobs:   
+  build-modern:
+    name: GmenuNX for MiyooCFW 1.4+ (musl libc)
+    runs-on: ubuntu-20.04
+    container:
+      image: nfriedly/miyoo-toolchain:latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: build
+      run: make -f Makefile.miyoo dist
+    - uses: actions/upload-artifact@v2
+      with:
+        name: GMenuNX binary
+        path: objs/miyoo/gmenu2x
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+    - uses: actions/upload-artifact@v2
+      with:
+        name: GMenuNX binary (debug)
+        path: objs/miyoo/gmenu2x-debug
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+    - uses: actions/upload-artifact@v2
+      with:
+        name: GMenuNX Bundle
+        path: dist/miyoo/GMenuNX.zip
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+  build-legacy:
+    name: GMenuNX legacy build for Miyoo 1.3.3 and older (uClibc)
+    runs-on: ubuntu-20.04
+    container:
+      image: nfriedly/miyoo-toolchain:steward
+    steps:
+    - uses: actions/checkout@v2
+    - name: build
+      run: make -f Makefile.miyoo dist
+    - uses: actions/upload-artifact@v2
+      with:
+        name: GMenuNX legacy binary
+        path: objs/miyoo/gmenu2x
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+    - uses: actions/upload-artifact@v2
+      with:
+        name: GMenuNX legacy binary (debug)
+        path: objs/miyoo/gmenu2x-debug
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+    - uses: actions/upload-artifact@v2
+      with:
+        name: GMenuNX legacy Bundle
+        path: dist/miyoo/GMenuNX.zip
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`

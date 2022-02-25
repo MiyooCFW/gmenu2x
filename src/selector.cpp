@@ -288,7 +288,7 @@ void Selector::loadAliases() {
 }
 
 string Selector::getAlias(const string &key, const string &fname) {
-	unordered_map<string, string>::iterator i = aliases.find(key);
+	std::tr1::unordered_map<string, string>::iterator i = aliases.find(key);
 	if (i == aliases.end())
 		return fname;
 	else
