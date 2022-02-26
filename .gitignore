@@ -1,0 +1,4 @@
+dist/
+objs/
+.DS_Store
+Thumbs.db
