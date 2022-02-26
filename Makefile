@@ -17,7 +17,7 @@ CFLAGS = -ggdb -DTARGET_MIYOO -DTARGET=$(TARGET) -D__BUILDTIME__="$(BUILDTIME)" 
 #CFLAGS += -std=c++11 -fdata-sections -ffunction-sections -fno-exceptions -fno-math-errno -fno-threadsafe-statics -Os
 
 CXXFLAGS = $(CFLAGS)
-LDFLAGS = $(SDL_LIBS) -lfreetype -lSDL_image -lSDL_mixer -lSDL_ttf -lSDL -lpthread
+LDFLAGS = $(SDL_LIBS) -lSDL_image -ljpeg -lpng -lz -lSDL_mixer -lvorbisfile -lvorbis -logg -lSDL_ttf -lfreetype -lSDL -lpthread -lbz2 -lmpg123
 #LDFLAGS +=-Wl,--as-needed -Wl,--gc-sections -s
 
 OBJDIR = objs/$(TARGET)
@@ -37,7 +37,7 @@ dir:
 
 debug: $(OBJS)
 	@echo "Linking gmenu2x-debug..."
-	$(CXX) -o $(APPNAME)-debug $(LDFLAGS) $(OBJS)
+	$(CXX) -o $(APPNAME)-debug $(OBJS) $(LDFLAGS)
 
 shared: debug
 	$(STRIP) $(APPNAME)-debug -o $(APPNAME)
