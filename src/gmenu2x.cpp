@@ -1883,25 +1883,16 @@ void GMenu2X::about() {
 
 	TextDialog td(this, "GMenuNX", tr["Info about system"], "skin:icons/about.png");
 
-// #if defined(TARGET_CAANOO)
-// 	string versionFile = "";
-// // 	if (fileExists("/usr/gp2x/version"))
-// // 		versionFile = "/usr/gp2x/version";
-// // 	else if (fileExists("/tmp/gp2x/version"))
-// // 		versionFile = "/tmp/gp2x/version";
-// // 	if (!versionFile.empty()) {
-// // 		ifstream f(versionFile.c_str(), ios_base::in);
-// // 		if (f.is_open()) {
-// // 			string line;
-// // 			if (getline(f, line, '\n'))
-// // 				temp += "\nFirmware version: " + line + "\n" + exec("uname -srm");
-// // 			f.close();
-// // 		}
-// // 	}
-// 	td.appendText("\nFirmware version: ");
-// 	td.appendFile(versionFile);
-// 	td.appendText(exec("uname -srm"));
-// #endif
+	// todo: translate
+	td.appendText("\nFirmware version: ");
+	string versionFile = "/boot/version.txt";
+	if (fileExists(versionFile)){
+		td.appendFile(versionFile);
+	}
+	else {
+		td.appendText("unknown - no " + versionFile);
+	}
+	td.appendText(exec("uname -srm"));
 
 	td.appendText(temp);
 	td.appendFile("about.txt");
