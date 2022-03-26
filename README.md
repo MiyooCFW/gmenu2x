@@ -64,6 +64,25 @@ The fields logged are:
 * BatteryStatus: Computed battery status, from 0 (discharged) to 4 (charged) and 5 (charging);
 * BatteryLevel: Raw battery level as given by system.
 
+## Building for PC
+
+This is primarily useful for development/testing. 
+
+First, install the dependencies. This should work for Debian/Ubuntu systems, use the appropriate package manager for other systems:
+```sh
+sudo apt-get install -y build-essential libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libboost-all-dev libfreetype6-dev libbz2-dev libmpg123-dev
+```
+
+Compile from the root directory:
+```sh
+make dist -f Makefile.pc
+```
+
+Then run it from the `dist/pc/gmenu2x` directory:
+```sh
+cd dist/pc/gmenu2x/
+./gmenu2x
+```
 
 ## Thanks
 
