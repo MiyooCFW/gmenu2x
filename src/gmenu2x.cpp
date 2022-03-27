@@ -414,6 +414,12 @@ static const char *colorToString(enum color c) {
 char *hwVersion() {
 	static char buf[10] = { 0 };
 	FILE *f = fopen("/dev/mmcblk0", "r");
+	if(!f)
+	{
+		// this is usually the case when running on a PC
+		printf("Unable to read /dev/mmcblk0: %d\n", errno);
+		return buf;
+	}
 	fseek(f, 440, SEEK_SET); // Set the new position at 10
 	if (f) {
 		for (int i = 0; i < 4; i++) {
