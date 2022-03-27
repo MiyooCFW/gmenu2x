@@ -859,17 +859,25 @@ void GMenu2X::main(bool autoStart,bool bootLogo) {
 				} 
 
 
-				if (i == (uint32_t)menu->selLinkIndex()){
+				bool selected = i == (int)menu->selLinkIndex();
+				if (selected){
 					s->box(ix, iy, linksRect.w, linkHeight, skinConfColors[COLOR_FONT]);
+				}
+
+				if(!confInt["hideIcons"]){
+					sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix, iy, 36, linkHeight}, HAlignCenter | VAlignMiddle);
+					hOffset += 32;
+				}
+
+				if (selected) {
 					s->write(titlefont, name, ix + linkSpacing + hOffset, iy + titlefont->getHeight()/2, alignment | VAlignMiddle, skinConfColors[COLOR_BOTTOM_BAR_BG], skinConfColors[COLOR_FONT_OUTLINE]);
 				} else {
 					s->write(titlefont, shortName, ix + linkSpacing + hOffset, iy + titlefont->getHeight()/2, alignment | VAlignMiddle);
 				}
 
-				if(!confInt["hideIcons"]){
-					sc[menu->sectionLinks()->at(i)->getIconPath()]->blit(s, {ix, iy, 36, linkHeight}, HAlignCenter | VAlignMiddle);
-				}
-				if(!confInt["hideDescription"]) {
+				// Warning: this writes on top of the title when menu rows is > 5
+				// todo: restore the bottom bar, and the behavior of showing the description there for a second or two after selecting a link
+				if(selected && !confInt["hideDescription"]) {
 					s->write(font, tr.translate(menu->sectionLinks()->at(i)->getDescription()), ix + linkSpacing + hOffset, iy + linkHeight - linkSpacing/2, alignment | VAlignBottom);
 				}
 
@@ -1560,7 +1568,7 @@ void GMenu2X::readConfig() {
 	evalIntConf( &confInt["sectionBar"], SB_LEFT, 1, 4);
 	evalIntConf( &confInt["textAlignment"], 0,0,1);
 	evalIntConf( &confInt["linkCols"], 1, 1, 8);
-	evalIntConf( &confInt["linkRows"], 6, 1, 18);
+	evalIntConf( &confInt["linkRows"], 5, 1, 18);
 
 	if (!confInt["saveSelection"]) {
 		confInt["section"] = 0;
