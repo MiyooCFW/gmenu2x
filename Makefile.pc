@@ -9,7 +9,7 @@ STRIP = strip
 CFLAGS = -I"/usr/include" `sdl-config --cflags` -DTARGET_PC -DTARGET=$(TARGET) -D__BUILDTIME__="$(BUILDTIME)" -DLOG_LEVEL=4 -Wall -Wundef -Wno-deprecated -Wno-unknown-pragmas -Wno-format -pg -O0 -g -ggdb
 CXXFLAGS = $(CFLAGS)
 #LDFLAGS = -L"/usr/lib" `sdl-config --libs` -lfreetype -lSDL_image -lSDL_ttf -lSDL_gfx -ljpeg -lpng12 -lz
-LDFLAGS = -L"/usr/lib" `sdl-config --libs` -lfreetype -lSDL_mixer -lSDL_image -lSDL_ttf -ljpeg -lz
+LDFLAGS = -L"/usr/lib" `sdl-config --libs` -lSDL_image -ljpeg -lpng -lz -lSDL_mixer -lvorbisfile -lvorbis -logg -lSDL_ttf -lfreetype -lSDL -lpthread -lbz2 -lmpg123
 
 OBJDIR = objs/$(TARGET)
 DISTDIR = dist/$(TARGET)/gmenu2x
@@ -29,7 +29,7 @@ dir:
 
 debug: $(OBJS)
 	@echo "Linking gmenu2x-debug..."
-	$(CXX) -o $(APPNAME)-debug $(LDFLAGS) $(OBJS)
+	$(CXX) -o $(APPNAME)-debug $(OBJS) $(LDFLAGS)
 
 shared: debug
 	$(STRIP) $(APPNAME)-debug -o $(APPNAME)
@@ -43,7 +43,7 @@ dist: dir shared
 	install -m755 -d $(DISTDIR)/sections/applications $(DISTDIR)/sections/emulators $(DISTDIR)/sections/games $(DISTDIR)/sections/settings
 	install -m644 -D README.md $(DISTDIR)/README.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING
-	install -m644 -D ChangeLog $(DISTDIR)/ChangeLog
+	# install -m644 -D ChangeLog $(DISTDIR)/ChangeLog
 	cp -R assets/skins assets/translations $(DISTDIR)
 
 -include $(patsubst src/%.cpp, $(OBJDIR)/src/%.d, $(SOURCES))
