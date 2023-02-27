@@ -3,7 +3,7 @@ PLATFORM := bittboy
 BUILDTIME := $(shell date +%s)
 
 CHAINPREFIX := /opt/miyoo
-CROSS_COMPILE := $(CHAINPREFIX)/usr/bin/arm-miyoo-linux-uclibcgnueabi-
+CROSS_COMPILE := $(CHAINPREFIX)/bin/arm-linux-
 
 CC			:= $(CROSS_COMPILE)gcc
 CXX			:= $(CROSS_COMPILE)g++
