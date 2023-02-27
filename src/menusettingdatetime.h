@@ -32,6 +32,7 @@ private:
 	int y;
 	std::string month, day, year, hour, minute, *_value, originalValue;
 	int imonth, iday, iyear, ihour, iminute;
+	bool editing = false;
 
 	void dec();
 	void inc();

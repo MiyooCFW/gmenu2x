@@ -1,7 +1,0 @@
-title=Homing
-description=Homing Fever Game
-icon=skin:icons/homing.png
-exec=/mnt/int_sd/games/homing/run.dge
-clock=600
-volume=1
-wrapper=true

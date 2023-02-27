@@ -1,45 +1,84 @@
-About
-----
-GMenuNX is a fork of GMenu2X, developed by pingflood to Retrogame RS-97, released under the GNU GPL license v2.
-Website: https://github.com/pingflood/GMenuNX
+GMenu2X is developed for the MiyooCFW and released under the GNU GPL license v2.
+This fork has been based of RetroFW src.
+Source code for current build: https://github.com/Apaczer/gmenu2x/tree/miyoo_beta
 
-GMenu2X is developed by Massimiliano "Ryo" Torromeo, and is released under the GPL-v2 license.
-Website: http://mtorromeo.github.com/gmenu2x
-E-Mail & PayPal account: massimiliano.torromeo@gmail.com
+Controls
+----
+* A: Accept / Launch selected link / Confirm action;
+* B: Back / Cancel action
+* X: Goes up one directory in file browser;
+* Y: Bring up the manual/readme;
+* L, R: Switch between sections / PageUp/PageDown on lists;
+* START: GMenuNX settings;
+* SELECT: Context menu;
+* SELECT + L: Volume control;
+* SELECT + R, BRIGHTNESS: Change screen brightness;
+* POWER: Bring up Poweroff dialog;
+* SELECT + START: Take a screenshot;
+* START (hold): Toggle Suspend mode;
+* MODIFIER (hold): Bring up Date&Time quick dialog;
+* TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal;
+
+In settings:
+
+* A, LEFT, RIGHT: Accept, select or toggle setting;
+* B: Back or cancel edits and return;
+* START: Save edits and return;
+* SELECT: Clear or set default value.
+
+
+How to have previews in Selector Browser
+----
+* Select the link you want to edit and press "menu";
+* Edit the link;
+* Configure the link to match your directory structure. Important fields:
++-- Selector Directory: The directory of your roms
++-- Selector Browser: Enable selector before launching the app
++-- Selector Filter: Filter extensions to be shown in the selector. Separe multiple extensions with commas.
++-- Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
+* The name of the file of rom and preview have to be exactly the same. Suported image types are .png or .jpg;
+
 
 Thanks goes to...
+
+Massimiliano "Ryo" Torromeo, by the original GMenu2X code.
+pingflood for adding Bittboy specific HW handling in his GMenuNX fork.
 
 Contributors
 ----
 NoidZ for his gp2x' buttons graphics
 Pickle for the initial Wiz and Caanoo ports
-Steward for the initial Miyoo/BittBoy ports
-Steward for the initial RetroGame RS-97 ports
+Steward-Fu for the initial RetroGame ports
+TonyJih for the new RetroFW features
+Fontes for the RetroFW graphics
 
 Beta testers
 ----
 Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X)
 Yann Vaillant (WIZ)
-jutley and m1024 (RS-97)
+msx, jbanes, jutley and scooterpsu (RetroFW)
+salvacam (MiyooCFW)
 
 Translators
 ----
-English & Italian by Massimiliano
-French by Yodaz
-Danish by claus
-Dutch by superfly
-Spanish by pedator
-Portuguese (Portugal) by NightShadow
-Portuguese (Brazil) by pingflood
-Slovak by Jozef
-Swedish by Esslan and Micket
-German by fusion_power, johnnysnet and Waldteufel
-Finnish by Jontte and Atte
-Norwegian by cowai
-Russian by XaMMaX90
-Chinese (CN) by KungfuPanda
-Chinese (TW) by TonyJih
-Korean by haven-jeon
+Chinese (CN): 蔡蔡哥; simpleasy; KungfuPanda
+Chinese (TW): wentao; TonyJih
+Danish: claus
+Dutch: superfly
+English: Massimiliano
+Finnish: Jontte; Atte
+French: Yodaz
+German: fusion_power; johnnysnet; Waldteufel
+Italian: Massimiliano
+Korean: haven-jeon
+Norwegian: cowai
+Polish: Macmmm81
+Portuguese (Brazil): pingflood
+Portuguese (Portugal): NightShadow
+Russian: XaMMaX90
+Slovak: Jozef
+Spanish: pedator
+Swedish: Esslan; Micket
 
 Donors
 ----
@@ -54,5 +93,14 @@ sbock
 b._.o._.b
 Jacopastorius
 lorystorm90
-and all the anonymous donors...
+
+http://funnyplaying.com,
+https://droidbox.co.uk,
+https://bittboy.com,
+for giving a discount coupon and development units
+
+Wentao for giving hardware mod support:
+https://www.youtube.com/channel/UCeGZpAGYSiCGz6x4OX5MSEw
+
+and all the anonymous colaborators...
 (If I missed to list you or if you want to be removed, contact me.)

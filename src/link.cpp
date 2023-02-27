@@ -17,45 +17,19 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-#include <fstream>
-#include <sstream>
 #include "link.h"
-#include "menu.h"
-#include "selector.h"
-// #include "debug.h"
-#include "fonthelper.h"
+#include "gmenu2x.h"
 
-Link::Link(GMenu2X *gmenu2x_, LinkAction action)
-	: Button(gmenu2x_->ts, true)
-	, gmenu2x(gmenu2x_)
-{
-	this->action = action;
-	edited = false;
-	iconPath = gmenu2x->sc.getSkinFilePath("icons/generic.png");
-	padding = 4;
-
-	updateSurfaces();
-}
+Link::Link(GMenu2X *gmenu2x, LinkAction action):
+Button(gmenu2x->ts, true), gmenu2x(gmenu2x), action(action) {}
 
 void Link::run() {
 	this->action();
 }
 
-void Link::updateSurfaces() {
-	iconSurface = gmenu2x->sc[getIconPath()];
-}
-
-const string &Link::getTitle() {
-	return title;
-}
-
 void Link::setTitle(const string &title) {
 	this->title = title;
 	edited = true;
-}
-
-const string &Link::getDescription() {
-	return description;
 }
 
 void Link::setDescription(const string &description) {
@@ -64,40 +38,53 @@ void Link::setDescription(const string &description) {
 }
 
 const string &Link::getIcon() {
+	int pos = iconPath.find('#'); // search for "opkfile.opk#icon.png"
+	if (pos != string::npos) icon = "";
 	return icon;
 }
 
 void Link::setIcon(const string &icon) {
-	this->icon = icon;
+	int pos = icon.find('#'); // search for "opkfile.opk#icon.png"
 
-	if (icon.compare(0, 5, "skin:") == 0)
+	this->icon = icon;
+	if (icon.compare(0, 5, "skin:") == 0) {
 		this->iconPath = gmenu2x->sc.getSkinFilePath(icon.substr(5, string::npos));
-	else
+	} else if (file_exists(icon)) {
 		this->iconPath = icon;
+	} else if (!(icon.empty() && pos != string::npos)) { // keep the opk icon
+		this->iconPath = "";
+	}
 
 	edited = true;
-	updateSurfaces();
 }
 
-const string &Link::searchIcon() {
-	if (!gmenu2x->sc.getSkinFilePath(iconPath).empty()) {
-		iconPath = gmenu2x->sc.getSkinFilePath(iconPath);
-	}	else if (!fileExists(iconPath)) {
-		iconPath = gmenu2x->sc.getSkinFilePath("icons/generic.png");
-	} else
-		iconPath = gmenu2x->sc.getSkinFilePath("icons/generic.png");
-	return iconPath;
+void Link::setBackdrop(const string &backdrop) {
+	this->backdrop = backdrop;
+
+	if (backdrop.compare(0, 5, "skin:") == 0)
+		this->backdropPath = gmenu2x->sc.getSkinFilePath(backdrop.substr(5, string::npos));
+	else if (file_exists(backdrop))
+		this->backdropPath = backdrop;
+	else
+		this->backdropPath = "";
+
+	edited = true;
+}
+
+const string Link::searchIcon() {
+	if (!gmenu2x->sc.getSkinFilePath(iconPath).empty())
+		return gmenu2x->sc.getSkinFilePath(iconPath);
+	return gmenu2x->sc.getSkinFilePath("icons/generic.png");
 }
 
 const string &Link::getIconPath() {
-	if (iconPath.empty()) searchIcon();
+	if (iconPath.empty()) iconPath = searchIcon();
 	return iconPath;
 }
 
 void Link::setIconPath(const string &icon) {
-	if (fileExists(icon))
+	if (file_exists(icon))
 		iconPath = icon;
 	else
 		iconPath = gmenu2x->sc.getSkinFilePath("icons/generic.png");
-	updateSurfaces();
 }

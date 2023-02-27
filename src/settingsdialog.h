@@ -36,6 +36,9 @@ private:
 	enum sd_action_t {
 		SD_NO_ACTION,
 		SD_ACTION_CLOSE,
+		SD_ACTION_CLOSE_NOMB,
+		SD_ACTION_CLOSE_LINK,
+		SD_ACTION_CLOSE_LINK_NOMB,
 		SD_ACTION_UP,
 		SD_ACTION_DOWN,
 		SD_ACTION_SAVE,
@@ -44,16 +47,15 @@ private:
 	};
 	Touchscreen &ts;
 	vector<MenuSetting *> voices;
-	string title, icon;
 
 public:
 	SettingsDialog(GMenu2X *gmenu2x, Touchscreen &ts, const string &title, const string &icon = "skin:sections/settings.png");
 	~SettingsDialog();
-	bool save = false, close = false, allowCancel = true;
+	bool save = false, loop = true, allowCancel = false,  allowCancel_nomb = false, allowCancel_link = false, allowCancel_link_nomb = false;
 	bool edited();
 	bool exec();
 	void addSetting(MenuSetting* set);
 	int32_t selected = 0;
 };
 
-#endif /*INPUTDIALOG_H_*/
+#endif /*SETTINGSDIALOG_H_*/

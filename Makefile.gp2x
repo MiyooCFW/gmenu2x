@@ -1,19 +1,19 @@
 # Export a OPEN2X environment variable pointing to the open2x toolchain
 CHAINPREFIX=$(OPEN2X)
 CROSS_COMPILE=$(CHAINPREFIX)/bin/arm-open2x-linux-
-TARGET=gp2x
+PLATFORM=gp2x
 
 CC= $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
 STRIP = $(CROSS_COMPILE)strip
 
-CFLAGS = -I"$(CHAINPREFIX)/include" `$(CHAINPREFIX)/bin/sdl-config --cflags` -DLOG_LEVEL=4 -DTARGET_GP2X -DTARGET=$(TARGET) -O3 -g -msoft-float -fomit-frame-pointer -ffast-math -funroll-loops -fno-exceptions -Wall -Wno-unknown-pragmas -Wno-format
+CFLAGS = -DTARGET_GP2X -DPLATFORM=\"$(PLATFORM)\" -I"$(CHAINPREFIX)/include" `$(CHAINPREFIX)/bin/sdl-config --cflags` -DLOG_LEVEL=4 -O3 -g -msoft-float -fomit-frame-pointer -ffast-math -funroll-loops -fno-exceptions -Wall -Wno-unknown-pragmas -Wno-format
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = -L$(CHAINPREFIX)/lib -lSDL_image -lSDL_ttf -lfreetype -lSDL_gfx -ljpeg -lpng12 -lSDL -lz -ldl
 
-OBJDIR = objs/$(TARGET)
-DISTDIR = dist/$(TARGET)/gmenu2x
-APPNAME = $(OBJDIR)/gmenu2x
+OBJDIR = /tmp/gmenu2x/$(PLATFORM)
+DISTDIR = dist/$(PLATFORM)/gmenu2x
+APPNAME = dist/$(PLATFORM)/gmenu2x
 
 SOURCES := $(wildcard src/*.cpp)
 OBJS := $(patsubst src/%.cpp, $(OBJDIR)/src/%.o, $(SOURCES))
@@ -50,7 +50,7 @@ dist: dir static
 	install -m644 -D README.rst $(DISTDIR)/README.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING
 	install -m644 -D ChangeLog $(DISTDIR)/ChangeLog
-	cp -RH assets/skins assets/translations assets/$(TARGET)/* $(DISTDIR)
+	cp -RH assets/skins assets/translations assets/$(PLATFORM)/* $(DISTDIR)
 	mv $(DISTDIR)/autorun.gpu $(DISTDIR)/..
 
 -include $(patsubst src/%.cpp, $(OBJDIR)/src/%.d, $(SOURCES))

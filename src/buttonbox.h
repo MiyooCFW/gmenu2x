@@ -14,6 +14,7 @@ public:
 	~ButtonBox();
 
 	void add(Button *button);
+	void remove(uint32_t n);
 
 	void paint(uint32_t posX);
 	void handleTS();

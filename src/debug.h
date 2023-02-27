@@ -1,4 +1,3 @@
-
 #ifndef DEBUG_H
 #define DEBUG_H
 
@@ -9,72 +8,60 @@
 #define DEBUG_L 4
 
 #ifndef LOG_LEVEL
-# define LOG_LEVEL INFO_L
+	#define LOG_LEVEL INFO_L
 #endif
 
-// -------------
-
-#ifndef COLOR_DEBUG
-# define COLOR_DEBUG   "\e[1;34m"
+#ifndef DEBUG_START
+	#define DEBUG_START		"\e[1;34m"
 #endif
-#ifndef COLOR_WARNING
-# define COLOR_WARNING "\e[1;33m"
+#ifndef WARNING_START
+	#define WARNING_START	"\e[1;33m"
 #endif
-#ifndef COLOR_ERROR
-# define COLOR_ERROR   "\e[1;31m"
+#ifndef ERROR_START
+	#define ERROR_START		"\e[1;31m"
 #endif
-#ifndef COLOR_INFO
-# define COLOR_INFO   "\e[1;32m"
+#ifndef INFO_START
+	#define INFO_START		"\e[1;32m"
 #endif
 
-#define COLOR_END "\e[00m"
+#define LOG_END "\e[00m\n"
+
+
+#define D(str, ...) \
+	fprintf(stdout, DEBUG_START "%s:%d %s: " str LOG_END, __FILE__, __LINE__, __func__,  ##__VA_ARGS__)
 
 #if (LOG_LEVEL >= DEBUG_L)
-# ifdef COLOR_DEBUG
-#  define DEBUG(str, ...) \
-    fprintf(stdout, COLOR_DEBUG "[D] %s:%d %s: " str COLOR_END "\n", __FILE__, __LINE__, __func__,  ##__VA_ARGS__)
-# else
-#  define DEBUG(str, ...) \
-    fprintf(stdout, "DEBUG: " str "\n", ##__VA_ARGS__)
-# endif
-#else
-# define DEBUG(...)
+	#define DEBUG(str, ...) \
+	fprintf(stdout, DEBUG_START str LOG_END, ##__VA_ARGS__)
 #endif
 
 #if (LOG_LEVEL >= INFO_L)
-# ifdef COLOR_INFO
-#  define INFO(str, ...) \
-    fprintf(stdout, COLOR_INFO str COLOR_END "\n", ##__VA_ARGS__)
-# else
-#  define INFO(str, ...) \
-    fprintf(stdout, str "\n", ##__VA_ARGS__)
-# endif
-#else
-# define INFO(...)
+	#define INFO(str, ...) \
+	fprintf(stdout, INFO_START str LOG_END, ##__VA_ARGS__)
 #endif
 
 #if (LOG_LEVEL >= WARNING_L)
-# ifdef COLOR_WARNING
-#  define WARNING(str, ...) \
-    fprintf(stderr, COLOR_WARNING "WARNING: " str COLOR_END "\n", ##__VA_ARGS__)
-# else
-#  define WARNING(str, ...) \
-    fprintf(stderr, "WARNING: " str "\n", ##__VA_ARGS__)
-# endif
-#else
-# define WARNING(...)
+	#define WARNING(str, ...) \
+	fprintf(stderr, WARNING_START str LOG_END, ##__VA_ARGS__)
 #endif
 
 #if (LOG_LEVEL >= ERROR_L)
-# ifdef COLOR_ERROR
-#  define ERROR(str, ...) \
-    fprintf(stderr, COLOR_ERROR "ERROR: " str COLOR_END "\n", ##__VA_ARGS__)
-# else
-#  define ERROR(str, ...) \
-    fprintf(stderr, "ERROR: " str "\n", ##__VA_ARGS__)
-# endif
-#else
-# define ERROR(...)
+	#define ERROR(str, ...) \
+	fprintf(stderr, ERROR_START str LOG_END, ##__VA_ARGS__)
 #endif
 
+
+#ifndef DEBUG
+	#define DEBUG(...)
 #endif
+#ifndef WARNING
+	#define WARNING(...)
+#endif
+#ifndef ERROR
+	#define ERROR(...)
+#endif
+#ifndef INFO
+	#define INFO(...)
+#endif
+
+#endif // DEBUG_H

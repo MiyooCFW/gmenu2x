@@ -22,7 +22,7 @@
 
 #include "menusetting.h"
 
-class GMenu2X;
+// class GMenu2X;
 
 class MenuSettingBool : public MenuSetting {
 private:

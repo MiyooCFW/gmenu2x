@@ -1,0 +1,11 @@
+Package: gmenunx
+Version:
+Description: GMenu 1X, 2X, 3X (...) NX: GMenuNX is a fork of GMenu2X developed for the RetroGame and RetroArcade gaming devices
+Replaces: gmenu2x,gmenunx
+Section: apps
+Priority: optional
+Maintainer: pingflood
+Architecture: mipsel
+Homepage: https://github.com/pingflood/gmenunx
+Depends: retrofw(>=2.0)
+Source: https://github.com/pingflood/gmenunx

@@ -23,28 +23,18 @@
 #include <algorithm>
 using std::find;
 
-MenuSettingMultiString::MenuSettingMultiString(
-		GMenu2X *gmenu2x, const string &title,
-		const string &description, string *value,
-		const vector<string> *choices_,
-		msms_onchange_t onChange, msms_onselect_t onSelect)
-	: MenuSettingStringBase(gmenu2x, title, description, value), choices(choices_),
-	onChange(onChange), onSelect(onSelect)
-{
+MenuSettingMultiString::MenuSettingMultiString(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const vector<string> *choices, msms_onchange_t onChange, msms_onselect_t onSelect):
+MenuSettingStringBase(gmenu2x, title, description, value), choices(choices), onChange(onChange), onSelect(onSelect) {
 	setSel(find(choices->begin(), choices->end(), *value) - choices->begin());
 
 	if (choices->size() > 1) {
-		btn = new IconButton(gmenu2x, "skin:imgs/buttons/left.png");
-		btn->setAction(MakeDelegate(this, &MenuSettingMultiString::decSel));
-		buttonBox.add(btn);
-
-		btn = new IconButton(gmenu2x, "skin:imgs/buttons/right.png", gmenu2x->tr["Change"]);
-		btn->setAction(MakeDelegate(this, &MenuSettingMultiString::incSel));
+		btn = new IconButton(gmenu2x, "dpad", gmenu2x->tr["Change"]);
+		// btn->setAction(MakeDelegate(this, &MenuSettingMultiString::incSel));
 		buttonBox.add(btn);
 	}
 
 	if (this->onSelect) {
-		btn = new IconButton(gmenu2x, "skin:imgs/buttons/a.png", gmenu2x->tr["Open"]);
+		btn = new IconButton(gmenu2x, "a", gmenu2x->tr["Open"]);
 		// btn->setAction(MakeDelegate(this, &MenuSettingMultiString::incSel));
 		buttonBox.add(btn);
 	}
@@ -78,8 +68,7 @@ void MenuSettingMultiString::decSel() {
 	setSel(selected - 1);
 }
 
-void MenuSettingMultiString::setSel(int sel)
-{
+void MenuSettingMultiString::setSel(int sel) {
 	if (sel < 0) {
 		sel = choices->size()-1;
 	} else if (sel >= (int)choices->size()) {
@@ -88,4 +77,19 @@ void MenuSettingMultiString::setSel(int sel)
 	selected = sel;
 
 	setValue((*choices)[sel]);
+}
+
+void MenuSettingMultiString::draw(int y) {
+	MenuSetting::draw(y);
+
+	int w = 0;
+	if (value() == "ON" || value() == "AUTO" || value() == "OFF") {
+		w = gmenu2x->font->getHeight()/2.5;
+		RGBAColor color = (RGBAColor){255, 0, 0, 255};
+		if (value() == "ON" || value() == "AUTO") color = (RGBAColor) {0, 255, 0, 255};
+		gmenu2x->s->box(155, y + 1, w, gmenu2x->font->getHeight() - 2, color);
+		gmenu2x->s->rectangle(155, y + 1, w, gmenu2x->font->getHeight() - 2, 0, 0, 0, 255);
+		w += 2;
+	}
+	gmenu2x->s->write(gmenu2x->font, value(), 155 + w, y + gmenu2x->font->getHalfHeight(), VAlignMiddle);
 }

@@ -29,27 +29,27 @@ using std::vector;
 
 class FileLister {
 private:
-	string path, filter;
 	vector<string> directories, files, excludes;
 
 public:
-	bool showDirectories, showFiles, allowDirUp = true;
-	FileLister(const string &startPath = "/mnt/", bool showDirectories = true, bool showFiles = true);
+	string path, filter;
+	FileLister(const string &startPath = "/", bool showDirectories = true, bool showFiles = true);
+	bool showDirectories = true, showFiles = true, allowDirUp = true;
 	void browse();
 
 	uint32_t size();
 	uint32_t dirCount();
 	uint32_t fileCount();
 	string operator[](uint32_t);
-	string at(uint32_t);
+	string getFile(uint32_t);
 	bool isFile(uint32_t);
 	bool isDirectory(uint32_t);
-
-	const string &getPath();
-	void setPath(const string &path, bool doBrowse=true);
-	const string &getFilter();
+	const string getExt(uint32_t i = 0);
+	const string getFilePath(uint32_t i = 0);
+	const string &getPath() { return path; }
+	void setPath(const string &path);
+	const string &getFilter() { return filter; }
 	void setFilter(const string &filter);
-
 	const vector<string> &getDirectories() { return directories; }
 	const vector<string> &getFiles() { return files; }
 	void insertFile(const string &file);

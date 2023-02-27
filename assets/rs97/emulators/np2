@@ -1,7 +1,0 @@
-title=NP2
-description=PC98 Emulator
-icon=skin:icons/np2.png
-exec=/mnt/int_sd/emus/np2/np2
-clock=600
-volume=1
-wrapper=true

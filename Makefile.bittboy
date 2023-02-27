@@ -1,0 +1,60 @@
+PLATFORM := bittboy
+
+BUILDTIME := $(shell date +%s)
+
+CHAINPREFIX := /opt/miyoo
+CROSS_COMPILE := $(CHAINPREFIX)/usr/bin/arm-miyoo-linux-uclibcgnueabi-
+
+CC			:= $(CROSS_COMPILE)gcc
+CXX			:= $(CROSS_COMPILE)g++
+STRIP		:= $(CROSS_COMPILE)strip
+
+SYSROOT     := $(shell $(CC) --print-sysroot)
+SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
+SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
+
+CFLAGS = -DPLATFORM=\"$(PLATFORM)\" -D__BUILDTIME__=$(BUILDTIME) -DLOG_LEVEL=3
+CFLAGS += -Isrc 
+CFLAGS += -Os -ggdb -g3 $(SDL_CFLAGS)
+CFLAGS += -DTARGET_BITTBOY
+
+LDFLAGS = $(SDL_LIBS) -lfreetype -lSDL -lSDL_image -lSDL_ttf
+
+OBJDIR = /tmp/gmenu2x/$(PLATFORM)
+DISTDIR = dist/$(PLATFORM)
+TARGET = $(DISTDIR)/gmenu2x
+
+SOURCES := $(wildcard src/*.cpp)
+OBJS := $(patsubst src/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
+
+# File types rules
+$(OBJDIR)/%.o: src/%.cpp src/%.h src/platform/$(PLATFORM).h
+	$(CXX) $(CFLAGS) -o $@ -c $<
+
+-include $(patsubst src/%.cpp, $(OBJDIR)/%.d, $(SOURCES))
+
+all: dir shared
+
+dir:
+	@mkdir -p $(OBJDIR) $(DISTDIR)
+
+debug: $(OBJS)
+	@echo "Linking gmenu2x-debug..."
+	$(CXX) -o $(TARGET)-debug $(LDFLAGS) $(OBJS)
+
+shared: debug
+	$(STRIP) $(TARGET)-debug -o $(TARGET)
+
+clean:
+	rm -rf $(OBJDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug $(DISTDIR) dist/gmenunx-$(PLATFORM).zip
+
+dist: dir shared
+	mkdir -p $(DISTDIR)/skins/Default
+	install -m644 -D about.txt $(DISTDIR)/about.txt
+	install -m644 -D COPYING $(DISTDIR)/COPYING
+	cp -RH assets/translations $(DISTDIR)
+	cp -RH assets/skins/FontGrid/* $(DISTDIR)/skins/Default
+	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
+
+zip: dist
+	cd $(DISTDIR)/ && rm -f ../gmenunx-$(PLATFORM).zip && zip -r ../gmenunx-$(PLATFORM).zip skins translations COPYING gmenu2x input.conf about.txt

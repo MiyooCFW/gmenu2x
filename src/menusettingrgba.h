@@ -23,7 +23,7 @@
 #include "menusetting.h"
 #include "surface.h"
 
-class GMenu2X;
+// class GMenu2X;
 
 class MenuSettingRGBA : public MenuSetting {
 private:
@@ -32,6 +32,7 @@ private:
 	std::string strR, strG, strB, strA;
 	RGBAColor originalValue;
 	RGBAColor *_value;
+	bool editing = false;
 
 	void dec();
 	void inc();
@@ -43,7 +44,7 @@ public:
 	virtual ~MenuSettingRGBA() {};
 
 	virtual void draw(int y);
-	virtual void handleTS();
+	// virtual void handleTS();
 	virtual uint32_t manageInput();
 	virtual void adjustInput();
 	virtual void drawSelected(int y);

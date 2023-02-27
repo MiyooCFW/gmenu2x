@@ -21,45 +21,31 @@
 #include "gmenu2x.h"
 using fastdelegate::MakeDelegate;
 
-MenuSettingBool::MenuSettingBool(GMenu2X *gmenu2x, const string &title, const string &description, int *value)
-	: MenuSetting(gmenu2x, title, description)
-{
-	_ivalue = value;
+MenuSettingBool::MenuSettingBool(GMenu2X *gmenu2x, const string &title, const string &description, int *value):
+MenuSetting(gmenu2x, title, description), _ivalue(value) {
 	_value = NULL;
 	originalValue = *value != 0;
 	setValue(this->value());
 	initButton();
 }
 
-MenuSettingBool::MenuSettingBool(GMenu2X *gmenu2x, const string &title, const string &description, bool *value)
-	: MenuSetting(gmenu2x, title, description)
-{
-	_value = value;
+MenuSettingBool::MenuSettingBool(GMenu2X *gmenu2x, const string &title, const string &description, bool *value):
+MenuSetting(gmenu2x, title, description), _value(value) {
 	_ivalue = NULL;
 	originalValue = *value;
 	setValue(this->value());
 	initButton();
 }
 
-void MenuSettingBool::initButton()
-{
+void MenuSettingBool::initButton() {
 	ButtonAction actionToggle = MakeDelegate(this, &MenuSettingBool::toggle);
 
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/left.png");
-	btn->setAction(actionToggle);
-	buttonBox.add(btn);
-
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/right.png");
-	btn->setAction(actionToggle);
-	buttonBox.add(btn);
-
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/a.png", gmenu2x->tr["Change"]);
+	btn = new IconButton(gmenu2x, "dpad", gmenu2x->tr["Change"]);
 	btn->setAction(actionToggle);
 	buttonBox.add(btn);
 }
 
-void MenuSettingBool::draw(int y)
-{
+void MenuSettingBool::draw(int y) {
 	MenuSetting::draw(y);
 
 	RGBAColor color = (RGBAColor){255, 0, 0, 255};
@@ -68,27 +54,24 @@ void MenuSettingBool::draw(int y)
 	int w = gmenu2x->font->getHeight()/2.5;
 	gmenu2x->s->box(155, y + 1, w, gmenu2x->font->getHeight() - 2, color);
 	gmenu2x->s->rectangle(155, y + 1, w, gmenu2x->font->getHeight() - 2, 0, 0, 0, 255);
-	gmenu2x->s->write( gmenu2x->font, strvalue, 155 + w + 2, y + gmenu2x->font->getHalfHeight(), VAlignMiddle );
+	gmenu2x->s->write(gmenu2x->font, strvalue, 155 + w + 2, y + gmenu2x->font->getHalfHeight(), VAlignMiddle);
 }
 
-uint32_t MenuSettingBool::manageInput()
-{
-	if ( gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM] ) toggle();
+uint32_t MenuSettingBool::manageInput() {
+	if (gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM])
+		toggle();
 	return 0; // SD_NO_ACTION
 }
 
-void MenuSettingBool::toggle()
-{
+void MenuSettingBool::toggle() {
 	setValue(!value());
 }
 
-void MenuSettingBool::setValue(int value)
-{
+void MenuSettingBool::setValue(int value) {
 	setValue(value != 0);
 }
 
-void MenuSettingBool::setValue(bool value)
-{
+void MenuSettingBool::setValue(bool value) {
 	if (_value == NULL)
 		*_ivalue = value;
 	else
@@ -96,15 +79,12 @@ void MenuSettingBool::setValue(bool value)
 	strvalue = value ? "ON" : "OFF";
 }
 
-bool MenuSettingBool::value()
-{
+bool MenuSettingBool::value() {
 	if (_value == NULL)
 		return *_ivalue != 0;
-	else
-		return *_value;
+	return *_value;
 }
 
-bool MenuSettingBool::edited()
-{
+bool MenuSettingBool::edited() {
 	return originalValue != value();
 }

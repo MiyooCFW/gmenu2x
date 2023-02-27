@@ -41,16 +41,33 @@ class Menu {
 private:
 	GMenu2X *gmenu2x;
 	int iSection, iLink;
-	uint32_t iFirstDispSection, iFirstDispRow;
+	int32_t iFirstDispSection, iFirstDispRow;
 	vector<string> sections;
 	vector<linklist> links;
 
-	void readLinks();
+	const int iconPadding = 4;
+	uint32_t section_changed, icon_changed;
+
+	Surface *iconSD, *iconManual, *iconCPU, *iconMenu, *iconL, *iconR, *iconBGoff, *iconBGon;
+	Surface *iconBrightness[6], *iconBattery[7], *iconVolume[3];
+
+	int8_t brightnessIcon = 5;
+	string iconDescription = "";
+
+	SDL_TimerID sectionChangedTimer, iconChangedTimer;
+
 	void freeLinks();
+
+	void drawList();
+	void drawGrid();
+	void drawSectionBar();
+	void drawStatusBar();
+	void drawIconTray();
 
 public:
 	Menu(GMenu2X *gmenu2x);
 	~Menu();
+	uint32_t linkCols, linkRows, linkWidth, linkHeight, linkSpacing = 4;
 
 	linklist *sectionLinks(int i = -1);
 
@@ -58,14 +75,17 @@ public:
 	int sectionNumItems();
 
 	const string &selSection();
+	const string selSectionName();
 	void decSectionIndex();
 	void incSectionIndex();
 	void setSectionIndex(int i);
 	uint32_t firstDispSection();
 	uint32_t firstDispRow();
 
+	void readSections();
+	void readLinks();
 	bool addActionLink(uint32_t section, const string &title, fastdelegate::FastDelegate0<> action, const string &description="", const string &icon="");
-	bool addLink(string path, string file, string section="");
+	bool addLink(string exec);
 	bool addSection(const string &sectionName);
 	void deleteSelectedLink();
 	void deleteSelectedSection();
@@ -89,8 +109,10 @@ public:
 	const vector<string> &getSections() { return sections; }
 	void renameSection(int index, const string &name);
 	int getSectionIndex(const string &name);
-	const string getSectionIcon(int i);
-	const string getSectionLetter(int i);
+	const string getSectionIcon(int i = -1);
+
+	void initLayout();
+	void exec();
 };
 
 #endif
