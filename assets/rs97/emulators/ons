@@ -1,7 +1,0 @@
-title=ONS
-description=OnScripter Emulator
-icon=skin:icons/ons.png
-exec=/mnt/int_sd/emus/ons/run.dge
-clock=600
-volume=1
-wrapper=true

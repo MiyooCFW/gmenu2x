@@ -17,52 +17,47 @@
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
-/*	RS97 Key Codes. 2018, pingflood
-	BUTTON     GMENU          SDL             NUMERIC
-	-------------------------------------------------
-	X          MODIFIER       SDLK_SPACE      32
-	A          CONFIRM        SDLK_LCTRL      306
-	B          CANCEL         SDLK_LALT       308
-	Y          MANUAL         SDLK_LSHIFT     304
-	L          SECTION_PREV   SDLK_TAB        9
-	R          SECTION_NEXT   SDLK_BACKSPACE  8
-	START      SETTINGS       SDLK_RETURN     13
-	SELECT     MENU)          SDLK_ESCAPE     27
-	BACKLIGHT  BACKLIGHT      SDLK_3          51
-	POWER      POWER          SDLK_END        279
-*/
 
 #include "debug.h"
 #include "inputmanager.h"
 #include "utilities.h"
+#include "gmenu2x.h"
 
-#include <iostream>
 #include <fstream>
 
 using namespace std;
 
-InputManager::InputManager()
-	: wakeUpTimer(NULL) {
-}
+extern uint8_t numJoy; // number of connected joysticks
+
+enum InputManagerMappingTypes {
+	MAPPING_TYPE_BUTTON,
+	MAPPING_TYPE_AXIS,
+	MAPPING_TYPE_KEYPRESS
+};
+
+static SDL_TimerID timer = NULL;
+
+uint8_t *keystate = SDL_GetKeyState(NULL);
+
+InputManager::InputManager() {}
 
 InputManager::~InputManager() {
+	SDL_RemoveTimer(timer); timer = NULL;
 	for (uint32_t x = 0; x < joysticks.size(); x++)
-		if(SDL_JoystickOpened(x))
+		if (SDL_JoystickOpened(x))
 			SDL_JoystickClose(joysticks[x]);
 }
 
-void InputManager::init(const string &conffile) {
-	initJoysticks();
-	if (!readConfFile(conffile))
-		ERROR("InputManager initialization from config file failed.");
-}
+void InputManager::initJoysticks(bool reinit) {
+	if (reinit) {
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+		SDL_InitSubSystem(SDL_INIT_JOYSTICK);
+	}
 
-void InputManager::initJoysticks() {
-	//SDL_JoystickEventState(SDL_IGNORE);
-
-	int numJoy = SDL_NumJoysticks();
-	// INFO("%d joysticks found", numJoy);
-	for (int x = 0; x < numJoy; x++) {
+	joysticks.clear();
+	int nj = SDL_NumJoysticks();
+	INFO("%d joysticks found", nj);
+	for (int x = 0; x < nj; x++) {
 		SDL_Joystick *joy = SDL_JoystickOpen(x);
 		if (joy) {
 			INFO("Initialized joystick: '%s'", SDL_JoystickName(x));
@@ -72,18 +67,20 @@ void InputManager::initJoysticks() {
 	}
 }
 
-bool InputManager::readConfFile(const string &conffile) {
-	setActionsCount(20); // plus 2 for BACKLIGHT and POWER
+void InputManager::init(const string &conffile) {
+	setActionsCount(NUM_ACTIONS);
+	initJoysticks(false);
+	SDL_EnableKeyRepeat(0, 0);
 
-	if (!fileExists(conffile)) {
+	if (!file_exists(conffile)) {
 		ERROR("File not found: %s", conffile.c_str());
-		return false;
+		return;
 	}
 
 	ifstream inf(conffile.c_str(), ios_base::in);
 	if (!inf.is_open()) {
 		ERROR("Could not open %s", conffile.c_str());
-		return false;
+		return;
 	}
 
 	int action, linenum = 0;
@@ -91,11 +88,18 @@ bool InputManager::readConfFile(const string &conffile) {
 	string::size_type pos;
 	vector<string> values;
 
+	for (uint32_t x = UDC_CONNECT; x < NUM_ACTIONS; x++) {
+		InputMap map;
+		map.type = MAPPING_TYPE_KEYPRESS;
+		map.value = x - UDC_CONNECT + SDLK_WORLD_0;
+		actions[x].maplist.push_back(map);
+	}
+
 	while (getline(inf, line, '\n')) {
 		linenum++;
 		pos = line.find("=");
-		name = trim(line.substr(0,pos));
-		value = trim(line.substr(pos + 1,line.length()));
+		name = trim(line.substr(0, pos));
+		value = trim(line.substr(pos + 1));
 
 		if (name == "up")                action = UP;
 		else if (name == "down")         action = DOWN;
@@ -112,51 +116,50 @@ bool InputManager::readConfFile(const string &conffile) {
 		else if (name == "pageup")       action = PAGEUP;
 		else if (name == "pagedown")     action = PAGEDOWN;
 		else if (name == "settings")     action = SETTINGS;
-		else if (name == "menu")         action = MENU;
 		else if (name == "volup")        action = VOLUP;
 		else if (name == "voldown")      action = VOLDOWN;
 		else if (name == "backlight")    action = BACKLIGHT;
 		else if (name == "power")        action = POWER;
+		else if (name == "menu")         action = MENU;
 		else if (name == "speaker") {}
 		else {
 			ERROR("%s:%d Unknown action '%s'.", conffile.c_str(), linenum, name.c_str());
-			return false;
+			continue;
 		}
 
 		split(values, value, ",");
 		if (values.size() >= 2) {
-
 			if (values[0] == "joystickbutton" && values.size() == 3) {
 				InputMap map;
-				map.type = InputManager::MAPPING_TYPE_BUTTON;
+				map.type = MAPPING_TYPE_BUTTON;
 				map.num = atoi(values[1].c_str());
 				map.value = atoi(values[2].c_str());
 				map.treshold = 0;
 				actions[action].maplist.push_back(map);
+				// INFO("ADDING: joystickbutton %d  %d ", map.num, map.value);
 			} else if (values[0] == "joystickaxis" && values.size() == 4) {
 				InputMap map;
-				map.type = InputManager::MAPPING_TYPE_AXIS;
+				map.type = MAPPING_TYPE_AXIS;
 				map.num = atoi(values[1].c_str());
 				map.value = atoi(values[2].c_str());
 				map.treshold = atoi(values[3].c_str());
 				actions[action].maplist.push_back(map);
 			} else if (values[0] == "keyboard") {
 				InputMap map;
-				map.type = InputManager::MAPPING_TYPE_KEYPRESS;
+				map.type = MAPPING_TYPE_KEYPRESS;
 				map.value = atoi(values[1].c_str());
 				actions[action].maplist.push_back(map);
 			} else {
 				ERROR("%s:%d Invalid syntax or unsupported mapping type '%s'.", conffile.c_str(), linenum, value.c_str());
-				return false;
+				continue;
 			}
 
 		} else {
 			ERROR("%s:%d Every definition must have at least 2 values (%s).", conffile.c_str(), linenum, value.c_str());
-			return false;
+			continue;
 		}
 	}
 	inf.close();
-	return true;
 }
 
 void InputManager::setActionsCount(int count) {
@@ -164,47 +167,64 @@ void InputManager::setActionsCount(int count) {
 	for (int x = 0; x < count; x++) {
 		InputManagerAction action;
 		action.active = false;
-		action.interval = 0;
-		// action.last = 0;
-		action.timer = NULL;
+		action.interval = 150;
 		actions.push_back(action);
 	}
 }
 
 bool InputManager::update(bool wait) {
 	bool anyactions = false;
-	SDL_JoystickUpdate();
-
-	events.clear();
+	uint32_t x;
 	SDL_Event event;
 
-	if (wait) {
-		SDL_WaitEvent(&event);
-		if (event.type == SDL_KEYUP) anyactions = true;
-		SDL_Event evcopy = event;
-		events.push_back(evcopy);
-	}
-	while (SDL_PollEvent(&event)) {
-		if (event.type == SDL_KEYUP) anyactions = true;
-		SDL_Event evcopy = event;
-		events.push_back(evcopy);
+	SDL_JoystickUpdate();
+
+	if (wait) SDL_WaitEvent(&event);
+	else if (!SDL_PollEvent(&event)) return false;
+
+	if (timer && (event.type == SDL_JOYAXISMOTION || event.type == SDL_JOYHATMOTION)) {
+		dropEvents(false);
+		return false;
 	}
 
-	int32_t now = SDL_GetTicks();
-	for (uint32_t x = 0; x < actions.size(); x++) {
+	dropEvents();
+
+	x = event.key.keysym.sym;
+	if (!x) x = event.key.keysym.scancode;
+
+	switch (event.type) {
+		case SDL_KEYDOWN:
+			keystate[x] = true;
+			break;
+		case SDL_KEYUP:
+			anyactions = true;
+			keystate[x] = false;
+			break;
+		case SDL_USEREVENT:
+			if (event.user.code == WAKE_UP)
+				anyactions = true;
+			break;
+	}
+
+	int active = -1;
+	for (x = 0; x < actions.size(); x++) {
 		actions[x].active = isActive(x);
 		if (actions[x].active) {
-			memcpy(input_combo, input_combo + 1, sizeof(input_combo) - 1); // eegg
-			input_combo[sizeof(input_combo) - 1] = x; // eegg
-			if (actions[x].timer == NULL) actions[x].timer = SDL_AddTimer(actions[x].interval, wakeUp, NULL);
+			memcpy(input_combo, input_combo + 1, sizeof(input_combo) - 1); input_combo[sizeof(input_combo) - 1] = x; // eegg
 			anyactions = true;
-			// actions[x].last = now;
-		} else {
-			if (actions[x].timer != NULL) {
-				SDL_RemoveTimer(actions[x].timer);
-				actions[x].timer = NULL;
-			}
-			// actions[x].last = 0;
+			active = x;
+		}
+	}
+
+	if (active >= 0) {
+		SDL_RemoveTimer(timer);
+		timer = SDL_AddTimer(actions[active].interval, wakeUp, (void*)false);
+	}
+
+	x = 0;
+	while (SDL_PollEvent(&event) && x++ < 30) {
+		if (event.type == SDL_KEYUP || event.type == SDL_KEYDOWN) {
+			keystate[event.key.keysym.sym] = false;
 		}
 	}
 
@@ -215,56 +235,33 @@ bool InputManager::combo() { // eegg
 	return !memcmp(input_combo, konami, sizeof(input_combo));
 }
 
-void InputManager::dropEvents() {
+void InputManager::dropEvents(bool drop_timer) {
+	if (drop_timer) {
+		SDL_RemoveTimer(timer); timer = NULL;
+	}
+
 	for (uint32_t x = 0; x < actions.size(); x++) {
 		actions[x].active = false;
-		if (actions[x].timer != NULL) {
-			SDL_RemoveTimer(actions[x].timer);
-			actions[x].timer = NULL;
-		}
 	}
 }
 
-uint32_t InputManager::checkRepeat(uint32_t interval, void *_data) {
-	RepeatEventData *data = (RepeatEventData *)_data;
-	InputManager *im = (class InputManager*)data->im;
-	SDL_JoystickUpdate();
-	if (im->isActive(data->action)) {
-		SDL_PushEvent( im->fakeEventForAction(data->action) );
-		return interval;
-	} else {
-		im->actions[data->action].timer = NULL;
-		return 0;
-	}
+uint32_t pushEventEnd(uint32_t interval, void *action) {
+	SDL_Event event;
+	event.type = SDL_KEYUP;
+	event.key.state = SDL_RELEASED;
+	event.key.keysym.sym = (SDLKey)((size_t)action - UDC_CONNECT + SDLK_WORLD_0);
+	SDL_PushEvent(&event);
+	return 0;
 }
 
-SDL_Event *InputManager::fakeEventForAction(int action) {
-	MappingList mapList = actions[action].maplist;
-	// Take the first mapping. We only need one of them.
-	InputMap map = *mapList.begin();
-
-	SDL_Event *event = new SDL_Event();
-	switch (map.type) {
-		case InputManager::MAPPING_TYPE_BUTTON:
-			event->type = SDL_JOYBUTTONDOWN;
-			event->jbutton.type = SDL_JOYBUTTONDOWN;
-			event->jbutton.which = map.num;
-			event->jbutton.button = map.value;
-			event->jbutton.state = SDL_PRESSED;
-		break;
-		case InputManager::MAPPING_TYPE_AXIS:
-			event->type = SDL_JOYAXISMOTION;
-			event->jaxis.type = SDL_JOYAXISMOTION;
-			event->jaxis.which = map.num;
-			event->jaxis.axis = map.value;
-			event->jaxis.value = map.treshold;
-		break;
-		case InputManager::MAPPING_TYPE_KEYPRESS:
-			event->type = SDL_KEYDOWN;
-			event->key.keysym.sym = (SDLKey)map.value;
-		break;
-	}
-	return event;
+void InputManager::pushEvent(int action) {
+	WARNING("EVENT START");
+	SDL_Event event;
+	event.type = SDL_KEYDOWN;
+	event.key.state = SDL_PRESSED;
+	event.key.keysym.sym = (SDLKey)(action - UDC_CONNECT + SDLK_WORLD_0);
+	SDL_PushEvent(&event);
+	SDL_AddTimer(50, pushEventEnd, (void*)action);
 }
 
 int InputManager::count() {
@@ -279,19 +276,14 @@ void InputManager::setInterval(int ms, int action) {
 		actions[action].interval = ms;
 }
 
-void InputManager::setWakeUpInterval(int ms) {
-	if (wakeUpTimer != NULL)
-		SDL_RemoveTimer(wakeUpTimer);
-
-	if (ms > 0)
-		wakeUpTimer = SDL_AddTimer(ms, wakeUp, NULL);
-}
-
-uint32_t InputManager::wakeUp(uint32_t interval, void *_data) {
-	SDL_Event *event = new SDL_Event();
-	event->type = SDL_WAKEUPEVENT;
-	SDL_PushEvent( event );
-	return interval;
+uint32_t InputManager::wakeUp(uint32_t interval, void *repeat) {
+	SDL_RemoveTimer(timer); timer = NULL;
+	SDL_Event event;
+	event.type = SDL_USEREVENT;
+	event.user.code = WAKE_UP;
+	SDL_PushEvent(&event);
+	// if ((bool*) repeat) return interval;
+	return 0;
 }
 
 bool &InputManager::operator[](int action) {
@@ -303,23 +295,22 @@ bool InputManager::isActive(int action) {
 	MappingList mapList = actions[action].maplist;
 	for (MappingList::const_iterator it = mapList.begin(); it != mapList.end(); ++it) {
 		InputMap map = *it;
-
 		switch (map.type) {
-			case InputManager::MAPPING_TYPE_BUTTON:
-				if (map.num < joysticks.size() && SDL_JoystickGetButton(joysticks[map.num], map.value))
-					return true;
-			break;
-			case InputManager::MAPPING_TYPE_AXIS:
+			case MAPPING_TYPE_BUTTON:
+				for (int j = 0; j < joysticks.size(); j++) {
+					if (SDL_JoystickGetButton(joysticks[j], map.value)) return true;
+				}
+				break;
+			case MAPPING_TYPE_AXIS:
 				if (map.num < joysticks.size()) {
 					int axyspos = SDL_JoystickGetAxis(joysticks[map.num], map.value);
 					if (map.treshold < 0 && axyspos < map.treshold) return true;
 					if (map.treshold > 0 && axyspos > map.treshold) return true;
 				}
-			break;
-			case InputManager::MAPPING_TYPE_KEYPRESS:
-				uint8_t *keystate = SDL_GetKeyState(NULL);
-				return keystate[map.value];
-			break;
+				break;
+			case MAPPING_TYPE_KEYPRESS:
+				if (keystate[map.value]) return true;
+				break;
 		}
 	}
 	return false;

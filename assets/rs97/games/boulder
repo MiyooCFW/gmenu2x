@@ -1,7 +1,0 @@
-title=Boulder
-description=Boulder Game
-icon=skin:icons/boulder.png
-exec=/mnt/int_sd/games/boulder/run.dge
-clock=600
-volume=1
-wrapper=true

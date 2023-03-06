@@ -28,6 +28,8 @@ private:
 	int *_value;
 	std::string strvalue;
 	int def, min, max, delta;
+	bool off=false;
+	int offValue;
 
 	void inc();
 	void dec();
@@ -37,7 +39,6 @@ public:
 	virtual ~MenuSettingInt() {};
 
 	virtual uint32_t manageInput();
-	// virtual void adjustInput();
 	virtual void draw(int);
 	virtual bool edited();
 
@@ -45,6 +46,7 @@ public:
 	virtual void setDefault();
 
 	int value();
+	MenuSettingInt *setOff(int value);
 };
 
 #endif

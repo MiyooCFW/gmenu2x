@@ -23,17 +23,10 @@
 
 using std::string;
 
-MenuSettingStringBase::MenuSettingStringBase(
-		GMenu2X *gmenu2x, const string &title,
-		const string &description, string *value)
-	: MenuSetting(gmenu2x, title, description)
-	, originalValue(*value)
-	, _value(value)
-{
-}
+MenuSettingStringBase::MenuSettingStringBase(GMenu2X *gmenu2x, const string &title, const string &description, string *value):
+MenuSetting(gmenu2x, title, description) , originalValue(*value) , _value(value) {}
 
-MenuSettingStringBase::~MenuSettingStringBase() {
-}
+MenuSettingStringBase::~MenuSettingStringBase() {}
 
 void MenuSettingStringBase::draw(int y) {
 	MenuSetting::draw(y);

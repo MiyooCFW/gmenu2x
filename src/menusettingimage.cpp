@@ -18,30 +18,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "menusettingimage.h"
-#include "browsedialog.h"
+#include "gmenu2x.h"
 #include "utilities.h"
 
 using std::string;
 
-MenuSettingImage::MenuSettingImage(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const string &filter, const string &startPath, const string &dialogTitle, const string &dialogIcon)
-	: MenuSettingFile(gmenu2x, title, description, value, filter, startPath, dialogTitle, dialogIcon) {}
+MenuSettingImage::MenuSettingImage(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const string &filter, const string &startPath, const string &dialogTitle, const string &dialogIcon):
+MenuSettingFile(gmenu2x, title, description, value, filter, startPath, dialogTitle, dialogIcon) {}
 
 void MenuSettingImage::setValue(const string &value) {
-	string skinpath(gmenu2x->getExePath() + "skins/" + gmenu2x->confStr["skin"]);
+	string skinpath(exe_path() + "/skins/" + gmenu2x->confStr["skin"]);
 	bool inSkinDir = value.substr(0, skinpath.length()) == skinpath;
+
 	if (!inSkinDir && gmenu2x->confStr["skin"] != "Default") {
-		skinpath = gmenu2x->getExePath() + "skins/Default";
+		skinpath = exe_path() + "/skins/Default";
 		inSkinDir = value.substr(0, skinpath.length()) == skinpath;
 	}
+
+	*_value = value;
 	if (inSkinDir) {
 		string tempIcon = value.substr(skinpath.length(), value.length());
 		string::size_type pos = tempIcon.find("/");
 		if (pos != string::npos) {
 			*_value = "skin:" + tempIcon.substr(pos + 1, value.length());
-		} else {
-			*_value = value;
 		}
-	} else {
-		*_value = value;
 	}
 }

@@ -20,12 +20,8 @@
 
 //for browsing the filesystem
 #include <sys/stat.h>
-// #include <sys/types.h>
 #include <dirent.h>
-// #include <errno.h>
-// #include <iostream>
 #include <algorithm>
-// #include <cstring>
 
 #include "filelister.h"
 #include "utilities.h"
@@ -34,25 +30,9 @@
 
 using namespace std;
 
-FileLister::FileLister(const string &startPath, bool showDirectories, bool showFiles)
-	: showDirectories(showDirectories), showFiles(showFiles) {
-	setPath(startPath, false);
-}
-
-const string &FileLister::getPath() {
-	return path;
-}
-void FileLister::setPath(const string &path, bool doBrowse) {
-	this->path = real_path(path);
-	if (doBrowse)
-		browse();
-}
-
-const string &FileLister::getFilter() {
-	return filter;
-}
-void FileLister::setFilter(const string &filter) {
-	this->filter = filter;
+FileLister::FileLister(const string &startPath, bool showDirectories, bool showFiles):
+showDirectories(showDirectories), showFiles(showFiles) {
+	setPath(startPath);
 }
 
 void FileLister::browse() {
@@ -60,55 +40,67 @@ void FileLister::browse() {
 	files.clear();
 
 	if (showDirectories || showFiles) {
-		DIR *dirp;
-		if ((dirp = opendir(path.c_str())) == NULL) {
-			ERROR("Error: opendir(%s)", path.c_str());
-			return;
-		}
+		if (showDirectories && path != "/" && allowDirUp) directories.push_back("..");
 
 		vector<string> vfilter;
 		split(vfilter, getFilter(), ",");
 
-		string filepath, file;
 		struct stat st;
-		struct dirent *dptr;
+		struct dirent **dptr;
 
-		while ((dptr = readdir(dirp))) {
-			file = dptr->d_name;
-			if (file[0] == '.') continue;
-			filepath = path + "/" + file;
-			int statRet = stat(filepath.c_str(), &st);
-			if (statRet == -1) {
-				ERROR("Stat failed on '%s' with error '%s'", filepath.c_str(), strerror(errno));
+		int i = 0, n = scandir(path.c_str(), &dptr, NULL, alphasort);
+
+		if (n < 0) {
+			ERROR("scandir(%s)", path.c_str());
+			return;
+		}
+
+		while (++i < n) {
+			string file = dptr[i]->d_name;
+			if (file[0] == '.' || (find(excludes.begin(), excludes.end(), file) != excludes.end()))
 				continue;
+
+			if (!((dptr[i]->d_type & DT_REG) || (dptr[i]->d_type & DT_DIR))) {
+				string filepath = path + "/" + file;
+				if (stat(filepath.c_str(), &st) == -1) {
+					ERROR("Stat failed on '%s': '%s'", filepath.c_str(), strerror(errno));
+					continue;
+				}
+				if (S_ISDIR(st.st_mode)) {
+					dptr[i]->d_type |= DT_DIR;
+				} else {
+					dptr[i]->d_type |= DT_REG;
+				}
 			}
-			if (find(excludes.begin(), excludes.end(), file) != excludes.end())
-				continue;
 
-			if (S_ISDIR(st.st_mode)) {
-				if (!showDirectories) continue;
-				directories.push_back(file);
-			} else {
-				if (!showFiles) continue;
+			if (dptr[i]->d_type & DT_DIR) {
+				if (showDirectories) directories.push_back(file); // warning: do not merge the _if_
+			} else if (showFiles) {
 				for (vector<string>::iterator it = vfilter.begin(); it != vfilter.end(); ++it) {
-					if (vfilter.size() > 1 && it->length() == 0 && (int32_t)file.rfind(".") >= 0) continue;
+					if (vfilter.size() > 1 && it->length() == 0 && (int32_t)file.rfind(".") >= 0) {
+						continue;
+					}
+
 					if (it->length() <= file.length()) {
-						if (file.compare(file.length() - it->length(), it->length(), *it) == 0) {
+						if (!strcasecmp(file.substr(file.size() - it->length()).c_str(), it->c_str())) {
 							files.push_back(file);
 							break;
 						}
 					}
 				}
 			}
+			free(dptr[i]);
 		}
-
-		closedir(dirp);
-		sort(files.begin(), files.end(), case_less());
-		sort(directories.begin(), directories.end(), case_less());
-		if (showDirectories && path != "/" && allowDirUp) directories.insert(directories.begin(), "..");
+		free(dptr);
 	}
 }
 
+void FileLister::setPath(const string &path) {
+	this->path = real_path(path);
+}
+void FileLister::setFilter(const string &filter) {
+	this->filter = filter;
+}
 uint32_t FileLister::size() {
 	return files.size() + directories.size();
 }
@@ -118,31 +110,29 @@ uint32_t FileLister::dirCount() {
 uint32_t FileLister::fileCount() {
 	return files.size();
 }
-
 string FileLister::operator[](uint32_t x) {
-	return at(x);
+	return getFile(x);
 }
-
-string FileLister::at(uint32_t x) {
+string FileLister::getFile(uint32_t x) {
 	if (x >= size()) return "";
-	if (x < directories.size())
-		return directories[x];
-	else
-		return files[x - directories.size()];
+	if (x < directories.size()) return directories[x];
+	return files[x - directories.size()];
 }
-
+const string FileLister::getFilePath(uint32_t i) {
+	return getPath() + "/" + getFile(i);
+}
+const string FileLister::getExt(uint32_t i) {
+	return file_ext(getFile(i), true);
+}
 bool FileLister::isFile(uint32_t x) {
 	return x >= directories.size() && x < size();
 }
-
 bool FileLister::isDirectory(uint32_t x) {
 	return x < directories.size();
 }
-
 void FileLister::insertFile(const string &file) {
 	files.insert(files.begin(), file);
 }
-
 void FileLister::addExclude(const string &exclude) {
 	if (exclude == "..") allowDirUp = false;
 	excludes.push_back(exclude);

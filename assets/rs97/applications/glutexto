@@ -1,7 +1,0 @@
-title=Glutexto
-description=Text Editor
-icon=skin:icons/glutexto.png
-exec=/mnt/int_sd/games/glutexto/run.dge
-clock=600
-volume=1
-wrapper=true

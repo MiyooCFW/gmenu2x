@@ -1,6 +1,6 @@
 # GMenuNX
 
-[GMenuNX](https://github.com/pingflood/GMenuNX/) is a fork of [GMenu2X](http://mtorromeo.github.io/gmenu2x) developed to Retrogame RS-97, released under the GNU GPL license v2.
+[GMenuNX](https://github.com/pingflood/GMenuNX/) is a fork of [GMenu2X](http://mtorromeo.github.com/gmenu2x) developed for the RetroFW, released under the GNU GPL license v2.
 
 View releases [changelog](ChangeLog.md).
 
@@ -15,17 +15,18 @@ Unpack the latest [Release](https://github.com/pingflood/GMenuNX/releases/) over
 ## Controls
 
 * A: Accept / Launch selected link / Confirm action;
-* B: Back / Cancel action / Goes up one directory in file browser;
+* B: Back / Cancel action
+* X: Goes up one directory in file browser;
 * Y: Bring up the manual/readme;
 * L, R: Switch between sections / PageUp/PageDown on lists;
-* START: GMenu2X settings;
+* START: GMenuNX settings;
 * SELECT: Bring up the contextual menu;
 * SELECT + L: Volume control;
-* SELECT + R: Take a screenshot;
-* BRIGHTNESS: Change screen brightness;
+* SELECT + R, BRIGHTNESS: Change screen brightness;
+* SELECT + START: Take a screenshot;
 * POWER: Toggle Suspend mode;
-* POWER (hold): Bring up Poweroff dialog.
-* TV-Out: (Dis)Connect the TV-out plug to toggle TV-out signal.
+* POWER/START (hold): Bring up Poweroff dialog.
+* TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal.
 
 In settings:
 
@@ -47,52 +48,15 @@ In settings:
 * The name of the file of rom and preview have to be exactly the same. Suported image types are .png or .jpg;
 
 
-## How to create battery logs
-
-To get data of your battery charge and discharge cycle:
-* Enter the Battery Logger;
-* Do a full charge;
-* After charged, remove the cable;
-* Stay in this screen and wait until it discharges totally;
-
-Repeat how many times you wish and can.
-
-New data will be printed on screen every minute and will be saved in file **battery.csv** located in **gmenu2x** folder.
-
-The fields logged are:
-* Time: Time in milliseconds since GMenuNX started;
-* BatteryStatus: Computed battery status, from 0 (discharged) to 4 (charged) and 5 (charging);
-* BatteryLevel: Raw battery level as given by system.
-
-## Building for PC
-
-This is primarily useful for development/testing. 
-
-First, install the dependencies. This should work for Debian/Ubuntu systems, use the appropriate package manager for other systems:
-```sh
-sudo apt-get install -y build-essential libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libboost-all-dev libfreetype6-dev libbz2-dev libmpg123-dev
-```
-
-Compile from the root directory:
-```sh
-make dist -f Makefile.pc
-```
-
-Then run it from the `dist/pc/gmenu2x` directory:
-```sh
-cd dist/pc/gmenu2x/
-./gmenu2x
-```
-
 ## Thanks
 
-I want to thanks [@msx](https://boards.dingoonity.org/profile/msx/), [@m1024x](https://boards.dingoonity.org/profile/m1024/) and [@jutley](https://boards.dingoonity.org/profile/jutley/) for all the support they are giving, testing and reporting bugs.
+I want to thanks [@msx](https://boards.dingoonity.org/profile/msx/), [@m1024x](https://boards.dingoonity.org/profile/m1024/), [@TonyJih](http://github.com/tonyjih/),[@Fontes](https://www.deviantart.com/fontesmakua) and [@jutley](https://boards.dingoonity.org/profile/jutley/) for all the support they are giving, testing and reporting bugs.
 
 
 ## Contacts
 
-GMenu2X Copyright (c) 2006-2010 [Massimiliano Torromeo](mailto:massimiliano.torromeo@gmail.com); GMenuNX 2018 by [@pingflood](https://boards.dingoonity.org/profile/pingflood/);
+GMenu2X Copyright (c) 2006-2010 [Massimiliano Torromeo](mailto:massimiliano.torromeo@gmail.com); GMenuNX 2018-2019 by [@pingflood](https://boards.dingoonity.org/profile/pingflood/);
 
-Visit the [Dingoonity thread](https://boards.dingoonity.org/ingenic-jz4760-devices/gmenunext-let's-make-gmenu-great-again!/) and the [Discord channel](https://discord.gg/hvR5vK6)!
+Visit the [Dingoonity thread](http://boards.dingoonity.org/ingenic-jz4760-devices/gmenunext-\(gmenu2x-fork\)-new-releases/) and the [Discord channel](https://discord.gg/hvR5vK6)!
 
 [GMenu2X](http://mtorromeo.github.com/gmenu2x) homepage for more info.

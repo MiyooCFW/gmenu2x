@@ -27,45 +27,45 @@ using std::string;
 using std::stringstream;
 using fastdelegate::MakeDelegate;
 
-MenuSettingInt::MenuSettingInt(GMenu2X *gmenu2x, const string &title, const string &description, int *value, int def, int min, int max, int delta)
-	: MenuSetting(gmenu2x, title, description) {
-
-	_value = value;
+MenuSettingInt::MenuSettingInt(GMenu2X *gmenu2x, const string &title, const string &description, int *value, int def, int min, int max, int delta):
+MenuSetting(gmenu2x, title, description), _value(value), def(def), min(min), max(max), delta(delta), off(false) {
 	originalValue = *value;
-	this->def = def;
-	this->min = min;
-	this->max = max;
-	this->delta = delta;
 	setValue(evalIntConf(value, def, min, max));
 
 	//Delegates
-	ButtonAction actionInc = MakeDelegate(this, &MenuSettingInt::inc);
-	ButtonAction actionDec = MakeDelegate(this, &MenuSettingInt::dec);
+	// ButtonAction actionInc = MakeDelegate(this, &MenuSettingInt::inc);
+	// ButtonAction actionDec = MakeDelegate(this, &MenuSettingInt::dec);
 
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/select.png", gmenu2x->tr["Default"]);
-	btn->setAction(MakeDelegate(this, &MenuSettingInt::setDefault));
+	btn = new IconButton(gmenu2x, "select", gmenu2x->tr["Reset"]);
+	// btn->setAction(MakeDelegate(this, &MenuSettingInt::setDefault));
 	buttonBox.add(btn);
 
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/left.png");
-	btn->setAction(actionDec);
-	buttonBox.add(btn);
-
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/right.png", gmenu2x->tr["Change"]);
-	btn->setAction(actionInc);
+	btn = new IconButton(gmenu2x, "dpad", gmenu2x->tr["Change"]);
+	// btn->setAction(actionInc);
 	buttonBox.add(btn);
 }
 
 void MenuSettingInt::draw(int y) {
 	MenuSetting::draw(y);
-	gmenu2x->s->write( gmenu2x->font, strvalue, 155, y+gmenu2x->font->getHalfHeight(), VAlignMiddle );
+	
+	int w = 0;
+	if (off && *_value <= offValue) {
+		strvalue = "OFF";
+		w = gmenu2x->font->getHeight() / 2.5;
+		RGBAColor color = (RGBAColor){255, 0, 0, 255};
+		gmenu2x->s->box(155, y + 1, w, gmenu2x->font->getHeight() - 2, color);
+		gmenu2x->s->rectangle(155, y + 1, w, gmenu2x->font->getHeight() - 2, 0, 0, 0, 255);
+		w += 2;
+	}
+	gmenu2x->s->write(gmenu2x->font, strvalue, 155 + w, y+gmenu2x->font->getHeight() / 2, VAlignMiddle);
 }
 
 uint32_t MenuSettingInt::manageInput() {
-	if ( gmenu2x->input[LEFT ] ) dec();
-	if ( gmenu2x->input[RIGHT] ) inc();
-	if ( gmenu2x->input[DEC] ) setValue(value() - 10 * delta);
-	if ( gmenu2x->input[INC] ) setValue(value() + 10 * delta);
-	if ( gmenu2x->input[MENU] ) setDefault();
+	if (gmenu2x->input[LEFT])		dec();
+	else if (gmenu2x->input[RIGHT])	inc();
+	else if (gmenu2x->input[DEC])	setValue(value() - 10 * delta);
+	else if (gmenu2x->input[INC])	setValue(value() + 10 * delta);
+	else if (gmenu2x->input[MENU])	setDefault();
 	return 0; // SD_NO_ACTION
 }
 
@@ -78,7 +78,16 @@ void MenuSettingInt::dec() {
 }
 
 void MenuSettingInt::setValue(int value) {
-	*_value = constrain(value,min,max);
+	if (off && *_value < value && value <= offValue)
+		*_value = offValue + 1;
+	else if (off && *_value > value && value <= offValue)
+		*_value = min;
+	else {
+		*_value = constrain(value,min,max);
+		if (off && *_value <= offValue)
+			*_value = min;
+	}
+
 	stringstream ss;
 	ss << *_value;
 	strvalue = "";
@@ -93,13 +102,12 @@ int MenuSettingInt::value() {
 	return *_value;
 }
 
-// void MenuSettingInt::adjustInput() {
-// 	gmenu2x->input.setInterval(100, LEFT);
-// 	gmenu2x->input.setInterval(100, RIGHT);
-// 	gmenu2x->input.setInterval(100, DEC);
-// 	gmenu2x->input.setInterval(100, INC);
-// }
-
 bool MenuSettingInt::edited() {
 	return originalValue != value();
+}
+
+MenuSettingInt *MenuSettingInt::setOff(int value) {
+	off = true;
+	offValue = constrain(value,min,max);
+	return this;
 }

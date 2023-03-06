@@ -21,6 +21,7 @@
 #define INPUTMANAGER_H
 
 enum actions {
+	WAKE_UP,
 	UP, DOWN, LEFT, RIGHT,
 	CONFIRM, CANCEL, MANUAL, MODIFIER,
 	SECTION_PREV, SECTION_NEXT,
@@ -28,11 +29,25 @@ enum actions {
 	PAGEUP, PAGEDOWN,
 	SETTINGS, MENU,
 	VOLUP, VOLDOWN,
-  BACKLIGHT, POWER
+	BACKLIGHT, POWER,
+	UDC_CONNECT, // = NUM_ACTIONS,
+	UDC_REMOVE,
+	MMC_INSERT,
+	MMC_REMOVE,
+	TV_CONNECT,
+	TV_REMOVE,
+	PHONES_CONNECT,
+	PHONES_REMOVE,
+	JOYSTICK_CONNECT,
+	JOYSTICK_REMOVE,
+	SCREENSHOT,
+	NUM_ACTIONS
 };
 
+#define VOLUME_HOTKEY		SECTION_PREV
+#define BACKLIGHT_HOTKEY	SECTION_NEXT
+
 #include <SDL.h>
-#include <SDL_image.h>
 #include <vector>
 #include <string>
 
@@ -47,70 +62,40 @@ typedef struct {
 } InputMap;
 
 typedef vector<InputMap> MappingList;
-typedef vector<SDL_Event> SDLEventList;
 
 typedef struct {
 	bool active;
 	int interval;
-	// long last;
 	MappingList maplist;
-	SDL_TimerID timer;
 } InputManagerAction;
 
-enum InputManagerActionState {
-	IM_INACTIVE,
-	IM_ACTIVE,
-	IM_UNCHANGED
-};
-
-/**
-Manages all input peripherals
-@author Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
-*/
 class InputManager {
 private:
 	InputMap getInputMapping(int action);
-	SDLEventList events;
-	SDL_TimerID wakeUpTimer;
 
 	vector <SDL_Joystick*> joysticks;
 	vector <InputManagerAction> actions;
-
-	static uint32_t checkRepeat(uint32_t interval, void *_data);
-	static uint32_t wakeUp(uint32_t interval, void *_data);
-	SDL_Event *fakeEventForAction(int action);
 
 	const char konami[10] = {UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, CANCEL, CONFIRM}; // eegg
 	char input_combo[10] = {POWER}; // eegg
 
 public:
-	static const int MAPPING_TYPE_UNDEFINED = -1;
-	static const int MAPPING_TYPE_BUTTON = 0;
-	static const int MAPPING_TYPE_AXIS = 1;
-	static const int MAPPING_TYPE_KEYPRESS = 2;
-
-	static const int SDL_WAKEUPEVENT = SDL_USEREVENT+1;
+	static uint32_t wakeUp(uint32_t interval, void *repeat);
 
 	InputManager();
 	~InputManager();
 	void init(const string &conffile);
-	void initJoysticks();
-	bool readConfFile(const string &conffile = "input.conf");
+	void initJoysticks(bool reinit = false);
 
-	bool update(bool wait=true);
+	bool update(bool wait = true);
 	bool combo();
-	void dropEvents();
+	void dropEvents(bool drop_timer = true);
+	static void pushEvent(int action);
 	int count();
 	void setActionsCount(int count);
 	void setInterval(int ms, int action = -1);
-	void setWakeUpInterval(int ms);
 	bool &operator[](int action);
 	bool isActive(int action);
 };
-
-typedef struct {
-	int action;
-	InputManager *im;
-} RepeatEventData;
 
 #endif

@@ -18,24 +18,19 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "menusettingfile.h"
-#include "iconbutton.h"
 #include "browsedialog.h"
-#include "utilities.h"
 #include "debug.h"
 
 using std::string;
 using fastdelegate::MakeDelegate;
 
-MenuSettingFile::MenuSettingFile(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const string &filter, const string &startPath, const string &dialogTitle, const string &dialogIcon)
-	: MenuSettingStringBase(gmenu2x, title, description, value),
-	filter(filter), startPath(startPath),
-	dialogTitle(dialogTitle), dialogIcon(dialogIcon)
-{
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/select.png", gmenu2x->tr["Clear"]);
+MenuSettingFile::MenuSettingFile(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const string &filter, const string &startPath, const string &dialogTitle, const string &dialogIcon):
+MenuSettingStringBase(gmenu2x, title, description, value), filter(filter), startPath(startPath), dialogTitle(dialogTitle), dialogIcon(dialogIcon) {
+	btn = new IconButton(gmenu2x, "select", gmenu2x->tr["Reset"]);
 	btn->setAction(MakeDelegate(this, &MenuSettingFile::clear));
 	buttonBox.add(btn);
 
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/a.png", gmenu2x->tr["Select"]);
+	btn = new IconButton(gmenu2x, "a", gmenu2x->tr["Select"]);
 	btn->setAction(MakeDelegate(this, &MenuSettingFile::edit));
 	buttonBox.add(btn);
 }
@@ -47,12 +42,11 @@ void MenuSettingFile::edit() {
 
 	_value = dir_name(_value);
 
-	BrowseDialog fd(gmenu2x, dialogTitle, description, dialogIcon);
-	fd.showDirectories = true;
-	fd.showFiles = true;
-	fd.setFilter(filter);
-	fd.setPath(_value);
-
-	if (fd.exec())
-		setValue(real_path(fd.getPath() + "/" + fd.getFile()));
+	BrowseDialog bd(gmenu2x, dialogTitle, description, dialogIcon);
+	bd.setPath(_value);
+	bd.showDirectories = true;
+	bd.showFiles = true;
+	bd.setFilter(filter);
+	if (bd.exec())
+		setValue(bd.getFilePath(bd.selected));
 }

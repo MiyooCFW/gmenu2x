@@ -1,7 +1,0 @@
-title=Meteoroid
-description=Meteoroid3D Game
-icon=skin:icons/meteoroid3d.png
-exec=/mnt/int_sd/games/meteoroid3d/run.dge
-clock=600
-volume=1
-wrapper=true

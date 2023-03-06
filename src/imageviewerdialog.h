@@ -35,7 +35,7 @@ using std::ios_base;
 
 class ImageViewerDialog : protected Dialog {
 protected:
-	string title, description, icon, path;
+	string path;
 
 public:
 	ImageViewerDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon = "icons/ebook.png", const string &path = "");

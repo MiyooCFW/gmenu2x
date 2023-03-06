@@ -21,7 +21,7 @@
 #define LINK_H
 
 #include <string>
-#include <iostream>
+// #include <iostream>
 
 #include "button.h"
 #include "surface.h"
@@ -42,32 +42,42 @@ Base class that represents a link on screen.
 */
 class Link : public Button {
 private:
-	uint32_t padding;
+	uint32_t padding = 4;
 	LinkAction action;
 
 protected:
 	GMenu2X *gmenu2x;
-	bool edited;
-	string title, description, icon, iconPath;
 
-	Surface *iconSurface;
+	bool	edited = false,
+			is_opk = false;
+
+	string	exec = "",
+			title = "",
+			description = "",
+			icon = "",
+			iconPath = "",
+			backdrop = "",
+			backdropPath = "";
 
 public:
 	// linkaction
 	Link(GMenu2X *gmenu2x, LinkAction action);
 
 	virtual ~Link() {};
-	void updateSurfaces();
 
-	const string &getTitle();
+	const string &getTitle() { return title; }
 	void setTitle(const string &title);
-	const string &getDescription();
+	const string &getDescription() { return description; }
 	void setDescription(const string &description);
 	const string &getIcon();
 	void setIcon(const string &icon);
-	virtual const string &searchIcon();
+	virtual const string searchIcon();
 	const string &getIconPath();
 	void setIconPath(const string &icon);
+	void setBackdrop(const string &backdrop);
+	const string &getBackdrop() { return backdrop; }
+	const string &getBackdropPath() { return backdropPath; }
+	bool isOPK() { return is_opk; }
 
 	virtual void run();
 };

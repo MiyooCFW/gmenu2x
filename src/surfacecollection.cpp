@@ -23,85 +23,112 @@
 #include "utilities.h"
 #include "debug.h"
 
+#if defined(OPK_SUPPORT)
+#include <libopk.h>
+#endif
+
 using std::endl;
 using std::string;
 
-SurfaceCollection::SurfaceCollection(bool defaultAlpha, const string &skin) {
-	this->defaultAlpha = defaultAlpha;
-	setSkin(skin);
+SurfaceCollection::SurfaceCollection() {
+	setSkin("Default");
 }
 
-SurfaceCollection::~SurfaceCollection() {}
+void SurfaceCollection::debug() {
+	SurfaceHash::iterator end = surfaces.end();
+	for (SurfaceHash::iterator curr = surfaces.begin(); curr != end; curr++) {
+		DEBUG("key: %i", curr->first.c_str());
+	}
+}
 
 void SurfaceCollection::setSkin(const string &skin) {
 	this->skin = skin;
 }
 
-string SurfaceCollection::getSkinFilePath(const string &file) {
-	if (fileExists("skins/"+skin+"/"+file))
-		return "skins/"+skin+"/"+file;
-	else if (fileExists("skins/Default/"+file))
-		return "skins/Default/"+file;
+string SurfaceCollection::getSkinFilePath(const string &file, bool fallback) {
+	string ret = "skins/" + skin + "/" + file;
+	if (file_exists(ret))
+		return ret;
+
+	if (fallback) {
+		ret = "skins/Default/" + file;
+		if (file_exists(ret))
+			return ret;
+	}
 
 	return "";
 }
 
-void SurfaceCollection::debug() {
-	SurfaceHash::iterator end = surfaces.end();
-	for(SurfaceHash::iterator curr = surfaces.begin(); curr != end; curr++){
-		DEBUG("key: %i", curr->first.c_str());
+Surface *SurfaceCollection::add(string path, string key) {
+	if (path.empty()) return NULL;
+	if (key.empty()) key = path;
+	if (exists(key)) return surfaces[key]; //del(key);
+
+	Surface *s = NULL;
+
+#if defined(OPK_SUPPORT)
+	int pos = path.find('#'); // search for "opkfile.opk#icon.png"
+	if (pos != path.npos) {
+		string iconpath = "icons/" + path.substr(pos + 1);
+		iconpath = getSkinFilePath(iconpath, false);
+
+		if (!iconpath.empty()) {
+			DEBUG("Adding OPK skin surface: '%s'", iconpath.c_str());
+			s = new Surface(iconpath, true);
+
+		} else {
+			DEBUG("Adding OPK surface: %s", path.c_str());
+			void *buf; size_t len;
+			struct OPK *opk = opk_open(path.substr(0, pos).c_str());
+			if (!opk) {
+				ERROR("Unable to open OPK");
+				// return NULL;
+			} else if (opk_extract_file(opk, path.substr(pos + 1).c_str(), &buf, &len) < 0) {
+				ERROR("Unable to extract file: %s", path.substr(pos + 1).c_str());
+				// return NULL;
+			} else {
+				opk_close(opk);
+				s = new Surface(buf, len);
+			}
+		}
+	} else
+#endif // OPK_SUPPORT
+	{
+		if (path.substr(0, 5) == "skin:") {
+			path = getSkinFilePath(path.substr(5));
+		}
+
+		if (!path.empty() && file_exists(path)) {
+			DEBUG("Adding surface: '%s'", path.c_str());
+			s = new Surface(path, true);
+		}
 	}
-}
 
-bool SurfaceCollection::exists(const string &path) {
-	return surfaces.find(path) != surfaces.end();
-}
+	// if (s != NULL)
+	surfaces[key] = s;
 
-Surface *SurfaceCollection::add(Surface *s, const string &path) {
-	if (exists(path)) del(path);
-	surfaces[path] = s;
 	return s;
 }
 
-Surface *SurfaceCollection::add(const string &path, bool alpha) {
-	if (path.empty()) return NULL;
-	if (exists(path)) return surfaces[path]; //del(path);
-
-	string filePath = path;
-	if (filePath.substr(0,5)=="skin:") {
-		filePath = getSkinFilePath(filePath.substr(5,filePath.length()));
-		if (filePath.empty())
-			return NULL;
-	} else if (!fileExists(filePath)) return NULL;
-
-	DEBUG("Adding surface: '%s'", path.c_str());
-	Surface *s = new Surface(filePath,alpha);
-	if (s != NULL)
-		surfaces[path] = s;
+Surface *SurfaceCollection::add(Surface *s, const string &key) {
+	if (exists(key)) return surfaces[key]; //del(key);
+	surfaces[key] = s;
 	return s;
 }
 
-Surface *SurfaceCollection::addSkinRes(const string &path, bool alpha) {
-	if (path.empty()) return NULL;
-	if (exists(path)) return surfaces[path]; // del(path);
-
-	string skinpath = getSkinFilePath(path);
-	if (skinpath.empty())
-		return NULL;
-
-	DEBUG("Adding skin surface: '%s'", path.c_str());
-	Surface *s = new Surface(skinpath,alpha);
-	if (s != NULL)
-		surfaces[path] = s;
-	return s;
+Surface *SurfaceCollection::operator[](const string &key) {
+	if (exists(key)) return surfaces[key];
+	return add(key);
 }
 
-void SurfaceCollection::del(const string &path) {
+bool SurfaceCollection::del(const string &path) {
 	SurfaceHash::iterator i = surfaces.find(path);
 	if (i != surfaces.end()) {
 		delete i->second;
 		surfaces.erase(i);
+		return true;
 	}
+	return false;
 }
 
 void SurfaceCollection::clear() {
@@ -111,25 +138,12 @@ void SurfaceCollection::clear() {
 	}
 }
 
+bool SurfaceCollection::exists(const string &path) {
+	return surfaces.find(path) != surfaces.end();
+}
+
 void SurfaceCollection::move(const string &from, const string &to) {
 	del(to);
 	surfaces[to] = surfaces[from];
 	surfaces.erase(from);
-}
-
-Surface *SurfaceCollection::operator[](const string &key) {
-	SurfaceHash::iterator i = surfaces.find(key);
-	if (i == surfaces.end())
-		return add(key, defaultAlpha);
-
-	return i->second;
-}
-
-Surface *SurfaceCollection::skinRes(const string &key) {
-	if (key.empty()) return NULL;
-	SurfaceHash::iterator i = surfaces.find(key);
-	if (i == surfaces.end())
-		return addSkinRes(key, defaultAlpha);
-
-	return i->second;
 }

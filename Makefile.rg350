@@ -1,0 +1,70 @@
+PLATFORM := rg350
+
+BUILDTIME := $(shell date +%s)
+
+CHAINPREFIX := /opt/gcw0-toolchain
+CHAINPREFIX := /opt/mipsel-RetroFW-linux-uclibc
+CROSS_COMPILE := $(CHAINPREFIX)/usr/bin/mipsel-linux-
+export CROSS_COMPILE
+
+CC			:= $(CROSS_COMPILE)gcc
+CXX			:= $(CROSS_COMPILE)g++
+STRIP		:= $(CROSS_COMPILE)strip
+
+SYSROOT     := $(shell $(CC) --print-sysroot)
+SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
+SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
+
+CFLAGS = -DPLATFORM=\"gcw0\" -D__BUILDTIME__=$(BUILDTIME) -DLOG_LEVEL=3
+CFLAGS += -Os -ggdb -g3 $(SDL_CFLAGS)
+CFLAGS += -mhard-float -mips32r2 -mno-mips16
+CFLAGS += -std=c++11 -fdata-sections -ffunction-sections -fno-exceptions -fno-math-errno -fno-threadsafe-statics -Wno-narrowing
+CFLAGS += -Isrc -Isrc/libopk
+CFLAGS += -DTARGET_RG350 -DHW_EXT_SD -DHW_SCALER -DOPK_SUPPORT
+CFLAGS += -D_GLIBCXX_USE_CXX11_ABI=0
+
+LDFLAGS = -Wl,-Bstatic -Lsrc/libopk -l:libopk.a -Wl,-Bdynamic -lz
+LDFLAGS += $(SDL_LIBS) -lSDL_image -lSDL_ttf
+LDFLAGS +=-Wl,--as-needed -Wl,--gc-sections
+
+OBJDIR = /tmp/gmenu2x/$(PLATFORM)
+DISTDIR = dist/$(PLATFORM)
+TARGET = $(DISTDIR)/gmenu2x
+
+SOURCES := $(wildcard src/*.cpp)
+OBJS := $(patsubst src/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
+
+# File types rules
+$(OBJDIR)/%.o: src/%.cpp src/%.h src/platform/$(PLATFORM).h
+	$(CXX) $(CFLAGS) -o $@ -c $<
+
+all: dir libopk shared
+
+dir:
+	@mkdir -p $(OBJDIR) $(DISTDIR)
+
+libopk:
+	make -C src/libopk clean
+	make -C src/libopk
+
+debug: $(OBJS)
+	@echo "Linking gmenu2x-debug..."
+	$(CXX) -o $(TARGET)-debug $(OBJS) $(LDFLAGS)
+
+shared: debug
+	$(STRIP) $(TARGET)-debug -o $(TARGET)
+
+clean:
+	make -C src/libopk clean
+	rm -rf $(OBJDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug $(DISTDIR) dist/gmenunx-$(PLATFORM).zip
+
+dist: dir libopk shared
+	mkdir -p $(DISTDIR)/skins/Default
+	install -m644 -D about.txt $(DISTDIR)/about.txt
+	install -m644 -D COPYING $(DISTDIR)/COPYING
+	cp -RH assets/translations $(DISTDIR)
+	cp -RH assets/skins/FontGrid/* $(DISTDIR)/skins/Default
+	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
+
+zip: dist
+	cd $(DISTDIR)/ && rm -f ../gmenunx-$(PLATFORM).zip && zip -r ../gmenunx-$(PLATFORM).zip skins translations COPYING gmenu2x input.conf about.txt

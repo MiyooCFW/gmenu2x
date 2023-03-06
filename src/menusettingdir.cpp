@@ -18,23 +18,25 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include "menusettingdir.h"
-#include "iconbutton.h"
 #include "browsedialog.h"
 #include "debug.h"
+
+extern const char *CARD_ROOT;
 
 using std::string;
 using fastdelegate::MakeDelegate;
 
-MenuSettingDir::MenuSettingDir(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const std::string &startPath, const std::string &dialogTitle, const std::string &dialogIcon)
-	: MenuSettingStringBase(gmenu2x, title, description, value),
-	startPath(startPath),
-	dialogTitle(dialogTitle), dialogIcon(dialogIcon)
-{
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/select.png", gmenu2x->tr["Clear"]);
+MenuSettingDir::MenuSettingDir(GMenu2X *gmenu2x, const string &title, const string &description, string *value, const std::string &startPath, const std::string &dialogTitle, const std::string &dialogIcon):
+MenuSettingStringBase(gmenu2x, title, description, value), startPath(startPath), dialogTitle(dialogTitle), dialogIcon(dialogIcon) {
+	if (dialogTitle.empty()) this->dialogTitle = this->title;
+	if (dialogIcon.empty()) this->dialogIcon = "icons/explorer.png";
+	if (startPath.empty()) this->startPath = CARD_ROOT;
+
+	btn = new IconButton(gmenu2x, "select", gmenu2x->tr["Reset"]);
 	btn->setAction(MakeDelegate(this, &MenuSettingDir::clear));
 	buttonBox.add(btn);
 
-	btn = new IconButton(gmenu2x, "skin:imgs/buttons/a.png", gmenu2x->tr["Select"]);
+	btn = new IconButton(gmenu2x, "a", gmenu2x->tr["Select"]);
 	btn->setAction(MakeDelegate(this, &MenuSettingDir::edit));
 	buttonBox.add(btn);
 }
@@ -44,10 +46,11 @@ void MenuSettingDir::edit() {
 	if (_value.empty())
 		_value = startPath + "/";
 
-	BrowseDialog dd(gmenu2x, dialogTitle, description, dialogIcon);
-	dd.showDirectories = true;
-	dd.showFiles = false;
-	dd.allowSelectDirectory = true;
-	dd.setPath(_value);
-	if (dd.exec()) setValue( dd.getPath() );
+	BrowseDialog bd(gmenu2x, dialogTitle, description, dialogIcon);
+	bd.setPath(_value);
+	bd.showDirectories = true;
+	bd.showFiles = false;
+	bd.allowSelectDirectory = true;
+	if (bd.exec())
+		setValue(bd.getPath());
 }
