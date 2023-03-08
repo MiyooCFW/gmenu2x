@@ -12,14 +12,14 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: build
-      run: make -f Makefile.bittboy
+      run: make -f Makefile.miyoo
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X binary
-        path: dist/bittboy/gmenu2x
+        path: dist/miyoo/gmenu2x
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X binary (debug)
-        path: dist/bittboy/gmenu2x-debug
+        path: dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`

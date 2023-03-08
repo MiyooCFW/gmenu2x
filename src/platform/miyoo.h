@@ -1,32 +1,21 @@
-#ifndef HW_BITTBOY_H
-#define HW_BITTBOY_H
+#ifndef HW_MIYOO_H
+#define HW_MIYOO_H
 
 #include <sys/mman.h>
 
-/*	BittBoy Key Codes. pingflood, 2019
-	BUTTON     GMENU          SDL             NUMERIC   GPIO
-	-----------------------------------------------------------------------------
-	A          CONFIRM        SDLK_LCTRL      306
-	B          CANCEL         SDLK_SPACE      32
-	TA         MANUAL         SDLK_LALT       308
-	TB         MODIFIER       SDLK_LSHIFT     304
-	R          SECTION_NEXT   SDLK_RCTRL      305
-	START      SETTINGS       SDLK_RETURN     13
-	SELECT     MENU           SDLK_ESCAPE     27
-	UP         UP             SDLK_UP         273
-	DOWN       DOWN           SDLK_DOWN       274
-	RIGHT      RIGHT          SDLK_RIGHT      275
-	LEFT       LEFT           SDLK_LEFT       276
-
-	Pocket-Go Key Codes. pingflood, 2019
+/*	MiyooCFW 2.0 Key Codes. Apaczer, 2023
 	BUTTON     GMENU          SDL             NUMERIC   GPIO
 	-----------------------------------------------------------------------------
 	A          CONFIRM        SDLK_LALT       308
 	B          CANCEL         SDLK_LCTRL      306
 	X          MODIFIER       SDLK_LSHIFT     304
 	Y          MANUAL         SDLK_SPACE      32
-	L          SECTION_PREV   SDLK_TAB        9
-	R          SECTION_NEXT   BACKSPACE       8
+	L1         SECTION_PREV   SDLK_TAB        9
+	R1         SECTION_NEXT   BACKSPACE       8
+	L2         DEC            SDLK_PAGEUP     280
+	R2         INC            SDLK_PAGEDOWN   281
+	L3         DEC            SDLK_RALT       307
+	R3         INC            SDLK_RSHIFT     303
 	RESET      POWER          SDLK_RCTRL      305
 	START      SETTINGS       SDLK_RETURN     13
 	SELECT     MENU           SDLK_ESCAPE     27
@@ -186,7 +175,7 @@ private:
 		}
 		w = 320;
 		h = 240;
-		INFO("BITTBOY");
+		INFO("MIYOO");
 	}
 
 	int getBacklight() {

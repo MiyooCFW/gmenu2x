@@ -1,4 +1,4 @@
-PLATFORM := bittboy
+PLATFORM := miyoo
 
 BUILDTIME := $(shell date +%s)
 
@@ -16,7 +16,7 @@ SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 CFLAGS = -DPLATFORM=\"$(PLATFORM)\" -D__BUILDTIME__=$(BUILDTIME) -DLOG_LEVEL=3
 CFLAGS += -Isrc 
 CFLAGS += -Os -ggdb -g3 $(SDL_CFLAGS)
-CFLAGS += -DTARGET_BITTBOY
+CFLAGS += -DTARGET_MIYOO
 
 LDFLAGS = $(SDL_LIBS) -lfreetype -lSDL -lSDL_image -lSDL_ttf
 
