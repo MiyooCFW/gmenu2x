@@ -1,5 +1,63 @@
 ## Changelog
 
+**2022.08.26** (GMenu2X rev. 2.1a)
+* FIXES:
+	* the Preview window will update now selected file's image when using "Random Selector" or modifying file through ContextMenu in Explorer.
+
+**2022.08.23** (GMenu2X rev. 2.1)
+
+* IMPROVEMENTS:
+	* hold down MODIFIER ("X" button on PocketGo), activates "SW Clock" dialog for quick Date&Time changing anywhere in gmenu2x.
+* REWORKS:
+	* increase lower year value to 2022 in Date settings.
+    reduce MIN value of Title Font size to "1" in Skin settings.
+* FIXES:
+	* skin GameShow is working again (has been broken due to SDL_SoftStretch when section bar height was lower than "9")
+	* accepting changes in "Cancel" dialog should save any modifications as expected now
+	* allow canceling in "Reset Settings" menu (also fixing non resetable options as a bonus)  
+*ISSUES:
+	* the Preview window is not updating image when using "Random Selector" or deleting file in Explorer.
+
+**2022.08.06** (GMenu2X rev. 2.0)
+
+* IMPROVEMENTS:
+  * File Explorer
+	* easier alphabetical searching (with L1/R1 buttons)
+	* random file selector (press Y )
+	* new lower & side scrolling bar logic
+	* faster loading big file collections in folders while browsing.
+	* fully working folder path is being displayed on top bar
+	* extra option menu (accesible with SELECT button):
+		* Set as wallpaper (if selected file is image)
+		* Add to Favourites (creates app link in Favourites section)
+		* Go to /mnt (fast change directory)
+		* Go to /mnt/roms (fast change directory)
+		* Delete (remove file permanently)
+  * General
+	* new Favourites section
+	* added "OFF" option for "Power TimeOut" and "Suspend TimeOut" in settings
+	* File_Selector option in Edit_link menu has now option to open by default with particular folder every time
+	* Deleting link/section requires now to use "Y" button
+	* new CPU logic with potential soft overclocking up to 864MHz
+	* new Preview_mode (allows for showing images while file browsing)
+		* Backdrop - in full screen mode
+		* Miniature - in scaled mode (auto downscaling for large boxarts!)
+* REWORKS:
+	* one press of RESET button shows PowerOff dialog
+	* hold down START button activates "Suspend Mode"
+	* hover over LinkApp & hold down CONFIRM button to launch app directly or with File Explorer
+	* changed BatteryStatus values
+		* case 6 will indicate max voltage (suggest to plug-off usb digital charger)
+		* case 5 indicates fully charged when voltage>4100 (typically for BL-5C vol-4150 is upper limit when UDC removed)
+		* lower values also should be now more precise than before (this is due to reverting part of working battery indicator code)
+* FIXES:
+	* allow canceling when modyfing Config settings, Skin settings and SkinColor
+	* track passage of Date&Time (use "datetime" string in gmenu2x.conf), should keep time within incrementing values
+* ISSUES:
+	* skin GameShow doesn't work in current state
+* ASSETS:
+	* new input configuration (L2/R2 - decrease/increase values ; L1/R1 - go_up/go_down)
+
 **2018.09.16** (*Codename: No more tears (AKA: My work is done here).*)
 * Renamed fork to GMenuNX;
 * New gridded menu layout:
