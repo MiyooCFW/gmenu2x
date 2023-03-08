@@ -1,15 +1,14 @@
-# GMenuNX
+# Info
 
-[GMenuNX](https://github.com/pingflood/GMenuNX/) is a fork of [GMenu2X](http://mtorromeo.github.com/gmenu2x) developed for the RetroFW, released under the GNU GPL license v2.
+This GMenu2X is a fork of [GMenuNX](https://github.com/pingflood/GMenuNX/) and is developed for the MiyooCFW, released under the GNU GPL license v2.
 
-View releases [changelog](ChangeLog.md).
-
+View changelog in [changelog](https://github.com/MiyooCFW/gmenu2x/blob/master/ChangeLog.md) file.
 
 ## Installation
 
-Unpack the latest [Release](https://github.com/pingflood/GMenuNX/releases/) over your current GMenu2X directory, or download the latest binary and replace it in your device.
+Replace the ``gmenu2x`` binary with the latest one from action builds.
 
-(Re)Boot your device and enjoy [GMenuNX](https://github.com/pingflood/GMenuNX/).
+(Re)Boot your device and enjoy new GMenu2X
 
 
 ## Controls
@@ -19,7 +18,7 @@ Unpack the latest [Release](https://github.com/pingflood/GMenuNX/releases/) over
 * X: Goes up one directory in file browser;
 * Y: Bring up the manual/readme;
 * L, R: Switch between sections / PageUp/PageDown on lists;
-* START: GMenuNX settings;
+* START: GMenu2X settings;
 * SELECT: Bring up the contextual menu;
 * SELECT + L: Volume control;
 * SELECT + R, BRIGHTNESS: Change screen brightness;
@@ -47,16 +46,8 @@ In settings:
 	* Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
 * The name of the file of rom and preview have to be exactly the same. Suported image types are .png or .jpg;
 
-
-## Thanks
-
-I want to thanks [@msx](https://boards.dingoonity.org/profile/msx/), [@m1024x](https://boards.dingoonity.org/profile/m1024/), [@TonyJih](http://github.com/tonyjih/),[@Fontes](https://www.deviantart.com/fontesmakua) and [@jutley](https://boards.dingoonity.org/profile/jutley/) for all the support they are giving, testing and reporting bugs.
-
-
 ## Contacts
 
-GMenu2X Copyright (c) 2006-2010 [Massimiliano Torromeo](mailto:massimiliano.torromeo@gmail.com); GMenuNX 2018-2019 by [@pingflood](https://boards.dingoonity.org/profile/pingflood/);
-
-Visit the [Dingoonity thread](http://boards.dingoonity.org/ingenic-jz4760-devices/gmenunext-\(gmenu2x-fork\)-new-releases/) and the [Discord channel](https://discord.gg/hvR5vK6)!
-
-[GMenu2X](http://mtorromeo.github.com/gmenu2x) homepage for more info.
+GMenu2X Copyright (c) 2006-2010 [Massimiliano Torromeo](mailto:massimiliano.torromeo@gmail.com);  
+GMenuNX 2018-2019 by [@pingflood](https://boards.dingoonity.org/profile/pingflood/);  
+GMenu2X 2022 (modded GMenuNX) by [@Apaczer](apaczer.git@gmail.com);
