@@ -14,17 +14,19 @@ Replace the ``gmenu2x`` binary with the latest one from action builds.
 ## Controls
 
 * A: Accept / Launch selected link / Confirm action;
-* B: Back / Cancel action
+* B: Back / Cancel action;
 * X: Goes up one directory in file browser;
 * Y: Bring up the manual/readme;
-* L, R: Switch between sections / PageUp/PageDown on lists;
+* L1, R1: Switch between sections / PageUp/PageDown on lists;
+* L2, R2: Fast Decrement/Increment of selected value;
 * START: GMenu2X settings;
 * SELECT: Bring up the contextual menu;
 * SELECT + L: Volume control;
 * SELECT + R, BRIGHTNESS: Change screen brightness;
 * SELECT + START: Take a screenshot;
-* POWER: Toggle Suspend mode;
-* POWER/START (hold): Bring up Poweroff dialog.
+* SELECT (hold): Disconnect TV-out;
+* POWER: Bring up Poweroff dialog;
+* POWER/START (hold):  Toggle Suspend mode;
 * TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal.
 
 In settings:
