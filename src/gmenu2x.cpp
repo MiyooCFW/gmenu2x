@@ -346,7 +346,10 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 		input.update();
 
-		if (input[SETTINGS]) {
+		if (SDL_GetTicks() - button_hold > 1000) {
+			wasActive = 0;
+			system("/mnt/apps/tvoff/tvout-off.sh"); //disables TVout in case there's no connection 
+		} else if (input[SETTINGS]) {
 			wasActive = SCREENSHOT;
 		} else if (input[BACKLIGHT_HOTKEY]) {
 			wasActive = BACKLIGHT;
