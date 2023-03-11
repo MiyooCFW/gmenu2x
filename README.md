@@ -16,17 +16,18 @@ Replace the ``gmenu2x`` binary with the latest one from action builds.
 * A: Accept / Launch selected link / Confirm action;
 * B: Back / Cancel action;
 * X: Goes up one directory in file browser;
+* X (hold): Bring up Date&Time quick dialog;
 * Y: Bring up the manual/readme;
 * L1, R1: Switch between sections / PageUp/PageDown on lists;
 * L2, R2: Fast Decrement/Increment of selected value;
 * START: GMenu2X settings;
+* START (hold):  Toggle Suspend mode;
 * SELECT: Bring up the contextual menu;
+* SELECT (hold): Disconnect TV-out;
 * SELECT + L: Volume control;
 * SELECT + R, BRIGHTNESS: Change screen brightness;
 * SELECT + START: Take a screenshot;
-* SELECT (hold): Disconnect TV-out;
 * POWER: Bring up Poweroff dialog;
-* POWER/START (hold):  Toggle Suspend mode;
 * TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal.
 
 In settings:
@@ -53,3 +54,53 @@ In settings:
 GMenu2X Copyright (c) 2006-2010 [Massimiliano Torromeo](mailto:massimiliano.torromeo@gmail.com);  
 GMenuNX 2018-2019 by [@pingflood](https://boards.dingoonity.org/profile/pingflood/);  
 GMenu2X 2022 (modded GMenuNX) by [@Apaczer](apaczer.git@gmail.com);
+
+## Credits
+
+### Contributors
+NoidZ for his gp2x' buttons graphics; 
+Pickle for the initial Wiz and Caanoo ports; 
+Steward-Fu for the initial RetroGame ports; 
+TonyJih for the new RetroFW features; 
+Fontes for the RetroFW graphics; 
+
+### Beta testers
+Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X); 
+Yann Vaillant (WIZ); 
+msx, jbanes, jutley and scooterpsu (RetroFW); 
+salvacam, SolidOne (MiyooCFW).
+
+### Translators
+Chinese (CN): 蔡蔡哥, simpleasy, KungfuPanda; 
+Chinese (TW): wentao, TonyJih; 
+Danish: claus; 
+Dutch: superfly; 
+English: Massimiliano; 
+Finnish: Jontte Atte; 
+French: Yodaz; 
+German: fusion_power, johnnysnet, Waldteufel; 
+Italian: Massimiliano; 
+Korean: haven-jeon; 
+Norwegian: cowai; 
+Polish: Macmmm81; 
+Portuguese (Brazil): pingflood; 
+Portuguese (Portugal): NightShadow; 
+Russian: XaMMaX90; 
+Slovak: Jozef; 
+Spanish: pedator; 
+Swedish: Esslan Micket; 
+
+### Donors
+EvilDragon (www.gp2x.de),
+Tecnologie Creative (www.tecnologiecreative.it), 
+TelcoLou, 
+gaterooze, 
+deepmenace, 
+superfly, 
+halo9, 
+sbock, 
+b._.o._.b, 
+Jacopastorius, 
+lorystorm90.
+
+and all the anonymous colaborators...

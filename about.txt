@@ -1,23 +1,25 @@
 GMenu2X is developed for the MiyooCFW and released under the GNU GPL license v2.
 This fork has been based of RetroFW src.
-Source code for current build: https://github.com/Apaczer/gmenu2x/tree/miyoo_beta
+Source code for current build: https://github.com/MiyooCFW/gmenu2x
 
 Controls
 ----
 * A: Accept / Launch selected link / Confirm action;
-* B: Back / Cancel action
+* B: Back / Cancel action;
 * X: Goes up one directory in file browser;
+* X (hold): Bring up Date&Time quick dialog;
 * Y: Bring up the manual/readme;
-* L, R: Switch between sections / PageUp/PageDown on lists;
-* START: GMenuNX settings;
-* SELECT: Context menu;
+* L1, R1: Switch between sections / PageUp/PageDown on lists;
+* L2, R2: Fast Decrement/Increment of selected value;
+* START: GMenu2X settings;
+* START (hold):  Toggle Suspend mode;
+* SELECT: Bring up the contextual menu;
+* SELECT (hold): Disconnect TV-out;
 * SELECT + L: Volume control;
 * SELECT + R, BRIGHTNESS: Change screen brightness;
-* POWER: Bring up Poweroff dialog;
 * SELECT + START: Take a screenshot;
-* START (hold): Toggle Suspend mode;
-* MODIFIER (hold): Bring up Date&Time quick dialog;
-* TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal;
+* POWER: Bring up Poweroff dialog;
+* TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal.
 
 In settings:
 
@@ -44,63 +46,3 @@ Thanks goes to...
 Massimiliano "Ryo" Torromeo, by the original GMenu2X code.
 pingflood for adding Bittboy specific HW handling in his GMenuNX fork.
 
-Contributors
-----
-NoidZ for his gp2x' buttons graphics
-Pickle for the initial Wiz and Caanoo ports
-Steward-Fu for the initial RetroGame ports
-TonyJih for the new RetroFW features
-Fontes for the RetroFW graphics
-
-Beta testers
-----
-Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X)
-Yann Vaillant (WIZ)
-msx, jbanes, jutley and scooterpsu (RetroFW)
-salvacam (MiyooCFW)
-
-Translators
-----
-Chinese (CN): 蔡蔡哥; simpleasy; KungfuPanda
-Chinese (TW): wentao; TonyJih
-Danish: claus
-Dutch: superfly
-English: Massimiliano
-Finnish: Jontte; Atte
-French: Yodaz
-German: fusion_power; johnnysnet; Waldteufel
-Italian: Massimiliano
-Korean: haven-jeon
-Norwegian: cowai
-Polish: Macmmm81
-Portuguese (Brazil): pingflood
-Portuguese (Portugal): NightShadow
-Russian: XaMMaX90
-Slovak: Jozef
-Spanish: pedator
-Swedish: Esslan; Micket
-
-Donors
-----
-EvilDragon (www.gp2x.de)
-Tecnologie Creative (www.tecnologiecreative.it)
-TelcoLou
-gaterooze
-deepmenace
-superfly
-halo9
-sbock
-b._.o._.b
-Jacopastorius
-lorystorm90
-
-http://funnyplaying.com,
-https://droidbox.co.uk,
-https://bittboy.com,
-for giving a discount coupon and development units
-
-Wentao for giving hardware mod support:
-https://www.youtube.com/channel/UCeGZpAGYSiCGz6x4OX5MSEw
-
-and all the anonymous colaborators...
-(If I missed to list you or if you want to be removed, contact me.)
