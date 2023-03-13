@@ -22,7 +22,7 @@
 #include "fonthelper.h"
 #include "utilities.h"
 #include "debug.h"
-#include <cassert>
+#include "assert.h"
 
 RGBAColor strtorgba(const string &strColor) {
 	const int s = (strColor.at(0) == '#') ? 1 : 0;
