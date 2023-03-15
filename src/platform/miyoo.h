@@ -208,7 +208,11 @@ public:
 	int setBacklight(int val, bool popup = false) {
 		val = GMenu2X::setBacklight(val, popup);
 		char buf[128] = {0};
-		sprintf(buf, "echo %d > /sys/devices/platform/backlight/backlight/backlight/brightness", val / 10);
+		if (FILE *f = fopen("/mnt/tvout", "r")) {
+			return 0;
+		} else {
+			sprintf(buf, "echo %d > /sys/devices/platform/backlight/backlight/backlight/brightness", val / 10);
+		}
 		system(buf);
 		return val;
 	}
