@@ -220,6 +220,7 @@ void GMenu2X::main() {
 
 	setBacklight(confInt["backlight"]);
 	setVolume(confInt["globalVolume"]);
+	setKbdLayout(confInt["keyboardLayout"]);
 	setCPU(confInt["cpuMenu"]);
 
 	setenv("SDL_FBCON_DONT_CLEAR", "1", 0);
@@ -581,12 +582,14 @@ void GMenu2X::settings() {
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 300))->setOff(9));
 	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
+	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the A/B/X/Y layout"], &confInt["keyboardLayout"], 1, 1, 3));
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		writeConfig();
+		setKbdLayout(confInt["keyboardLayout"]);
 	}
 		if (lang == "English") lang = "";
 		if (confStr["lang"] != lang) {
@@ -749,6 +752,7 @@ void GMenu2X::readConfig() {
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
 	confInt["globalVolume"] = 60;
+	confInt["keyboardLayout"] = 1;
 	confStr["bgscale"] = "Crop";
 	confStr["skinFont"] = "Custom";
 	confInt["backlightTimeout"] = 30;

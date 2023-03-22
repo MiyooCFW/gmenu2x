@@ -28,9 +28,9 @@
 #define MIYOO_SND_SET_VOLUME  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_KBD_GET_HOTKEY  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_KBD_SET_VER     _IOWR(0x101, 0, unsigned long)
+#define MIYOO_LAY_SET_VER     _IOWR(0x103, 0, unsigned long)
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
-int fb0, kbd;
 
 static uint32_t oc_table[] = {
   ((24 * 2 * 1) << 16) | ((0 << 8) | (3 << 3)), // 48MHz = 24*2*1
@@ -215,6 +215,16 @@ public:
 		}
 		system(buf);
 		return val;
+	}
+
+	void setKbdLayout(int val) {
+		uint32_t kbd = open("/dev/miyoo_kbd", O_RDWR);
+
+		if (kbd) {
+			if (val > 3) val = 3;
+			ioctl(kbd, MIYOO_LAY_SET_VER, val);
+			close(kbd);
+		}
 	}
 
 	void setCPU(uint32_t mhz) {
