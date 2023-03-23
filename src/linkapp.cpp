@@ -34,6 +34,7 @@ extern char** environ;
 LinkApp::LinkApp(GMenu2X *gmenu2x, const char* file):
 Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 	setCPU(gmenu2x->confInt["cpuLink"]);
+	setKbdLayout(gmenu2x->confInt["keyboardLayoutLink"]);
 
 #if defined(HW_GAMMA)
 	//G
@@ -68,6 +69,7 @@ Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 		else if (name == "home") setHomeDir(value);
 		else if (name == "manual") setManual(value);
 		else if (name == "clock") setCPU(atoi(value.c_str()));
+		else if (name == "layout") setKbdLayout(atoi(value.c_str()));
 
 #if defined(HW_GAMMA)
 		// else if (name == "wrapper" && value == "true") // wrapper = true;
@@ -223,6 +225,12 @@ void LinkApp::setCPU(int mhz) {
 	edited = true;
 }
 
+void LinkApp::setKbdLayout(int val) {
+	layout = val;
+	if (layout != 1) layout = constrain(layout, 1, 3);
+	edited = true;
+}
+
 #if defined(HW_GAMMA)
 void LinkApp::setGamma(int gamma) {
 	gamma = constrain(gamma, 0, 100);
@@ -260,6 +268,8 @@ bool LinkApp::save() {
 		if (manual != "")			f << "manual="			<< manual			<< endl;
 		if (clock != 0 && clock != gmenu2x->confInt["cpuLink"])
 									f << "clock="			<< clock			<< endl;
+		if (layout != 1 && layout != gmenu2x->confInt["keyboardLayoutLink"])
+									f << "layout="			<< layout			<< endl;
 		// if (useRamTimings)		f << "useramtimings=true"					<< endl;
 		// if (useGinge)			f << "useginge=true"						<< endl;
 		// if (volume > 0)			f << "volume="			<< volume			<< endl;
@@ -393,6 +403,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	}
 
 	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
+	if (getKbdLayout() != gmenu2x->confInt["keyboardLayoutMenu"]) gmenu2x->setKbdLayout(getKbdLayout());
 
 #if defined(TARGET_GP2X)
 	//if (useRamTimings) gmenu2x->applyRamTimings();
