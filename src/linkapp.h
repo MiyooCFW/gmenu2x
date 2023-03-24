@@ -33,7 +33,7 @@ class LinkApp : public Link {
 private:
 	// InputManager &input;
 	int		clock = 0,
-			layout = 1,
+			layout = 0,
 			selectorelement = 0,
 			scalemode,
 			_scalemode = 0; //, ivolume = 0;
@@ -82,7 +82,7 @@ public:
 	int getCPU() { return clock; }
 	void setCPU(int mhz = 0);
 	int getKbdLayout() { return layout; }
-	void setKbdLayout(int val = 1);
+	void setKbdLayout(int val = 0);
 	bool save();
 	void run();
 	void selector(int startSelection = 0, const string &selectorDir = "");

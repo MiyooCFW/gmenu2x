@@ -87,6 +87,8 @@ int CPU_LINK = 0;
 int CPU_MAX = 0;
 int CPU_MIN = 0;
 int CPU_STEP = 0;
+int LAYOUT_VERSION = 0;
+int LAYOUT_VERSION_MAX = 0;
 
 const char *CARD_ROOT = getenv("HOME");
 
@@ -582,7 +584,7 @@ void GMenu2X::settings() {
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 300))->setOff(9));
 	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
-	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], 1, 1, 3));
+	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], 1, 1, confInt["keyboardLayoutMax"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
@@ -752,7 +754,8 @@ void GMenu2X::readConfig() {
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
 	confInt["globalVolume"] = 60;
-	confInt["keyboardLayoutMenu"] = 1;
+	confInt["keyboardLayoutMenu"] = LAYOUT_VERSION;
+	confInt["keyboardLayoutMax"] = LAYOUT_VERSION_MAX;
 	confStr["bgscale"] = "Crop";
 	confStr["skinFont"] = "Custom";
 	confInt["backlightTimeout"] = 30;
@@ -1595,7 +1598,7 @@ void GMenu2X::editLink() {
 #endif
 
 
-	sd.addSetting(new MenuSettingInt(		this, tr["Keyboard Layout"],	tr["Set the appropriate A/B/X/Y layout"], &linkKbdLayout, confInt["keyboardLayoutMenu"], 1, 3, 1));
+	sd.addSetting(new MenuSettingInt(		this, tr["Keyboard Layout"],	tr["Set the appropriate A/B/X/Y layout"], &linkKbdLayout, confInt["keyboardLayoutMenu"], 1, confInt["keyboardLayoutMax"], 1));
 	sd.addSetting(new MenuSettingMultiString(	this, tr["File Selector"],	tr["Use file browser selector"], &confStr["tmp_selector"], &selStr, NULL, MakeDelegate(this, &GMenu2X::changeSelectorDir)));
 	sd.addSetting(new MenuSettingBool(			this, tr["Show Folders"],	tr["Allow the selector to change directory"], &linkSelBrowser));
 	sd.addSetting(new MenuSettingString(		this, tr["File Filter"],	tr["Filter by file extension (separate with commas)"], &linkSelFilter, dialogTitle, dialogIcon));
@@ -1603,7 +1606,6 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingFile(			this, tr["Aliases"],		tr["File containing a list of aliases for the selector"], &linkSelAliases, ".txt,.dat", linkExec, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingImage(			this, tr["Backdrop"],		tr["Select an image backdrop"], &linkBackdrop, ".png,.bmp,.jpg,.jpeg", linkExec, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingFile(			this, tr["Manual"],			tr["Select a Manual or Readme file"], &linkManual, ".man.png,.txt,.me", linkExec, dialogTitle, dialogIcon));
-
 #if defined(TARGET_WIZ) || defined(TARGET_CAANOO)
 	bool linkUseGinge = menu->selLinkApp()->getUseGinge();
 	string ginge_prep = exe_path() + "/ginge/ginge_prep";

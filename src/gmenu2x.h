@@ -94,6 +94,8 @@ extern int CPU_LINK;
 extern int CPU_MAX;
 extern int CPU_MIN;
 extern int CPU_STEP;
+extern int LAYOUT_VERSION;
+extern int LAYOUT_VERSION_MAX;
 
 typedef FastDelegate0<> MenuAction;
 typedef unordered_map<string, string, hash<string> > ConfStrHash;

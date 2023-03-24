@@ -227,7 +227,7 @@ void LinkApp::setCPU(int mhz) {
 
 void LinkApp::setKbdLayout(int val) {
 	layout = val;
-	if (layout != 1) layout = constrain(layout, 1, 3);
+	if (layout != 0) layout = constrain(layout, 1, gmenu2x->confInt["keyboardLayoutMax"]);
 	edited = true;
 }
 
@@ -268,7 +268,7 @@ bool LinkApp::save() {
 		if (manual != "")			f << "manual="			<< manual			<< endl;
 		if (clock != 0 && clock != gmenu2x->confInt["cpuLink"])
 									f << "clock="			<< clock			<< endl;
-		if (layout != 1 && layout != gmenu2x->confInt["keyboardLayoutLink"])
+		if (layout != 0 && layout != gmenu2x->confInt["keyboardLayoutLink"])
 									f << "layout="			<< layout			<< endl;
 		// if (useRamTimings)		f << "useramtimings=true"					<< endl;
 		// if (useGinge)			f << "useginge=true"						<< endl;

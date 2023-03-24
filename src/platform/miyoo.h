@@ -29,6 +29,7 @@
 #define MIYOO_KBD_GET_HOTKEY  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_KBD_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_LAY_SET_VER     _IOWR(0x103, 0, unsigned long)
+#define MIYOO_LAY_GET_VER     _IOWR(0x105, 0, unsigned long)
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
 
@@ -94,6 +95,7 @@ static uint32_t oc_table[] = {
 
 volatile uint32_t *mem;
 volatile uint8_t memdev = 0;
+int kbd;
 int32_t tickBattery = 0;
 
 int32_t getBatteryLevel() {
@@ -158,6 +160,7 @@ private:
 		CPU_MAX = 912;
 		CPU_MIN = 48;
 		CPU_STEP = 48;
+		LAYOUT_VERSION_MAX = 6;
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
@@ -172,6 +175,13 @@ private:
 			}
 		} else {
 			WARNING("Could not open /dev/mem");
+		}
+		kbd = open("/dev/miyoo_kbd", O_RDWR);
+		if (kbd > 0) {
+			ioctl(kbd, MIYOO_LAY_GET_VER, &(LAYOUT_VERSION));
+			close(kbd);
+		} else {
+			WARNING("Could not open /dev/miyoo_kbd");
 		}
 		w = 320;
 		h = 240;
@@ -218,12 +228,15 @@ public:
 	}
 
 	void setKbdLayout(int val) {
-		uint32_t kbd = open("/dev/miyoo_kbd", O_RDWR);
+		int f = open("/dev/miyoo_kbd", O_RDWR);
 
-		if (kbd) {
-			if (val > 3) val = 3;
-			ioctl(kbd, MIYOO_LAY_SET_VER, val);
-			close(kbd);
+		if (f > 0) {
+			if (val <= 0) val = 1;
+			ioctl(f, MIYOO_LAY_SET_VER, val);
+			close(f);
+		} else {
+			WARNING("Could not open /dev/miyoo_kbd");
+			val = 0;
 		}
 	}
 
