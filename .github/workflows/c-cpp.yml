@@ -18,23 +18,26 @@ jobs:
     container:
       image: nfriedly/miyoo-toolchain:steward
     steps:
+    - run: echo "submodule ${{ inputs.submodule }} on ${{ github.event }}"
     - uses: actions/checkout@v3
+    - if: inputs.submodule
+      run: git submodule update --init --depth 1 -- ${{ inputs.submodule }}
     - name: build
-      run: make -f Makefile.miyoo dist
+      run: cd ${{ inputs.submodule || '.' }} && make -f Makefile.miyoo dist
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X binary
-        path: dist/miyoo/gmenu2x
+        path: ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X binary (debug)
-        path: dist/miyoo/gmenu2x-debug
+        path: ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X Bundle 
         path: |
-          dist/miyoo/
-          !dist/miyoo/gmenu2x-debug
+          ${{ inputs.submodule || '.' }}/dist/miyoo/
+          !${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
