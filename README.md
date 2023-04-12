@@ -37,6 +37,14 @@ In settings:
 * START: Save edits and return;
 * SELECT: Clear or set default value.
 
+## Parameters
+
+You can pass useful variables before launching app in the editLink menu under "Parameters" option
+[selPath] - this string will be replaced by the selector path.
+[selFile] - this string will be replaced by the selected file's name, in the selector, without its extension
+[selExt] - this string will be replaced by the selected file's extension.
+[selFileFull] - this is a shortcut value that means [selFile][selExt]
+[selFullPath] - this is a shortcut value that means [selPath][selFile][selExt]
 
 ## [How to have previews in Selector Browser](http://boards.dingoonity.org/ingenic-jz4760-devices/gmenunext-let's-make-gmenu-great-again!/msg177392/#msg177392)
 
