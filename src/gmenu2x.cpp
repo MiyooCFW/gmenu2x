@@ -615,6 +615,10 @@ void GMenu2X::settings() {
 	
 	powerManager->setSuspendTimeout(confInt["backlightTimeout"]);
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
+
+	if (sd.exec() && sd.edited() && sd.save) {
+	reinit_save();
+	}
 }
 
 void GMenu2X::resetSettings() {
@@ -782,7 +786,6 @@ void GMenu2X::readConfig() {
 
 			if (value.length() > 1 && value.at(0) == '"' && value.at(value.length() - 1) == '"')
 				confStr[name] = value.substr(1, value.length() - 2);
-			else
 				confInt[name] = atoi(value.c_str());
 		}
 		cfg.close();

@@ -34,7 +34,7 @@ extern char** environ;
 LinkApp::LinkApp(GMenu2X *gmenu2x, const char* file):
 Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 	setCPU(gmenu2x->confInt["cpuLink"]);
-	setKbdLayout(gmenu2x->confInt["keyboardLayoutLink"]);
+	setKbdLayout(gmenu2x->confInt["keyboardLayoutMenu"]);
 
 #if defined(HW_GAMMA)
 	//G
@@ -268,7 +268,7 @@ bool LinkApp::save() {
 		if (manual != "")			f << "manual="			<< manual			<< endl;
 		if (clock != 0 && clock != gmenu2x->confInt["cpuLink"])
 									f << "clock="			<< clock			<< endl;
-		if (layout != 0 && layout != gmenu2x->confInt["keyboardLayoutLink"])
+		if (layout != 0 && layout != gmenu2x->confInt["keyboardLayoutMenu"])
 									f << "layout="			<< layout			<< endl;
 		// if (useRamTimings)		f << "useramtimings=true"					<< endl;
 		// if (useGinge)			f << "useginge=true"						<< endl;
