@@ -1223,9 +1223,7 @@ void GMenu2X::about() {
 	// temp += tr["Uptime: "] + ms2hms(SDL_GetTicks()) + "\n";
 
 	// temp += "----\n";
-
-	TextDialog td(this, "GMenuNX", tr["Build date: "] + __DATE__, "skin:icons/about.png");
-
+	TextDialog td(this, "GMenuNX", tr["Build date&time: "] + __DATE__ + " " + __TIME__, "skin:icons/about.png");
 	// td.appendText(temp);
 	td.appendFile("about.txt");
 	td.exec();
