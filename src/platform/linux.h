@@ -8,6 +8,10 @@ uint8_t memdev = 0;
 int SOUND_MIXER_READ = SOUND_MIXER_READ_PCM;
 int SOUND_MIXER_WRITE = SOUND_MIXER_WRITE_PCM;
 
+int32_t setTVoff() {
+	return 0;
+}
+
 uint16_t getDevStatus() {
 	FILE *f;
 	char buf[10000];

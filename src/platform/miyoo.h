@@ -98,6 +98,10 @@ volatile uint8_t memdev = 0;
 int kbd;
 int32_t tickBattery = 0;
 
+int32_t setTVoff() {
+	system("/mnt/apps/tvoff/tvout-off.sh");
+}
+
 int32_t getBatteryLevel() {
 	int val = -1;
 	if (FILE *f = fopen("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now", "r")) {
