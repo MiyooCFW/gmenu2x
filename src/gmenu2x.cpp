@@ -1212,6 +1212,10 @@ void GMenu2X::skinColors() {
 }
 
 void GMenu2X::about() {
+#if defined (__COMMIT_HASH__)
+#define xstr(s) str(s)
+#define str(s) #s
+#endif
 	vector<string> text;
 	// string temp = "", buf;
 
@@ -1223,7 +1227,11 @@ void GMenu2X::about() {
 	// temp += tr["Uptime: "] + ms2hms(SDL_GetTicks()) + "\n";
 
 	// temp += "----\n";
-	TextDialog td(this, "GMenuNX", tr["Build date&time: "] + __DATE__ + " " + __TIME__, "skin:icons/about.png");
+#if defined (__COMMIT_HASH__)
+	TextDialog td(this, "GMenuNX", tr["Build: "] + __DATE__ + " " + __TIME__ + " with commit " xstr(__COMMIT_HASH__), "skin:icons/about.png");
+#else
+	TextDialog td(this, "GMenuNX", tr["Build: "] + __DATE__ + " " + __TIME__, "skin:icons/about.png");
+#endif
 	// td.appendText(temp);
 	td.appendFile("about.txt");
 	td.exec();
