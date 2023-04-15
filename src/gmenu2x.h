@@ -155,7 +155,7 @@ public:
 	~GMenu2X();
 	void quit();
 	void quit_nosave();
-	void main();
+	void main(bool autoStart);
 	void settings();
 	void settings_date();
 	void reinit(bool showDialog = false);
@@ -172,10 +172,13 @@ public:
 
 	bool inputCommonActions(bool &inputAction);
 
+	bool autoStart;
+
 	void cls(Surface *s = NULL, bool flip = true);
 
 	void about();
 	void viewLog();
+	void viewAutoStart();
 	void contextMenu();
 	void changeWallpaper();
 	void changeSelectorDir();

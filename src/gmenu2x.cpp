@@ -142,13 +142,20 @@ static void quit_all(int err) {
 	exit(err);
 }
 
-int main(int /*argc*/, char * /*argv*/[]) {
+int main(int argc, char * argv[]) {
 	INFO("Starting GMenuNX...");
 
 	signal(SIGINT,  &quit_all);
 	signal(SIGSEGV, &quit_all);
 	signal(SIGTERM, &quit_all);
 
+	bool autoStart = false;
+	for (int i = 0; i < argc; i++){
+       		if(strcmp(argv[i],"--autostart")==0) {
+			INFO("Launching Autostart");
+			autoStart = true;
+		}
+	}
 	int fd = open("/dev/tty0", O_RDONLY);
 	if (fd > 0) {
 		ioctl(fd, VT_UNLOCKSWITCH, 1);
@@ -160,7 +167,7 @@ int main(int /*argc*/, char * /*argv*/[]) {
 	usleep(1000);
 
 	GMenu2X::instance = new GMenuNX();
-	GMenu2X::instance->main();
+	GMenu2X::instance->main(autoStart);
 
 	return 0;
 }
@@ -211,7 +218,7 @@ void GMenu2X::quit_nosave() {
 	hwDeinit();
 }
 
-void GMenu2X::main() {
+void GMenu2X::main(bool autoStart) {
 	hwInit();
 
 	chdir(exe_path().c_str());
@@ -281,6 +288,24 @@ void GMenu2X::main() {
 	if (readTmp() && confInt["outputLogs"]) {
 		viewLog();
 	};
+
+	if (confInt["dialogAutoStart"]) {
+		viewAutoStart();
+	};
+
+	if(confStr["lastCommand"] != "" && confStr["lastDirectory"] != "")  {
+		INFO("Starting autostart()");
+		INFO("conf %s %s",confStr["lastDirectory"].c_str(),confStr["lastCommand"].c_str());
+		INFO("autostart %s %s",confStr["lastDirectory"],confStr["lastCommand"]);
+		setCPU(confInt["lastCPU"]);
+		chdir(confStr["lastDirectory"].c_str());
+		if (!confInt["dialogAutoStartOFF"]) {
+			confInt["dialogAutoStart"] = 1;
+			writeConfig();
+			}
+		quit();
+		execlp("/bin/sh", "/bin/sh", "-c", confStr["lastCommand"].c_str(), NULL);
+	}
 
 	input.dropEvents();
 
@@ -586,6 +611,7 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], 1, 1, confInt["keyboardLayoutMax"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
@@ -754,6 +780,7 @@ void GMenu2X::readConfig() {
 
 	// Defaults *** Sync with default values in writeConfig
 	confInt["saveSelection"] = 1;
+	confInt["saveAutoStart"] = 0;
 	confStr["datetime"] = __BUILDTIME__;
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
@@ -771,6 +798,13 @@ void GMenu2X::readConfig() {
 	confInt["cpuMin"] = CPU_MIN;
 	confInt["cpuLink"] = CPU_LINK;
 	confInt["cpuStep"] = CPU_STEP;
+	
+	if (!confInt["saveAutoStart"]) {
+		confStr["lastCommand"] = "";
+		confStr["lastDirectory"] = "";
+		confInt["lastCPU"] = confInt["cpuMenu"];
+		confInt["dialogAutoStartOFF"] = 0 ;
+	}
 
 	// input.update(false);
 
@@ -1266,6 +1300,28 @@ void GMenu2X::viewLog() {
 	}
 }
 
+void GMenu2X::viewAutoStart() {
+	TextDialog td(this, tr["AutoStart dialog"], tr["Last launched program's output"], "skin:icons/ebook.png");
+
+	MessageBox mb(this, tr["Disable AutoStart feature?"], "skin:icons/ebook.png");
+	mb.setButton(CONFIRM, tr["Delete"]);
+	mb.setButton(CANCEL,  tr["No"]);
+	mb.setButton(MODIFIER,  tr["Disable this message!"]);
+	int res = mb.exec();
+
+	switch (res) {
+		case CONFIRM:
+			confInt["saveAutoStart"] = 0;
+			confStr["lastDirectory"] = "";
+			writeConfig();
+		case MODIFIER:
+			confInt["dialogAutoStartOFF"] = 1;
+			confInt["dialogAutoStart"] = 0;
+			writeConfig();
+			break;
+	}
+}
+
 void GMenu2X::changeWallpaper() {
 	WallpaperDialog wp(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], "skin:icons/wallpaper.png");
 	if (wp.exec() && confStr["wallpaper"] != wp.wallpaper) {
@@ -1331,6 +1387,14 @@ void GMenu2X::explorer() {
 
 	if (confInt["saveSelection"]) bd.setPath(confStr["explorerLastDir"]);
 
+			string command = cmdclean(bd.getFilePath(bd.selected));
+			if (confInt["saveAutoStart"]) {
+				confInt["lastCPU"] = confInt["cpuMenu"];
+				confStr["lastCommand"] = command.c_str();
+				confStr["lastDirectory"] = bd.getFilePath().c_str();
+				confInt["dialogAutoStartOFF"] = 0;
+				writeConfig();
+			}
 	while (bd.exec()) {
 		string ext = bd.getExt(bd.selected);
 		if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp") {
@@ -1370,6 +1434,12 @@ void GMenu2X::explorer() {
 
 			string command = cmdclean(bd.getFilePath(bd.selected));
 			string params = "";
+			if (confInt["saveAutoStart"]) {
+				confInt["lastCPU"] = confInt["cpuMenu"];
+				confStr["lastCommand"] = command.c_str();
+				confStr["lastDirectory"] = bd.getFilePath().c_str();
+				writeConfig();
+			}
 
 			if (confInt["outputLogs"]) {
 				if (file_exists("/usr/bin/gdb")) {

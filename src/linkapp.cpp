@@ -402,6 +402,12 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		gmenu2x->writeConfig();
 	}
 
+	if (gmenu2x->confInt["saveAutoStart"]) {
+		gmenu2x->confInt["lastCPU"] = clock;
+		gmenu2x->confStr["lastCommand"] = command.c_str();
+		gmenu2x->confStr["lastDirectory"] = dir_name(exec).c_str();
+		gmenu2x->writeConfig();
+	}
 	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
 	if (getKbdLayout() != gmenu2x->confInt["keyboardLayoutMenu"]) gmenu2x->setKbdLayout(getKbdLayout());
 
