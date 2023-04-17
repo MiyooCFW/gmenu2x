@@ -4,7 +4,7 @@ BUILDTIME := $(shell date +%s)
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
 
 CHAINPREFIX := /opt/miyoo
-CROSS_COMPILE := $(CHAINPREFIX)/usr/bin/arm-miyoo-linux-uclibcgnueabi-
+CROSS_COMPILE := $(CHAINPREFIX)/usr/bin/arm-linux-
 
 CC			:= $(CROSS_COMPILE)gcc
 CXX			:= $(CROSS_COMPILE)g++
