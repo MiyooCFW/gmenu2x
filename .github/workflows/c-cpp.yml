@@ -12,11 +12,11 @@ on:
         type: string
 
 jobs:   
-  build-modern:
-    name: GMenu2X for MiyooCFW (dynamic uClibc)
-    runs-on: ubuntu-20.04
+  build-legacy:
+    name: GMenu2X for MiyooCFW (uClibc)
+    runs-on: ubuntu-22.04
     container:
-      image: nfriedly/miyoo-toolchain:steward
+      image: miyoocfw/toolchain-shared-uclibc:master
     steps:
     - run: echo "submodule ${{ inputs.submodule }} on ${{ github.event }}"
     - uses: actions/checkout@v3
@@ -26,17 +26,41 @@ jobs:
       run: cd ${{ inputs.submodule || '.' }} && make -f Makefile.miyoo dist
     - uses: actions/upload-artifact@v3
       with:
-        name: GMenu2X binary
-        path: ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x
+        name: GMenu2X (uClibc)
+        path: |
+          ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x
+          ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
     - uses: actions/upload-artifact@v3
       with:
-        name: GMenu2X binary (debug)
-        path: ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
+        name: GMenu2X Bundle (uClibc)
+        path: |
+          ${{ inputs.submodule || '.' }}/dist/miyoo/
+          !${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+
+  build-modern:
+    name: GMenu2X for MiyooCFW (musl)
+    runs-on: ubuntu-22.04
+    container:
+      image: miyoocfw/toolchain-shared-musl:master
+    steps:
+    - run: echo "submodule ${{ inputs.submodule }} on ${{ github.event }}"
+    - uses: actions/checkout@v3
+    - if: inputs.submodule
+      run: git submodule update --init --depth 1 -- ${{ inputs.submodule }}
+    - name: build
+      run: cd ${{ inputs.submodule || '.' }} && make -f Makefile.miyoo dist
+    - uses: actions/upload-artifact@v3
+      with:
+        name: GMenu2X (musl)
+        path: |
+          ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x
+          ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
     - uses: actions/upload-artifact@v3
       with:
-        name: GMenu2X Bundle 
+        name: GMenu2X Bundle (musl)
         path: |
           ${{ inputs.submodule || '.' }}/dist/miyoo/
           !${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
