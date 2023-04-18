@@ -611,11 +611,14 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
+	if (sd.exec() && sd.edited() && sd.save) {
+		writeConfig();
 		if (lang == "English") lang = "";
 		if (confStr["lang"] != lang) {
 			confStr["lang"] = lang;
 			tr.setLang(lang);
 		}
+	}
 
 		setBacklight(confInt["backlight"], false);
 		
@@ -1293,9 +1296,9 @@ void GMenu2X::viewAutoStart() {
 	TextDialog td(this, tr["AutoStart dialog"], tr["Last launched program's output"], "skin:icons/ebook.png");
 
 	MessageBox mb(this, tr["Disable AutoStart feature?"], "skin:icons/ebook.png");
-	mb.setButton(CONFIRM, tr["Delete"]);
+	mb.setButton(CONFIRM, tr["Disable"]);
 	mb.setButton(CANCEL,  tr["No"]);
-	mb.setButton(MODIFIER,  tr["Disable this message!"]);
+	mb.setButton(MODIFIER,  tr["Remove this message!"]);
 	int res = mb.exec();
 
 	switch (res) {
