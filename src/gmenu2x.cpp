@@ -289,7 +289,7 @@ void GMenu2X::main(bool autoStart) {
 		viewLog();
 	};
 
-	if (confInt["dialogAutoStart"]) {
+	if (confInt["dialogAutoStart"] && confStr["lastCommand"] != "" && confStr["lastDirectory"] != "") {
 		viewAutoStart();
 	};
 
@@ -299,10 +299,6 @@ void GMenu2X::main(bool autoStart) {
 		INFO("autostart %s %s",confStr["lastDirectory"],confStr["lastCommand"]);
 		setCPU(confInt["lastCPU"]);
 		chdir(confStr["lastDirectory"].c_str());
-		if (!confInt["dialogAutoStartOFF"]) {
-			confInt["dialogAutoStart"] = 1;
-			writeConfig();
-			}
 		quit();
 		execlp("/bin/sh", "/bin/sh", "-c", confStr["lastCommand"].c_str(), NULL);
 	}
@@ -615,10 +611,6 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
-	if (sd.exec() && sd.edited() && sd.save) {
-		writeConfig();
-		setKbdLayout(confInt["keyboardLayoutMenu"]);
-	}
 		if (lang == "English") lang = "";
 		if (confStr["lang"] != lang) {
 			confStr["lang"] = lang;
@@ -643,7 +635,11 @@ void GMenu2X::settings() {
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
 
 	if (sd.exec() && sd.edited() && sd.save) {
-	reinit_save();
+		setKbdLayout(confInt["keyboardLayoutMenu"]);
+		if (confInt["saveAutoStart"])  {
+			confInt["dialogAutoStart"] = 1;
+		}
+		reinit_save();
 	}
 }
 
@@ -780,7 +776,7 @@ void GMenu2X::readConfig() {
 
 	// Defaults *** Sync with default values in writeConfig
 	confInt["saveSelection"] = 1;
-	confInt["saveAutoStart"] = 0;
+	confInt["dialogAutoStart"] = 1;
 	confStr["datetime"] = __BUILDTIME__;
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
@@ -798,13 +794,6 @@ void GMenu2X::readConfig() {
 	confInt["cpuMin"] = CPU_MIN;
 	confInt["cpuLink"] = CPU_LINK;
 	confInt["cpuStep"] = CPU_STEP;
-	
-	if (!confInt["saveAutoStart"]) {
-		confStr["lastCommand"] = "";
-		confStr["lastDirectory"] = "";
-		confInt["lastCPU"] = confInt["cpuMenu"];
-		confInt["dialogAutoStartOFF"] = 0 ;
-	}
 
 	// input.update(false);
 
@@ -1313,9 +1302,9 @@ void GMenu2X::viewAutoStart() {
 		case CONFIRM:
 			confInt["saveAutoStart"] = 0;
 			confStr["lastDirectory"] = "";
+			confInt["dialogAutoStart"] = 0;
 			writeConfig();
 		case MODIFIER:
-			confInt["dialogAutoStartOFF"] = 1;
 			confInt["dialogAutoStart"] = 0;
 			writeConfig();
 			break;
@@ -1392,7 +1381,6 @@ void GMenu2X::explorer() {
 				confInt["lastCPU"] = confInt["cpuMenu"];
 				confStr["lastCommand"] = command.c_str();
 				confStr["lastDirectory"] = bd.getFilePath().c_str();
-				confInt["dialogAutoStartOFF"] = 0;
 				writeConfig();
 			}
 	while (bd.exec()) {
