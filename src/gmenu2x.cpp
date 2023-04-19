@@ -300,7 +300,14 @@ void GMenu2X::main(bool autoStart) {
 		setCPU(confInt["lastCPU"]);
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
-		execlp("/bin/sh", "/bin/sh", "-c", confStr["lastCommand"].c_str(), NULL);
+		string a = confStr["lastCommand"].c_str();
+#if defined(TARGET_LINUX)
+		string b = "; exit" ;
+#else
+		string b = "; sync; mount -o remount,ro $HOME; poweroff" ;
+#endif
+		string c = a + b ;
+		execlp("/bin/sh", "/bin/sh", "-c", c.c_str(),  NULL);
 	}
 
 	input.dropEvents();
@@ -1296,9 +1303,10 @@ void GMenu2X::viewAutoStart() {
 	TextDialog td(this, tr["AutoStart dialog"], tr["Last launched program's output"], "skin:icons/ebook.png");
 
 	MessageBox mb(this, tr["Disable AutoStart feature?"], "skin:icons/ebook.png");
-	mb.setButton(CONFIRM, tr["Disable"]);
+	mb.setButton(CONFIRM, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
-	mb.setButton(MODIFIER,  tr["Remove this message!"]);
+	mb.setButton(MODIFIER,  tr["Remove dialog!"]);
+	mb.setButton(MANUAL,  tr["Poweroff"]);
 	int res = mb.exec();
 
 	switch (res) {
@@ -1306,10 +1314,15 @@ void GMenu2X::viewAutoStart() {
 			confInt["saveAutoStart"] = 0;
 			confStr["lastDirectory"] = "";
 			confInt["dialogAutoStart"] = 0;
-			writeConfig();
+			reinit_save();
 		case MODIFIER:
 			confInt["dialogAutoStart"] = 0;
 			writeConfig();
+		case MANUAL:
+			quit();
+#if !defined(TARGET_LINUX)
+			system("sync; mount -o remount,ro $HOME; poweroff");
+#endif
 			break;
 	}
 }
