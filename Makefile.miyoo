@@ -55,6 +55,7 @@ dist: dir shared
 	install -m644 -D about.txt $(DISTDIR)/about.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING
 	cp -RH assets/translations $(DISTDIR)
+	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
 	cp -RH assets/skins/FontiGrid/* $(DISTDIR)/skins/Default
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
 
