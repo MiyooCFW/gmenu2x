@@ -1315,7 +1315,7 @@ void GMenu2X::viewAutoStart() {
 				reinit_save();
 			case MODIFIER:
 				confInt["dialogAutoStart"] = 0;
-				writeConfig();
+				reinit_save();
 			case MANUAL:
 				quit();
 #if !defined(TARGET_LINUX)
