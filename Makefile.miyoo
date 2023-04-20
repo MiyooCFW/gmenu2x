@@ -15,8 +15,9 @@ SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
 CFLAGS = -DPLATFORM=\"$(PLATFORM)\" -D__BUILDTIME__=$(BUILDTIME) -D__COMMIT_HASH__=$(COMMIT_HASH) -DLOG_LEVEL=3
-CFLAGS += -Isrc 
-CFLAGS += -Os -ggdb -g3 $(SDL_CFLAGS)
+CFLAGS += -Isrc
+# Zero optimization flag due to unexpected behavior on 2022 clibs
+CFLAGS += -O0 -ggdb -g3 $(SDL_CFLAGS)
 CFLAGS += -DTARGET_MIYOO
 
 LDFLAGS = $(SDL_LIBS) -lfreetype -lSDL -lSDL_image -lSDL_ttf
