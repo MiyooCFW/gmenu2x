@@ -1300,24 +1300,28 @@ void GMenu2X::viewLog() {
 }
 
 void GMenu2X::viewAutoStart() {
-	TextDialog td(this, tr["AutoStart dialog"], tr["Last launched program's output"], "skin:icons/ebook.png");
-
-	MessageBox mb(this, tr["Disable AutoStart feature?"], "skin:icons/ebook.png");
-	mb.setButton(CONFIRM, tr["Disable"]);
+	MessageBox mb(this, tr["Disable AutoStart feature?"]);
+	mb.setButton(CONFIRM, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
-	mb.setButton(MODIFIER,  tr["Remove this message!"]);
+	mb.setButton(MODIFIER,  tr["Remove this dialog!"]);
+	mb.setButton(MANUAL,  tr["Poweroff"]);
 	int res = mb.exec();
 
 	switch (res) {
-		case CONFIRM:
-			confInt["saveAutoStart"] = 0;
-			confStr["lastDirectory"] = "";
-			confInt["dialogAutoStart"] = 0;
-			reinit_save();
-		case MODIFIER:
-			confInt["dialogAutoStart"] = 0;
-			writeConfig();
-			break;
+			case CONFIRM:
+				confInt["saveAutoStart"] = 0;
+				confStr["lastDirectory"] = "";
+				confInt["dialogAutoStart"] = 0;
+				reinit_save();
+			case MODIFIER:
+				confInt["dialogAutoStart"] = 0;
+				writeConfig();
+			case MANUAL:
+				quit();
+#if !defined(TARGET_LINUX)
+				system("sync; mount -o remount,ro $HOME; poweroff");
+#endif
+				break;
 	}
 }
 
