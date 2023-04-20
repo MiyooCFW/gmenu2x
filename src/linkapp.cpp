@@ -446,8 +446,18 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	if (getTerminal()) gmenu2x->enableTerminal();
 
 	// execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, environ);
-	execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
-
+	if (gmenu2x->confInt["saveAutoStart"]) {
+		string a = command.c_str();
+#if defined(TARGET_LINUX)
+		string b = "; exit" ;
+#else
+		string b = "; sync; mount -o remount,ro $HOME; poweroff" ;
+#endif
+		string c = a + b ;
+		execlp("/bin/sh", "/bin/sh", "-c", c.c_str(),  NULL);
+	} else {
+		execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
+	}
 	//if execution continues then something went wrong and as we already called SDL_Quit we cannot continue
 	//try relaunching gmenu2x
 	chdir(exe_path().c_str());
