@@ -298,6 +298,7 @@ void GMenu2X::main(bool autoStart) {
 		INFO("conf %s %s",confStr["lastDirectory"].c_str(),confStr["lastCommand"].c_str());
 		INFO("autostart %s %s",confStr["lastDirectory"],confStr["lastCommand"]);
 		setCPU(confInt["lastCPU"]);
+		setKbdLayout(confInt["lastKeyboardLayout"]);
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
 		string a = confStr["lastCommand"].c_str();
@@ -1393,6 +1394,7 @@ void GMenu2X::explorer() {
 			string command = cmdclean(bd.getFilePath(bd.selected));
 			if (confInt["saveAutoStart"]) {
 				confInt["lastCPU"] = confInt["cpuMenu"];
+				confInt["lastKeyboardLayout"] = confInt["keyboardLayoutMenu"];
 				confStr["lastCommand"] = command.c_str();
 				confStr["lastDirectory"] = bd.getFilePath().c_str();
 				writeConfig();
@@ -1438,6 +1440,7 @@ void GMenu2X::explorer() {
 			string params = "";
 			if (confInt["saveAutoStart"]) {
 				confInt["lastCPU"] = confInt["cpuMenu"];
+				confInt["lastKeyboardLayout"] = confInt["keyboardLayoutMenu"];
 				confStr["lastCommand"] = command.c_str();
 				confStr["lastDirectory"] = bd.getFilePath().c_str();
 				writeConfig();

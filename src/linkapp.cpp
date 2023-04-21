@@ -404,6 +404,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 
 	if (gmenu2x->confInt["saveAutoStart"]) {
 		gmenu2x->confInt["lastCPU"] = clock;
+		gmenu2x->confInt["lastKeyboardLayout"] = layout;
 		gmenu2x->confStr["lastCommand"] = command.c_str();
 		gmenu2x->confStr["lastDirectory"] = dir_name(exec).c_str();
 		gmenu2x->writeConfig();
