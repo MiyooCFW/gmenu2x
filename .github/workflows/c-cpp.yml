@@ -23,7 +23,10 @@ jobs:
     - if: inputs.submodule
       run: git submodule update --init --depth 1 -- ${{ inputs.submodule }}
     - name: build
-      run: cd ${{ inputs.submodule || '.' }} && make -f Makefile.miyoo dist
+      run: |
+        cd ${{ inputs.submodule || '.' }} 
+        git config --global --add safe.directory /__w/gmenu2x/gmenu2x
+        make -f Makefile.miyoo dist
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X (uClibc)
@@ -50,7 +53,10 @@ jobs:
     - if: inputs.submodule
       run: git submodule update --init --depth 1 -- ${{ inputs.submodule }}
     - name: build
-      run: cd ${{ inputs.submodule || '.' }} && make -f Makefile.miyoo dist
+      run: |
+        cd ${{ inputs.submodule || '.' }}
+        git config --global --add safe.directory /__w/gmenu2x/gmenu2x
+        make -f Makefile.miyoo dist
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X (musl)
