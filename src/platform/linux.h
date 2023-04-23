@@ -68,8 +68,8 @@ private:
 		CPU_MIN = 500;
 		CPU_STEP = 5;
 
-		w = 480;
-		h = 272;
+		w = 320;
+		h = 240;
 	}
 
 	uint16_t getBatteryLevel() {
