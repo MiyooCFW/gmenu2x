@@ -783,12 +783,15 @@ void GMenu2X::writeTmp(int selelem, const string &selectordir) {
 }
 
 void GMenu2X::readConfig() {
+#if defined (__BUILDTIME__)
+#define xstr(s) str(s)
+#define str(s) #s
+#endif
 	string conf = exe_path() + "/gmenu2x.conf";
-
 	// Defaults *** Sync with default values in writeConfig
 	confInt["saveSelection"] = 1;
 	confInt["dialogAutoStart"] = 1;
-	confStr["datetime"] = __BUILDTIME__;
+	confStr["datetime"] = xstr(__BUILDTIME__);
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
 	confInt["globalVolume"] = 60;

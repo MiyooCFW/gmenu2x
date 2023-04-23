@@ -1,6 +1,6 @@
 PLATFORM := miyoo
 
-BUILDTIME := $(shell date +%s)
+BUILDTIME := "$(shell date +%F\ %H:%M)"
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
 
 CHAINPREFIX := /opt/miyoo

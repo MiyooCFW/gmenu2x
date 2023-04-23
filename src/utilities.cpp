@@ -383,7 +383,7 @@ void sync_date_time(time_t t) {
 
 void init_date_time() {
 	time_t now = time(0);
-	const uint32_t t = __BUILDTIME__;
+	const uint32_t t = 0;
 
 	if (now < t) {
 		sync_date_time(t);
@@ -391,7 +391,7 @@ void init_date_time() {
 }
 
 void build_date_time() {
-	const uint32_t t = __BUILDTIME__;
+	const uint32_t t = 0;
 
 		sync_date_time(t);
 }
