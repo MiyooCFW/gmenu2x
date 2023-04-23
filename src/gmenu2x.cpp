@@ -1262,13 +1262,13 @@ void GMenu2X::about() {
 
 	// temp += "----\n";
 #if defined (__COMMIT_HASH__) && defined (__BUILDROOT_HASH__) && defined (__CFW_HASH__)
-	TextDialog td(this, "GMenuNX", tr["CFW-sha: "] + xstr(__CFW_HASH__) + " B2R-sha:" + xstr(__BUILDROOT_HASH__) + " GMenu2X-sha:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
+	TextDialog td(this, "GMenu2X", tr["CFW-ver:"] + xstr(__CFW_HASH__) + " B2R:" + xstr(__BUILDROOT_HASH__) + " GM2X:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
 #elif defined (__COMMIT_HASH__) && defined (__BUILDROOT_HASH__)
-	TextDialog td(this, "GMenuNX", tr["Build: "] + __DATE__ + " B2R-sha:" + xstr(__BUILDROOT_HASH__) + " GMenu2X-sha:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
+	TextDialog td(this, "GMenu2X", tr["Build: "] + __DATE__ + " B2R:" + xstr(__BUILDROOT_HASH__) + " GM2X:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
 #elif defined (__COMMIT_HASH__)
-	TextDialog td(this, "GMenuNX", tr["Build: "] + __DATE__ + " " + __TIME__ + " with commit " xstr(__COMMIT_HASH__), "skin:icons/about.png");
+	TextDialog td(this, "GMenu2X", tr["Build: "] + __DATE__ + " " + __TIME__ + " with commit:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
 #else
-	TextDialog td(this, "GMenuNX", tr["Build: "] + __DATE__ + " " + __TIME__, "skin:icons/about.png");
+	TextDialog td(this, "GMenu2X", tr["Build: "] + __DATE__ + " " + __TIME__, "skin:icons/about.png");
 #endif
 	// td.appendText(temp);
 	td.appendFile("about.txt");
