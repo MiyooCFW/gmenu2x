@@ -25,6 +25,7 @@ jobs:
     - name: generate commit sha 
       run: |
         git config --global --add safe.directory /__w/gmenu2x/gmenu2x 
+        cd ${{ inputs.submodule || '.' }} 
         echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       id: commit
     - name: build
@@ -59,6 +60,7 @@ jobs:
     - name: generate commit sha 
       run: |
         git config --global --add safe.directory /__w/gmenu2x/gmenu2x 
+        cd ${{ inputs.submodule || '.' }} 
         echo "commit=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       id: commit
     - name: build
