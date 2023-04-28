@@ -1698,9 +1698,9 @@ void GMenu2X::editLink() {
 
 	if (CPU_MAX != CPU_MIN) {
 #if defined(TARGET_MIYOO)
-		sd.addSetting(new MenuSettingMultiInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, oc_choices, oc_choices_size, confInt["cpuMenu"], confInt["cpuMin"], confInt["cpuMax"]));
+		sd.addSetting(new MenuSettingMultiInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, oc_choices, oc_choices_size, confInt["cpuLink"], confInt["cpuMin"], confInt["cpuMax"]));
 #else
-		sd.addSetting(new MenuSettingInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, confInt["cpuMenu"], confInt["cpuMin"], confInt["cpuMax"], confInt["cpuStep"]));
+		sd.addSetting(new MenuSettingInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, confInt["cpuLink"], confInt["cpuMin"], confInt["cpuMax"], confInt["cpuStep"]));
 #endif
 	}
 	// sd.addSetting(new MenuSettingDir(			this, tr["Home Path"],		tr["Set directory as $HOME for this link"], &linkHomeDir, CARD_ROOT, dialogTitle, dialogIcon));
