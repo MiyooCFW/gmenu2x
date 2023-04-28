@@ -311,17 +311,16 @@ public:
 	}
 
 	void setCPU(uint32_t mhz) {
-		uint32_t v;
 		uint32_t total = sizeof(oc_table) / sizeof(oc_table[0]);
 
 		for (int x = 0; x < total; x++) {
 			if ((oc_table[x] >> 18) >= mhz) {
-				mem[0] = (1 << 31) | (oc_table[x] &  0x0000ffff);
+				mem[0] = (1 << 31) | (oc_table[x] &  0x0003ffff);
 				break;
 			}
 		}
 
-		INFO("Set CPU clock: %d(0x%08x)", mhz, v);
+		INFO("Set CPU clock: %d", mhz);
 	}
 
 	string hwPreLinkLaunch() {
