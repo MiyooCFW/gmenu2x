@@ -159,8 +159,6 @@ static uint32_t oc_table[] = {
 // int SOUND_MIXER_READ = SOUND_MIXER_READ_PCM;
 // int SOUND_MIXER_WRITE = SOUND_MIXER_WRITE_PCM;
 
-volatile uint32_t *mem;
-volatile uint8_t memdev = 0;
 int kbd;
 int32_t tickBattery = 0;
 
@@ -219,9 +217,6 @@ uint8_t getVolumeMode(uint8_t vol) {
 class GMenuNX : public GMenu2X {
 private:
 	void hwDeinit() {
-		if (memdev > 0) {
-			close(memdev);
-		}
 	}
 
 	void hwInit() {
@@ -235,17 +230,6 @@ private:
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
 		system("mount -o remount,async /mnt");
-
-		memdev = open("/dev/mem", O_RDWR);
-		if (memdev > 0) {
-			mem = (uint32_t*)mmap(0, 0x1000, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, 0x01c20000);
-			if (mem == MAP_FAILED) {
-				ERROR("Could not mmap hardware registers!");
-				close(memdev);
-			}
-		} else {
-			WARNING("Could not open /dev/mem");
-		}
 		kbd = open("/dev/miyoo_kbd", O_RDWR);
 		if (kbd > 0) {
 			ioctl(kbd, MIYOO_LAY_GET_VER, &(LAYOUT_VERSION));
@@ -311,16 +295,28 @@ public:
 	}
 
 	void setCPU(uint32_t mhz) {
-		uint32_t total = sizeof(oc_table) / sizeof(oc_table[0]);
+		volatile uint8_t memdev = open("/dev/mem", O_RDWR);
+		if (memdev > 0) {
+			uint32_t *mem = (uint32_t*)mmap(0, 0x8000, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, 0x01c20000);
+			if (mem == MAP_FAILED) {
+				ERROR("Could not mmap hardware registers!");
+				return;
+			} else {
+				uint32_t total = sizeof(oc_table) / sizeof(oc_table[0]);
 
-		for (int x = 0; x < total; x++) {
-			if ((oc_table[x] >> 18) >= mhz) {
-				mem[0] = (1 << 31) | (oc_table[x] &  0x0003ffff);
-				break;
+				for (int x = 0; x < total; x++) {
+					if ((oc_table[x] >> 18) >= mhz) {
+						mem[0] = (1 << 31) | (oc_table[x] & 0x0003ffff);
+						INFO("Set CPU clock: %d", mhz);
+						break;
+					}
+				}
 			}
+			munmap(mem, 0x1000);
+		} else {
+			WARNING("Could not open /dev/mem");
 		}
-
-		INFO("Set CPU clock: %d", mhz);
+		close(memdev);
 	}
 
 	string hwPreLinkLaunch() {
