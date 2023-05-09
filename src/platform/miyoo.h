@@ -2,6 +2,7 @@
 #define HW_MIYOO_H
 
 #include <sys/mman.h>
+#include <bitset>
 
 /*	MiyooCFW 2.0 Key Codes. Apaczer, 2023
 	BUTTON     GMENU          SDL             NUMERIC   GPIO
@@ -297,7 +298,7 @@ public:
 	void setCPU(uint32_t mhz) {
 		volatile uint8_t memdev = open("/dev/mem", O_RDWR);
 		if (memdev > 0) {
-			uint32_t *mem = (uint32_t*)mmap(0, 0x8000, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, 0x01c20000);
+			uint32_t *mem = (uint32_t*)mmap(0, 0x1000, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, 0x01c20000);
 			if (mem == MAP_FAILED) {
 				ERROR("Could not mmap hardware registers!");
 				return;
@@ -307,7 +308,12 @@ public:
 				for (int x = 0; x < total; x++) {
 					if ((oc_table[x] >> 18) >= mhz) {
 						mem[0] = (1 << 31) | (oc_table[x] & 0x0003ffff);
-						INFO("Set CPU clock: %d", mhz);
+						uint32_t v = mem[0];
+						while (std::bitset<32>(v).test(28) == 0) {
+							v = mem[0];
+							INFO("PLL unstable wait for register lock");
+						}
+						INFO("Set CPU clock: %d(0x%08x)", mhz, v);
 						break;
 					}
 				}
