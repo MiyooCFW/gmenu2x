@@ -109,7 +109,8 @@ void MenuSettingMultiInt::setValue(int value) {
 }
 
 void MenuSettingMultiInt::setDefault() {
-	setValue(def);
+	selection = reverseLookup(def);
+	setValue(choices[selection]);
 }
 
 int MenuSettingMultiInt::value() {
