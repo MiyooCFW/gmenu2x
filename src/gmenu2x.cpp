@@ -99,16 +99,6 @@ const char *CARD_ROOT = getenv("HOME");
 	#include "platform/rg350.h"
 #elif defined(TARGET_MIYOO)
 	#include "platform/miyoo.h"
-	int oc_choices[] = {
-	200,204,207,208,216,224,225,228,232,234,
-	240,243,248,252,256,261,264,270,272,276,279,288,300,304,
-	306,312,320,324,336,342,348,352,360,368,372,378,384,396,
-	400,408,414,416,432,448,450,456,464,468,480,486,496,504,
-	512,522,528,540,544,552,558,576,600,608,612,624,640,648,
-	672,684,696,704,720,736,744,756,768,792,800,816,828,832,
-	864,896,900,912,928,936,960,972,992,1008
-	};
-	int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 #elif defined(TARGET_GP2X) || defined(TARGET_WIZ) || defined(TARGET_CAANOO)
 	#include "platform/gp2x.h"
 #else //if defined(TARGET_LINUX)
@@ -738,10 +728,10 @@ void GMenu2X::cpuSettings() {
 SettingsDialog sd(this, ts, tr["CPU setup"], "skin:icons/cpu.png");
 sd.allowCancel = true;
 #if defined(TARGET_MIYOO)
-sd.addSetting(new MenuSettingMultiInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], oc_choices, oc_choices_size, 720, 480, 900));
-sd.addSetting(new MenuSettingMultiInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], oc_choices, oc_choices_size, 1008, 720, 1008));
-sd.addSetting(new MenuSettingMultiInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], oc_choices, oc_choices_size, 200, 200, 720));
-sd.addSetting(new MenuSettingMultiInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], oc_choices, oc_choices_size, 720, 200, 1008));
+sd.addSetting(new MenuSettingMultiInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MENU));
+//sd.addSetting(new MenuSettingMultiInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], oc_choices, oc_choices_size, CPU_EDGE, CPU_MIN, CPU_MAX));
+sd.addSetting(new MenuSettingMultiInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], oc_choices, oc_choices_size, CPU_MIN, CPU_MIN, CPU_MAX));
+sd.addSetting(new MenuSettingMultiInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MAX));
 #else
 sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], 672, 480, 864, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], 864, 720, 1248, 48));

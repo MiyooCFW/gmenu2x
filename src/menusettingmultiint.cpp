@@ -37,7 +37,7 @@ MenuSettingMultiInt::MenuSettingMultiInt(GMenu2X *gmenu2x, const string &title, 
 	selection_max = choice_size - 1;
 
 	selection = reverseLookup(*value);
-	this->def = choices[reverseLookup(def)];
+	this->def = def;
 	this->min = min;
 	this->max = max;
 
