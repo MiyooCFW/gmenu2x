@@ -32,6 +32,8 @@ private:
 	int selection;
 	void inc();
 	void dec();
+	void inc2x();
+	void dec2x();
 	int *choices;
 	int reverseLookup(int value);
   
