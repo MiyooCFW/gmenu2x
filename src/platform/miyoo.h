@@ -234,6 +234,7 @@ private:
 		CPU_MENU = 720;
 		CPU_LINK = CPU_MENU;
 		CPU_MAX = oc_choices[oc_choices_size - 1];
+		CPU_EDGE = oc_choices[oc_choices_size - 4];
 		CPU_MIN = oc_choices[0];
 //		CPU_STEP = 1;
 		LAYOUT_VERSION_MAX = 6;

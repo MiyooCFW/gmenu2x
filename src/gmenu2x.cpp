@@ -86,6 +86,7 @@ uint8_t numJoyPrev, numJoy; // number of connected joysticks
 int CPU_MENU = 0;
 int CPU_LINK = 0;
 int CPU_MAX = 0;
+int CPU_EDGE = 0;
 int CPU_MIN = 0;
 int CPU_STEP = 0;
 int LAYOUT_VERSION = 0;
@@ -729,7 +730,7 @@ SettingsDialog sd(this, ts, tr["CPU setup"], "skin:icons/cpu.png");
 sd.allowCancel = true;
 #if defined(TARGET_MIYOO)
 sd.addSetting(new MenuSettingMultiInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MENU));
-//sd.addSetting(new MenuSettingMultiInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], oc_choices, oc_choices_size, CPU_EDGE, CPU_MIN, CPU_MAX));
+sd.addSetting(new MenuSettingMultiInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], oc_choices, oc_choices_size, CPU_EDGE, CPU_EDGE, CPU_MAX));
 sd.addSetting(new MenuSettingMultiInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], oc_choices, oc_choices_size, CPU_MIN, CPU_MIN, CPU_MAX));
 sd.addSetting(new MenuSettingMultiInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MAX));
 #else
