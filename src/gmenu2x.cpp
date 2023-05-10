@@ -1475,11 +1475,13 @@ void GMenu2X::explorer() {
 }
 
 bool GMenu2X::saveScreenshot(string path) {
+#if !defined(TARGET_MIYOO) //for performance sake
 	if (file_exists("/usr/bin/fbgrab")) {
 		path = unique_filename(path + "/screenshot", ".png");
 		path = "/usr/bin/fbgrab " + path;
 		return system(path.c_str()) == 0;
 	}
+#endif
 
 	path = unique_filename(path + "/screenshot", ".bmp");
 	return SDL_SaveBMP(s->raw, path.c_str()) == 0;
