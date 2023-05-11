@@ -136,8 +136,8 @@ int oc_choices[] = {
 	400,408,414,416,432,448,450,456,464,468,480,486,496,504,
 	512,522,528,540,544,552,558,576,600,608,612,624,640,648,
 	672,684,696,704,720,736,744,756,768,792,800,816,828,832,
-	864,896,900,912,928,936,960,972,992,1008
-};
+	864,896,900,912,928,936,960,972,992,1008,9999
+}; // last value[] is dummy point - do not modify
 int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 // #define MIYOO_LID_FILE "/mnt/.backlight.conf"
 // static int read_conf(const char *file)
@@ -233,7 +233,7 @@ private:
 	void hwInit() {
 		CPU_MENU = 720;
 		CPU_LINK = CPU_MENU;
-		CPU_MAX = oc_choices[oc_choices_size - 1];
+		CPU_MAX = oc_choices[oc_choices_size - 2]; //omitting last value in oc_choices
 		CPU_EDGE = oc_choices[oc_choices_size - 4];
 		CPU_MIN = oc_choices[0];
 //		CPU_STEP = 1;
