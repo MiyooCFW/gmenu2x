@@ -34,6 +34,9 @@
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
 
+#define MULTI_INT
+#define DEFAULT_CPU 720
+
 static uint32_t oc_table[] = {
 // 24MHz*N*K/(M*P) ; N = (Nf+1)<32 ; K = (Kf+1)<4 ; M = (Mf+1)<4 ; P = (00: /1 | 01: /2 | 02: /4); --> CPU_PLL output must be in 200MHz~2.6GHz range
 // 27:18 are 10bit non-affecting space thus starting to read "int mhz" value here "(MHz << 18)" up to last 32bit.
@@ -90,7 +93,7 @@ static uint32_t oc_table[] = {
 	(648 << 18) | (8 << 8) | (2 << 4),
 	(672 << 18) | (6 << 8) | (3 << 4),
 	(696 << 18) | (28 << 8) | (0 << 4),
-	(720 << 18) | (9 << 8) | (2 << 4),// Default
+	(DEFAULT_CPU << 18) | (9 << 8) | (2 << 4),
 	(744 << 18) | (30 << 8) | (0 << 4),
 	(768 << 18) | (7 << 8) | (3 << 4),
 	(792 << 18) | (10 << 8) | (2 << 4),
@@ -200,7 +203,7 @@ private:
 	}
 
 	void hwInit() {
-		CPU_MENU = 720;
+		CPU_MENU = DEFAULT_CPU;
 		CPU_LINK = CPU_MENU;
 		CPU_MAX = oc_choices[oc_choices_size - 2]; //omitting last value in oc_choices
 		CPU_EDGE = oc_choices[oc_choices_size - 4];

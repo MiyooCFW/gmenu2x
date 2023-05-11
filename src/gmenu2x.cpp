@@ -728,7 +728,7 @@ void GMenu2X::resetSettings() {
 void GMenu2X::cpuSettings() {  
 SettingsDialog sd(this, ts, tr["CPU setup"], "skin:icons/cpu.png");
 sd.allowCancel = true;
-#if defined(TARGET_MIYOO)
+#if defined(MULTI_INT)
 sd.addSetting(new MenuSettingMultiInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MENU));
 sd.addSetting(new MenuSettingMultiInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], oc_choices, oc_choices_size, CPU_MAX, CPU_EDGE, CPU_MAX));
 sd.addSetting(new MenuSettingMultiInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], oc_choices, oc_choices_size, CPU_MIN, CPU_MIN, CPU_MAX));
@@ -1688,7 +1688,7 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingImage(			this, tr["Icon"],			tr["Select a custom icon for the link"], &linkIcon, ".png,.bmp,.jpg,.jpeg,.gif", linkExec, dialogTitle, dialogIcon));
 
 	if (CPU_MAX != CPU_MIN) {
-#if defined(TARGET_MIYOO)
+#if defined(MULTI_INT)
 		sd.addSetting(new MenuSettingMultiInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, oc_choices, oc_choices_size, confInt["cpuLink"], confInt["cpuMin"], confInt["cpuMax"]));
 #else
 		sd.addSetting(new MenuSettingInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, confInt["cpuLink"], confInt["cpuMin"], confInt["cpuMax"], confInt["cpuStep"]));
