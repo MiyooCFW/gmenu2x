@@ -48,6 +48,7 @@
 #include "menusettingint.h"
 #include "menusettingbool.h"
 #include "menusettingrgba.h"
+#include "menusettingmultiint.h"
 #include "menusettingstring.h"
 #include "menusettingmultistring.h"
 #include "menusettingfile.h"
@@ -85,6 +86,7 @@ uint8_t numJoyPrev, numJoy; // number of connected joysticks
 int CPU_MENU = 0;
 int CPU_LINK = 0;
 int CPU_MAX = 0;
+int CPU_EDGE = 0;
 int CPU_MIN = 0;
 int CPU_STEP = 0;
 int LAYOUT_VERSION = 0;
@@ -726,12 +728,18 @@ void GMenu2X::resetSettings() {
 void GMenu2X::cpuSettings() {  
 SettingsDialog sd(this, ts, tr["CPU setup"], "skin:icons/cpu.png");
 sd.allowCancel = true;
+#if defined(MULTI_INT)
+sd.addSetting(new MenuSettingMultiInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MENU));
+sd.addSetting(new MenuSettingMultiInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], oc_choices, oc_choices_size, CPU_MAX, CPU_EDGE, CPU_MAX));
+sd.addSetting(new MenuSettingMultiInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], oc_choices, oc_choices_size, CPU_MIN, CPU_MIN, CPU_MAX));
+sd.addSetting(new MenuSettingMultiInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MAX));
+#else
 sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], 672, 480, 864, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], 864, 720, 1248, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], 192, 48, 720, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], 720, 480, 1248, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Step for clock values"], tr["Set Step default CPU frequency"], &confInt["cpuStep"], 48, 48, 240, 48));
-
+#endif
 if (sd.exec() && sd.edited() && sd.save) {
 		setCPU(confInt["cpuMenu"]);
  		writeConfig();
@@ -1682,7 +1690,11 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingImage(			this, tr["Icon"],			tr["Select a custom icon for the link"], &linkIcon, ".png,.bmp,.jpg,.jpeg,.gif", linkExec, dialogTitle, dialogIcon));
 
 	if (CPU_MAX != CPU_MIN) {
-		sd.addSetting(new MenuSettingInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, confInt["cpuMenu"], confInt["cpuMin"], confInt["cpuMax"], confInt["cpuStep"]));
+#if defined(MULTI_INT)
+		sd.addSetting(new MenuSettingMultiInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, oc_choices, oc_choices_size, confInt["cpuLink"], confInt["cpuMin"], confInt["cpuMax"]));
+#else
+		sd.addSetting(new MenuSettingInt(		this, tr["CPU Clock"],		tr["CPU clock frequency when launching this link"], &linkClock, confInt["cpuLink"], confInt["cpuMin"], confInt["cpuMax"], confInt["cpuStep"]));
+#endif
 	}
 	// sd.addSetting(new MenuSettingDir(			this, tr["Home Path"],		tr["Set directory as $HOME for this link"], &linkHomeDir, CARD_ROOT, dialogTitle, dialogIcon));
 

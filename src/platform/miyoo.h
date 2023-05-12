@@ -2,6 +2,7 @@
 #define HW_MIYOO_H
 
 #include <sys/mman.h>
+#include <bitset>
 
 /*	MiyooCFW 2.0 Key Codes. Apaczer, 2023
 	BUTTON     GMENU          SDL             NUMERIC   GPIO
@@ -33,35 +34,52 @@
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
 
-static uint32_t oc_table[] = {
-  ((24 * 2 * 1) << 16) | ((0 << 8) | (3 << 3)), // 48MHz = 24*2*1
-  ((24 * 2 * 2) << 16) | ((1 << 8) | (3 << 3)),
-  ((24 * 3 * 2) << 16) | ((2 << 8) | (3 << 3)),
-  ((24 * 4 * 2) << 16) | ((3 << 8) | (3 << 3)),
-  ((24 * 5 * 2) << 16) | ((4 << 8) | (3 << 3)),
-  ((24 * 6 * 2) << 16) | ((5 << 8) | (3 << 3)),
-  ((24 * 7 * 2) << 16) | ((6 << 8) | (3 << 3)),
-  ((24 * 8 * 2) << 16) | ((7 << 8) | (3 << 3)),
-  ((24 * 9 * 2) << 16) | ((8 << 8) | (3 << 3)),
-  ((24 * 10 * 2) << 16) | ((9 << 8) | (3 << 3)),
-  ((24 * 11 * 2) << 16) | ((10 << 8) | (3 << 3)),
-  ((24 * 12 * 2) << 16) | ((11 << 8) | (3 << 3)),
-  ((24 * 13 * 2) << 16) | ((12 << 8) | (3 << 3)),
-  ((24 * 14 * 2) << 16) | ((13 << 8) | (3 << 3)),
-  ((24 * 15 * 2) << 16) | ((14 << 8) | (3 << 3)),
-  ((24 * 16 * 2) << 16) | ((15 << 8) | (3 << 3)),
-  ((24 * 17 * 2) << 16) | ((16 << 8) | (3 << 3)),
-  ((24 * 18 * 2) << 16) | ((17 << 8) | (3 << 3)),
-  ((24 * 19 * 2) << 16) | ((18 << 8) | (3 << 3)),
-  ((24 * 20 * 2) << 16) | ((19 << 8) | (3 << 3)),
-  ((24 * 21 * 2) << 16) | ((20 << 8) | (3 << 3)),
-  ((24 * 22 * 2) << 16) | ((21 << 8) | (3 << 3)),
-  ((24 * 23 * 2) << 16) | ((22 << 8) | (3 << 3)),
-  ((24 * 24 * 2) << 16) | ((23 << 8) | (3 << 3)),
-  ((24 * 25 * 2) << 16) | ((24 << 8) | (3 << 3)),
-  ((24 * 26 * 2) << 16) | ((25 << 8) | (3 << 3)), // 1248MHz = 24*26*2
-};
+#define MULTI_INT
+#define DEFAULT_CPU 720
 
+static uint32_t oc_table[] = {
+// 24MHz*N*K/(M*P) ; N = (Nf+1)<32 ; K = (Kf+1)<4 ; M = (Mf+1)<4 ; P = (00: /1 | 01: /2 | 02: /4); --> CPU_PLL output must be in 200MHz~2.6GHz range
+// 27:18 are 10bit non-affecting space thus starting to read "int mhz" value here "(MHz << 18)" up to last 32bit.
+//((24 * N * K) << 18) | (Nf << 8) | (Kf << 4) | (Mf << 0) | (Pf << 16),
+	(216 << 18) | (2 << 8) | (2 << 4),// 216MHz = 24MHz*3*3/(1*1)
+	(240 << 18) | (4 << 8) | (1 << 4),
+	(264 << 18) | (10 << 8) | (0 << 4),
+	(288 << 18) | (2 << 8) | (3 << 4),
+	(312 << 18) | (12 << 8) | (0 << 4),
+	(336 << 18) | (6 << 8) | (1 << 4),
+	(360 << 18) | (4 << 8) | (2 << 4),
+	(384 << 18) | (3 << 8) | (3 << 4),
+	(408 << 18) | (16 << 8) | (0 << 4),
+	(432 << 18) | (5 << 8) | (2 << 4),
+	(456 << 18) | (18 << 8) | (0 << 4),
+	(480 << 18) | (4 << 8) | (3 << 4),
+	(504 << 18) | (6 << 8) | (2 << 4),
+	(528 << 18) | (10 << 8) | (1 << 4),
+	(552 << 18) | (22 << 8) | (0 << 4),
+	(576 << 18) | (5 << 8) | (3 << 4),
+	(600 << 18) | (24 << 8) | (0 << 4),
+	(624 << 18) | (12 << 8) | (1 << 4),
+	(648 << 18) | (8 << 8) | (2 << 4),
+	(672 << 18) | (6 << 8) | (3 << 4),
+	(696 << 18) | (28 << 8) | (0 << 4),
+	(DEFAULT_CPU << 18) | (9 << 8) | (2 << 4),
+	(744 << 18) | (30 << 8) | (0 << 4),
+	(768 << 18) | (7 << 8) | (3 << 4),
+	(792 << 18) | (10 << 8) | (2 << 4),
+	(816 << 18) | (16 << 8) | (1 << 4),
+	(864 << 18) | (8 << 8) | (3 << 4),
+	(912 << 18) | (18 << 8) | (1 << 4),
+	(936 << 18) | (12 << 8) | (2 << 4),
+	(960 << 18) | (9 << 8) | (3 << 4),
+	(1008 << 18) | (13 << 8) | (2 << 4)// 1.008GHz = 24MHz*14*3/(1*1)
+};
+int oc_choices[] = {
+	216,240,264,288,312,336,360,384,408,432,
+	456,480,504,528,552,576,600,624,648,672,
+	696,720,744,768,792,816,864,912,936,960,
+	1008,9999
+}; // last value[] is dummy point - do not modify
+int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 // #define MIYOO_LID_FILE "/mnt/.backlight.conf"
 // static int read_conf(const char *file)
 // {
@@ -93,8 +111,6 @@ static uint32_t oc_table[] = {
 // int SOUND_MIXER_READ = SOUND_MIXER_READ_PCM;
 // int SOUND_MIXER_WRITE = SOUND_MIXER_WRITE_PCM;
 
-volatile uint32_t *mem;
-volatile uint8_t memdev = 0;
 int kbd;
 int32_t tickBattery = 0;
 
@@ -153,33 +169,20 @@ uint8_t getVolumeMode(uint8_t vol) {
 class GMenuNX : public GMenu2X {
 private:
 	void hwDeinit() {
-		if (memdev > 0) {
-			close(memdev);
-		}
 	}
 
 	void hwInit() {
-		CPU_MENU = 720;
-		CPU_LINK = 720;
-		CPU_MAX = 912;
-		CPU_MIN = 48;
-		CPU_STEP = 48;
+		CPU_MENU = DEFAULT_CPU;
+		CPU_LINK = CPU_MENU;
+		CPU_MAX = oc_choices[oc_choices_size - 2]; //omitting last value in oc_choices
+		CPU_EDGE = oc_choices[oc_choices_size - 4];
+		CPU_MIN = oc_choices[0];
+//		CPU_STEP = 1;
 		LAYOUT_VERSION_MAX = 6;
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
 		system("mount -o remount,async /mnt");
-
-		memdev = open("/dev/mem", O_RDWR);
-		if (memdev > 0) {
-			mem = (uint32_t*)mmap(0, 0x1000, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, 0x01c20000);
-			if (mem == MAP_FAILED) {
-				ERROR("Could not mmap hardware registers!");
-				close(memdev);
-			}
-		} else {
-			WARNING("Could not open /dev/mem");
-		}
 		kbd = open("/dev/miyoo_kbd", O_RDWR);
 		if (kbd > 0) {
 			ioctl(kbd, MIYOO_LAY_GET_VER, &(LAYOUT_VERSION));
@@ -245,17 +248,33 @@ public:
 	}
 
 	void setCPU(uint32_t mhz) {
-		uint32_t v;
-		uint32_t total = sizeof(oc_table) / sizeof(oc_table[0]);
+		volatile uint8_t memdev = open("/dev/mem", O_RDWR);
+		if (memdev > 0) {
+			uint32_t *mem = (uint32_t*)mmap(0, 0x1000, PROT_READ | PROT_WRITE, MAP_SHARED, memdev, 0x01c20000);
+			if (mem == MAP_FAILED) {
+				ERROR("Could not mmap hardware registers!");
+				return;
+			} else {
+				uint32_t total = sizeof(oc_table) / sizeof(oc_table[0]);
 
-		for (int x = 0; x < total; x++) {
-			if ((oc_table[x] >> 16) >= mhz) {
-				mem[0] = (1 << 31) | (oc_table[x] &  0x0000ffff);
-				break;
+				for (int x = 0; x < total; x++) {
+					if ((oc_table[x] >> 18) >= mhz) {
+						mem[0] = (1 << 31) | (oc_table[x] & 0x0003ffff);
+						uint32_t v = mem[0];
+						while (std::bitset<32>(v).test(28) == 0) {
+							v = mem[0];
+//							INFO("PLL unstable wait for register lock");
+						}
+						INFO("Set CPU clock: %d(0x%08x)", mhz, v);
+						break;
+					}
+				}
 			}
+			munmap(mem, 0x1000);
+		} else {
+			WARNING("Could not open /dev/mem");
 		}
-
-		INFO("Set CPU clock: %d(0x%08x)", mhz, v);
+		close(memdev);
 	}
 
 	string hwPreLinkLaunch() {
