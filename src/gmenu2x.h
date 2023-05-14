@@ -96,6 +96,8 @@ extern int CPU_MIN;
 extern int CPU_STEP;
 extern int LAYOUT_VERSION;
 extern int LAYOUT_VERSION_MAX;
+extern int TEFIX;
+extern int TEFIX_MAX;
 
 typedef FastDelegate0<> MenuAction;
 typedef unordered_map<string, string, hash<string> > ConfStrHash;
@@ -216,6 +218,7 @@ public:
 	virtual void ledOff() { };
 	virtual int setVolume(int val, bool popup = false);
 	virtual void setKbdLayout(int val) { };
+	virtual void setTefix(int val) { };
 	virtual int getVolume() { return 0; };
 	virtual int getBacklight() { return -1; };
 	virtual int setBacklight(int val, bool popup = false);

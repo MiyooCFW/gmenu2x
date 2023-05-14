@@ -34,6 +34,7 @@ private:
 	// InputManager &input;
 	int		clock = 0,
 			layout = 0,
+			tefix = -1,
 			selectorelement = 0,
 			scalemode,
 			_scalemode = 0; //, ivolume = 0;
@@ -83,6 +84,8 @@ public:
 	void setCPU(int mhz = 0);
 	int getKbdLayout() { return layout; }
 	void setKbdLayout(int val = 0);
+	int getTefix() { return tefix; }
+	void setTefix(int val = -1);
 	bool save();
 	void run();
 	void selector(int startSelection = 0, const string &selectorDir = "");

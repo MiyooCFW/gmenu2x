@@ -91,6 +91,8 @@ int CPU_MIN = 0;
 int CPU_STEP = 0;
 int LAYOUT_VERSION = 0;
 int LAYOUT_VERSION_MAX = 0;
+int TEFIX = -1;
+int TEFIX_MAX = -1;
 
 const char *CARD_ROOT = getenv("HOME");
 
@@ -232,6 +234,7 @@ void GMenu2X::main(bool autoStart) {
 	setBacklight(confInt["backlight"]);
 	setVolume(confInt["globalVolume"]);
 	setKbdLayout(confInt["keyboardLayoutMenu"]);
+	setTefix(confInt["tefixMenu"]);
 	setCPU(confInt["cpuMenu"]);
 
 	setenv("SDL_FBCON_DONT_CLEAR", "1", 0);
@@ -301,6 +304,7 @@ void GMenu2X::main(bool autoStart) {
 		INFO("autostart %s %s",confStr["lastDirectory"],confStr["lastCommand"]);
 		setCPU(confInt["lastCPU"]);
 		setKbdLayout(confInt["lastKeyboardLayout"]);
+		setTefix(confInt["lastTefix"]);
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
 		string a = confStr["lastCommand"].c_str();
@@ -616,6 +620,7 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], 1, 1, confInt["keyboardLayoutMax"]));
+	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], 1, 0, confInt["tefixMax"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
@@ -649,6 +654,7 @@ void GMenu2X::settings() {
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		setKbdLayout(confInt["keyboardLayoutMenu"]);
+		setTefix(confInt["tefixMenu"]);
 		if (confInt["saveAutoStart"])  {
 			confInt["dialogAutoStart"] = 1;
 		}
@@ -805,6 +811,8 @@ void GMenu2X::readConfig() {
 	confInt["globalVolume"] = 60;
 	confInt["keyboardLayoutMenu"] = LAYOUT_VERSION;
 	confInt["keyboardLayoutMax"] = LAYOUT_VERSION_MAX;
+	confInt["tefixMenu"] = TEFIX;
+	confInt["tefixMax"] = TEFIX_MAX;
 	confStr["bgscale"] = "Crop";
 	confStr["skinFont"] = "Custom";
 	confInt["backlightTimeout"] = 30;
@@ -1651,6 +1659,7 @@ void GMenu2X::editLink() {
 	string linkSelAliases = menu->selLinkApp()->getAliasFile();
 	int linkClock = menu->selLinkApp()->getCPU();
 	int linkKbdLayout = menu->selLinkApp()->getKbdLayout();
+	int linkTefix = menu->selLinkApp()->getTefix();
 	string linkBackdrop = menu->selLinkApp()->getBackdrop();
 	string dialogTitle = tr["Edit"] + " " + linkTitle;
 	string dialogIcon = menu->selLinkApp()->getIconPath();
@@ -1704,6 +1713,7 @@ void GMenu2X::editLink() {
 
 
 	sd.addSetting(new MenuSettingInt(		this, tr["Keyboard Layout"],	tr["Set the appropriate A/B/X/Y layout"], &linkKbdLayout, confInt["keyboardLayoutMenu"], 1, confInt["keyboardLayoutMax"], 1));
+	sd.addSetting(new MenuSettingInt(		this, tr["TEfix method"],	tr["Set different tearing FIX method"], &linkTefix, confInt["tefixMenu"], 0, confInt["tefixMax"], 1));
 	sd.addSetting(new MenuSettingMultiString(	this, tr["File Selector"],	tr["Use file browser selector"], &confStr["tmp_selector"], &selStr, NULL, MakeDelegate(this, &GMenu2X::changeSelectorDir)));
 	sd.addSetting(new MenuSettingBool(			this, tr["Show Folders"],	tr["Allow the selector to change directory"], &linkSelBrowser));
 	sd.addSetting(new MenuSettingString(		this, tr["File Filter"],	tr["Filter by file extension (separate with commas)"], &linkSelFilter, dialogTitle, dialogIcon));
@@ -1753,6 +1763,7 @@ void GMenu2X::editLink() {
 		menu->selLinkApp()->setBackdrop(linkBackdrop);
 		menu->selLinkApp()->setCPU(linkClock);
 		menu->selLinkApp()->setKbdLayout(linkKbdLayout);
+		menu->selLinkApp()->setTefix(linkTefix);
 
 #if defined(HW_GAMMA)
 		menu->selLinkApp()->setGamma(linkGamma);

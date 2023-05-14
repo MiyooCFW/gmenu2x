@@ -33,6 +33,8 @@
 #define MIYOO_LAY_GET_VER     _IOWR(0x105, 0, unsigned long)
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
+#define MIYOO_FB0_SET_TEFIX   _IOWR(0x102, 0, unsigned long)
+#define MIYOO_FB0_GET_TEFIX   _IOWR(0x103, 0, unsigned long)
 
 #define MULTI_INT
 #define DEFAULT_CPU 720
@@ -113,7 +115,7 @@ int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 // int SOUND_MIXER_READ = SOUND_MIXER_READ_PCM;
 // int SOUND_MIXER_WRITE = SOUND_MIXER_WRITE_PCM;
 
-int kbd;
+int kbd, fb0;
 int32_t tickBattery = 0;
 
 int32_t setTVoff() {
@@ -181,6 +183,7 @@ private:
 		CPU_MIN = oc_choices[0];
 //		CPU_STEP = 1;
 		LAYOUT_VERSION_MAX = 6;
+		TEFIX_MAX = 3;
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
@@ -191,6 +194,13 @@ private:
 			close(kbd);
 		} else {
 			WARNING("Could not open /dev/miyoo_kbd");
+		}
+		fb0 = open("/dev/miyoo_fb0", O_RDWR);
+		if (fb0 > 0) {
+			ioctl(fb0, MIYOO_FB0_GET_TEFIX, &(TEFIX));
+			close(fb0);
+		} else {
+			WARNING("Could not open /dev/miyoo_fb0");
 		}
 		w = 320;
 		h = 240;
@@ -240,12 +250,25 @@ public:
 		int f = open("/dev/miyoo_kbd", O_RDWR);
 
 		if (f > 0) {
-			if (val <= 0) val = 1;
+			if (val <= 0 || val > LAYOUT_VERSION_MAX) val = 1;
 			ioctl(f, MIYOO_LAY_SET_VER, val);
 			close(f);
 		} else {
 			WARNING("Could not open /dev/miyoo_kbd");
 			val = 0;
+		}
+	}
+
+	void setTefix(int val) {
+		int f = open("/dev/miyoo_fb0", O_RDWR);
+
+		if (f > 0) {
+			if (val < 0 || val > TEFIX_MAX) val = 1;
+			ioctl(f, MIYOO_FB0_SET_TEFIX, val);
+			close(f);
+		} else {
+			WARNING("Could not open /dev/miyoo_fb0");
+			val = -1;
 		}
 	}
 
