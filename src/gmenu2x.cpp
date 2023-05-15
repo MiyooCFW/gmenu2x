@@ -92,6 +92,7 @@ int CPU_STEP = 0;
 int LAYOUT_VERSION = 0;
 int LAYOUT_VERSION_MAX = 0;
 int TEFIX = -1;
+int TEFIX_MENU = -1;
 int TEFIX_MAX = -1;
 
 const char *CARD_ROOT = getenv("HOME");
@@ -619,8 +620,8 @@ void GMenu2X::settings() {
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 300))->setOff(9));
 	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
-	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], 1, 1, confInt["keyboardLayoutMax"]));
-	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], 1, 0, confInt["tefixMax"]));
+	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], DEFAULT_LAYOUT, 1, confInt["keyboardLayoutMax"]));
+	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], DEFAULT_TEFIX, 0, confInt["tefixMax"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
@@ -811,7 +812,7 @@ void GMenu2X::readConfig() {
 	confInt["globalVolume"] = 60;
 	confInt["keyboardLayoutMenu"] = LAYOUT_VERSION;
 	confInt["keyboardLayoutMax"] = LAYOUT_VERSION_MAX;
-	confInt["tefixMenu"] = TEFIX;
+	confInt["tefixMenu"] = TEFIX_MENU;
 	confInt["tefixMax"] = TEFIX_MAX;
 	confStr["bgscale"] = "Crop";
 	confStr["skinFont"] = "Custom";

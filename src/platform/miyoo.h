@@ -38,6 +38,8 @@
 
 #define MULTI_INT
 #define DEFAULT_CPU 720
+#define DEFAULT_LAYOUT 1
+#define DEFAULT_TEFIX 1
 
 static uint32_t oc_table[] = {
 /* F1C100S PLL_CPU Control Register.
@@ -183,6 +185,7 @@ private:
 		CPU_MIN = oc_choices[0];
 //		CPU_STEP = 1;
 		LAYOUT_VERSION_MAX = 6;
+		TEFIX_MENU = DEFAULT_TEFIX;
 		TEFIX_MAX = 3;
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
@@ -250,7 +253,7 @@ public:
 		int f = open("/dev/miyoo_kbd", O_RDWR);
 
 		if (f > 0) {
-			if (val <= 0 || val > LAYOUT_VERSION_MAX) val = 1;
+			if (val <= 0 || val > LAYOUT_VERSION_MAX) val = DEFAULT_LAYOUT;
 			ioctl(f, MIYOO_LAY_SET_VER, val);
 			close(f);
 		} else {
@@ -263,7 +266,7 @@ public:
 		int f = open("/dev/miyoo_fb0", O_RDWR);
 
 		if (f > 0) {
-			if (val < 0 || val > TEFIX_MAX) val = 1;
+			if (val < 0 || val > TEFIX_MAX) val = DEFAULT_TEFIX;
 			ioctl(f, MIYOO_FB0_SET_TEFIX, val);
 			close(f);
 		} else {
