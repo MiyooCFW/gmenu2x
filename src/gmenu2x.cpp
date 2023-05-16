@@ -234,9 +234,9 @@ void GMenu2X::main(bool autoStart) {
 
 	setBacklight(confInt["backlight"]);
 	setVolume(confInt["globalVolume"]);
+	setCPU(confInt["cpuMenu"]);
 	setKbdLayout(confInt["keyboardLayoutMenu"]);
 	setTefix(confInt["tefixMenu"]);
-	setCPU(confInt["cpuMenu"]);
 
 	setenv("SDL_FBCON_DONT_CLEAR", "1", 0);
 	setenv("SDL_NOMOUSE", "1", 1);
@@ -654,11 +654,9 @@ void GMenu2X::settings() {
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		setKbdLayout(confInt["keyboardLayoutMenu"]);
-		setTefix(confInt["tefixMenu"]);
-		if (confInt["saveAutoStart"])  {
-			confInt["dialogAutoStart"] = 1;
-		}
+		if (confInt["keyboardLayoutMenu"] != getKbdLayout()) setKbdLayout(confInt["keyboardLayoutMenu"]);
+		if (confInt["tefixMenu"] != getTefix()) setTefix(confInt["tefixMenu"]);
+		if (confInt["saveAutoStart"]) confInt["dialogAutoStart"] = 1;
 		reinit_save();
 	}
 }
