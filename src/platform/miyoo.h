@@ -211,7 +211,6 @@ private:
 		CPU_MIN = oc_choices[0];
 //		CPU_STEP = 1;
 		LAYOUT_VERSION_MAX = 6;
-		TEFIX_MENU = DEFAULT_TEFIX;
 		TEFIX_MAX = 3;
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);

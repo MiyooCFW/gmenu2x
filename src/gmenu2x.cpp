@@ -92,7 +92,6 @@ int CPU_STEP = 0;
 int LAYOUT_VERSION = 0;
 int LAYOUT_VERSION_MAX = 0;
 int TEFIX = -1;
-int TEFIX_MENU = -1;
 int TEFIX_MAX = -1;
 
 const char *CARD_ROOT = getenv("HOME");
@@ -808,7 +807,7 @@ void GMenu2X::readConfig() {
 	confInt["globalVolume"] = 60;
 	confInt["keyboardLayoutMenu"] = LAYOUT_VERSION;
 	confInt["keyboardLayoutMax"] = LAYOUT_VERSION_MAX;
-	confInt["tefixMenu"] = TEFIX_MENU;
+	confInt["tefixMenu"] = TEFIX;
 	confInt["tefixMax"] = TEFIX_MAX;
 	confStr["bgscale"] = "Crop";
 	confStr["skinFont"] = "Custom";
