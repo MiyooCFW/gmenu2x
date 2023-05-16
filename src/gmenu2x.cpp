@@ -654,8 +654,8 @@ void GMenu2X::settings() {
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		if (confInt["keyboardLayoutMenu"] != getKbdLayout()) setKbdLayout(confInt["keyboardLayoutMenu"]);
-		if (confInt["tefixMenu"] != getTefix()) setTefix(confInt["tefixMenu"]);
+		if (confInt["keyboardLayoutMenu"] != getKbdLayoutHW()) setKbdLayout(confInt["keyboardLayoutMenu"]);
+		if (confInt["tefixMenu"] != getTefixHW()) setTefix(confInt["tefixMenu"]);
 		if (confInt["saveAutoStart"]) confInt["dialogAutoStart"] = 1;
 		reinit_save();
 	}

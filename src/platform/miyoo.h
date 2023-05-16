@@ -120,8 +120,34 @@ int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 int kbd, fb0;
 int32_t tickBattery = 0;
 
-int32_t setTVoff() {
+void setTVoff() {
 	system("/mnt/apps/tvoff/tvout-off.sh");
+}
+
+int getKbdLayoutHW() {
+	kbd = open("/dev/miyoo_kbd", O_RDWR);
+	if (kbd > 0) {
+		ioctl(kbd, MIYOO_LAY_GET_VER, &LAYOUT_VERSION);
+		int val = LAYOUT_VERSION;
+		close(kbd);
+		return val;
+	} else {
+		WARNING("Could not open /dev/miyoo_kbd");
+		return 0;
+	}
+}
+
+int getTefixHW() {
+	fb0 = open("/dev/miyoo_fb0", O_RDWR);
+	if (fb0 > 0) {
+		ioctl(fb0, MIYOO_FB0_GET_TEFIX, &TEFIX);
+		int val = TEFIX;
+		close(fb0);
+		return val;
+	} else {
+		WARNING("Could not open /dev/miyoo_fb0");
+		return -1;
+	}
 }
 
 int32_t getBatteryLevel() {
@@ -191,20 +217,8 @@ private:
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
 		system("mount -o remount,async /mnt");
-		kbd = open("/dev/miyoo_kbd", O_RDWR);
-		if (kbd > 0) {
-			ioctl(kbd, MIYOO_LAY_GET_VER, &(LAYOUT_VERSION));
-			close(kbd);
-		} else {
-			WARNING("Could not open /dev/miyoo_kbd");
-		}
-		fb0 = open("/dev/miyoo_fb0", O_RDWR);
-		if (fb0 > 0) {
-			ioctl(fb0, MIYOO_FB0_GET_TEFIX, &(TEFIX));
-			close(fb0);
-		} else {
-			WARNING("Could not open /dev/miyoo_fb0");
-		}
+		getKbdLayoutHW();
+		getTefixHW();
 		w = 320;
 		h = 240;
 		INFO("MIYOO");
