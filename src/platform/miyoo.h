@@ -39,7 +39,7 @@
 #define MULTI_INT
 #define DEFAULT_CPU 720
 #define DEFAULT_LAYOUT 1
-#define DEFAULT_TEFIX 1
+#define DEFAULT_TEFIX 0
 
 static uint32_t oc_table[] = {
 /* F1C100S PLL_CPU Control Register.
