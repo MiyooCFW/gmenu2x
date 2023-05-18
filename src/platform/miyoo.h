@@ -31,10 +31,13 @@
 #define MIYOO_KBD_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_LAY_SET_VER     _IOWR(0x103, 0, unsigned long)
 #define MIYOO_LAY_GET_VER     _IOWR(0x105, 0, unsigned long)
-#define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
-#define MIYOO_FB0_SET_TEFIX   _IOWR(0x102, 0, unsigned long)
-#define MIYOO_FB0_GET_TEFIX   _IOWR(0x103, 0, unsigned long)
+#define MIYOO_FB0_SET_MODE    _IOWR(0x101, 0, unsigned long)
+#define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
+#define MIYOO_FB0_SET_FLIP    _IOWR(0x103, 0, unsigned long)
+#define MIYOO_FB0_SET_FPBP    _IOWR(0x104, 0, unsigned long)
+#define MIYOO_FB0_SET_TEFIX   _IOWR(0x106, 0, unsigned long)
+#define MIYOO_FB0_GET_TEFIX   _IOWR(0x107, 0, unsigned long)
 
 #define MULTI_INT
 #define DEFAULT_CPU 720
