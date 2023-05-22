@@ -31,11 +31,18 @@
 #define MIYOO_KBD_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_LAY_SET_VER     _IOWR(0x103, 0, unsigned long)
 #define MIYOO_LAY_GET_VER     _IOWR(0x105, 0, unsigned long)
-#define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
+#define MIYOO_FB0_SET_MODE    _IOWR(0x101, 0, unsigned long)
+#define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
+#define MIYOO_FB0_SET_FLIP    _IOWR(0x103, 0, unsigned long)
+#define MIYOO_FB0_SET_FPBP    _IOWR(0x104, 0, unsigned long)
+#define MIYOO_FB0_SET_TEFIX   _IOWR(0x106, 0, unsigned long)
+#define MIYOO_FB0_GET_TEFIX   _IOWR(0x107, 0, unsigned long)
 
 #define MULTI_INT
 #define DEFAULT_CPU 720
+#define DEFAULT_LAYOUT 1
+#define DEFAULT_TEFIX 0
 
 static uint32_t oc_table[] = {
 /* F1C100S PLL_CPU Control Register.
@@ -113,11 +120,37 @@ int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 // int SOUND_MIXER_READ = SOUND_MIXER_READ_PCM;
 // int SOUND_MIXER_WRITE = SOUND_MIXER_WRITE_PCM;
 
-int kbd;
+int kbd, fb0;
 int32_t tickBattery = 0;
 
-int32_t setTVoff() {
+void setTVoff() {
 	system("/mnt/apps/tvoff/tvout-off.sh");
+}
+
+int getKbdLayoutHW() {
+	kbd = open("/dev/miyoo_kbd", O_RDWR);
+	if (kbd > 0) {
+		ioctl(kbd, MIYOO_LAY_GET_VER, &LAYOUT_VERSION);
+		int val = LAYOUT_VERSION;
+		close(kbd);
+		return val;
+	} else {
+		WARNING("Could not open /dev/miyoo_kbd");
+		return 0;
+	}
+}
+
+int getTefixHW() {
+	fb0 = open("/dev/miyoo_fb0", O_RDWR);
+	if (fb0 > 0) {
+		ioctl(fb0, MIYOO_FB0_GET_TEFIX, &TEFIX);
+		int val = TEFIX;
+		close(fb0);
+		return val;
+	} else {
+		WARNING("Could not open /dev/miyoo_fb0");
+		return -1;
+	}
 }
 
 int32_t getBatteryLevel() {
@@ -181,17 +214,13 @@ private:
 		CPU_MIN = oc_choices[0];
 //		CPU_STEP = 1;
 		LAYOUT_VERSION_MAX = 6;
+		TEFIX_MAX = 3;
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
 		system("mount -o remount,async /mnt");
-		kbd = open("/dev/miyoo_kbd", O_RDWR);
-		if (kbd > 0) {
-			ioctl(kbd, MIYOO_LAY_GET_VER, &(LAYOUT_VERSION));
-			close(kbd);
-		} else {
-			WARNING("Could not open /dev/miyoo_kbd");
-		}
+		getKbdLayoutHW();
+		getTefixHW();
 		w = 320;
 		h = 240;
 		INFO("MIYOO");
@@ -240,12 +269,25 @@ public:
 		int f = open("/dev/miyoo_kbd", O_RDWR);
 
 		if (f > 0) {
-			if (val <= 0) val = 1;
+			if (val <= 0 || val > LAYOUT_VERSION_MAX) val = DEFAULT_LAYOUT;
 			ioctl(f, MIYOO_LAY_SET_VER, val);
 			close(f);
 		} else {
 			WARNING("Could not open /dev/miyoo_kbd");
 			val = 0;
+		}
+	}
+
+	void setTefix(int val) {
+		int f = open("/dev/miyoo_fb0", O_RDWR);
+
+		if (f > 0) {
+			if (val < 0 || val > TEFIX_MAX) val = DEFAULT_TEFIX;
+			ioctl(f, MIYOO_FB0_SET_TEFIX, val);
+			close(f);
+		} else {
+			WARNING("Could not open /dev/miyoo_fb0");
+			val = -1;
 		}
 	}
 

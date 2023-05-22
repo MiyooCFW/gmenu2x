@@ -35,6 +35,7 @@ LinkApp::LinkApp(GMenu2X *gmenu2x, const char* file):
 Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 	setCPU(gmenu2x->confInt["cpuLink"]);
 	setKbdLayout(gmenu2x->confInt["keyboardLayoutMenu"]);
+	setTefix(gmenu2x->confInt["tefixMenu"]);
 
 #if defined(HW_GAMMA)
 	//G
@@ -70,6 +71,7 @@ Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 		else if (name == "manual") setManual(value);
 		else if (name == "clock") setCPU(atoi(value.c_str()));
 		else if (name == "layout") setKbdLayout(atoi(value.c_str()));
+		else if (name == "tefix") setTefix(atoi(value.c_str()));
 
 #if defined(HW_GAMMA)
 		// else if (name == "wrapper" && value == "true") // wrapper = true;
@@ -231,6 +233,12 @@ void LinkApp::setKbdLayout(int val) {
 	edited = true;
 }
 
+void LinkApp::setTefix(int val) {
+	tefix = val;
+	if (tefix != -1) tefix = constrain(tefix, 0, gmenu2x->confInt["tefixMax"]);
+	edited = true;
+}
+
 #if defined(HW_GAMMA)
 void LinkApp::setGamma(int gamma) {
 	gamma = constrain(gamma, 0, 100);
@@ -270,6 +278,8 @@ bool LinkApp::save() {
 									f << "clock="			<< clock			<< endl;
 		if (layout != 0 && layout != gmenu2x->confInt["keyboardLayoutMenu"])
 									f << "layout="			<< layout			<< endl;
+		if (tefix != -1 && tefix != gmenu2x->confInt["tefixMenu"])
+									f << "tefix="			<< tefix			<< endl;
 		// if (useRamTimings)		f << "useramtimings=true"					<< endl;
 		// if (useGinge)			f << "useginge=true"						<< endl;
 		// if (volume > 0)			f << "volume="			<< volume			<< endl;
@@ -405,13 +415,15 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	if (gmenu2x->confInt["saveAutoStart"]) {
 		gmenu2x->confInt["lastCPU"] = clock;
 		gmenu2x->confInt["lastKeyboardLayout"] = layout;
+		gmenu2x->confInt["lastTefix"] = tefix;
 		gmenu2x->confStr["lastCommand"] = command.c_str();
 		gmenu2x->confStr["lastDirectory"] = dir_name(exec).c_str();
 		gmenu2x->writeConfig();
 	}
 	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
 	if (getKbdLayout() != gmenu2x->confInt["keyboardLayoutMenu"]) gmenu2x->setKbdLayout(getKbdLayout());
-
+	if (getTefix() != gmenu2x->confInt["tefixMenu"]) gmenu2x->setTefix(getTefix());
+	
 #if defined(TARGET_GP2X)
 	//if (useRamTimings) gmenu2x->applyRamTimings();
 	// if (useGinge) {
