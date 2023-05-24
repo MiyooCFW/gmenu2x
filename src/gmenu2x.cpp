@@ -108,6 +108,16 @@ const char *CARD_ROOT = getenv("HOME");
 	#include "platform/linux.h"
 #endif
 
+#ifndef DEFAULT_CPU
+#define DEFAULT_CPU 0
+#endif
+#ifndef DEFAULT_LAYOUT
+#define DEFAULT_LAYOUT 0
+#endif
+#ifndef DEFAULT_TEFIX
+#define DEFAULT_TEFIX -1
+#endif
+
 #include "menu.h"
 
 // Note: Keep this in sync with the enum!
