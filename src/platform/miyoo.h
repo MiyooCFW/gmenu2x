@@ -211,7 +211,7 @@ private:
 		CPU_LINK = CPU_MENU;
 		CPU_MAX = oc_choices[oc_choices_size - 2]; //omitting last value in oc_choices
 		CPU_EDGE = oc_choices[oc_choices_size - 4];
-		CPU_MIN = oc_choices[0];
+		CPU_MIN = oc_choices[8]; //408MHz, below may be insufficient and result in occasional freezes
 //		CPU_STEP = 1;
 		LAYOUT_VERSION_MAX = 6;
 		TEFIX_MAX = 3;
