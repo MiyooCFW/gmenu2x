@@ -279,18 +279,30 @@ void GMenu2X::main(bool autoStart) {
 
 	setSkin(confStr["skin"], true);
 
-	currBackdrop = confStr["wallpaper"];
-	confStr["wallpaper"] = setBackground(s, currBackdrop);
-
-	bg = new Surface(s);
-
 	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
-
-	MessageBox mb(this, tr["Loading"]);
-	mb.setAutoHide(1);
-	mb.setBgAlpha(0);
-	mb.exec();
-
+	
+	srand(time(0));  // Seed the rand with current time to get different number sequences
+	int randomInt = rand() % 2; // Generate a rand 0 or 1 to print "Hint" msg occasionally
+	
+	if (randomInt){
+		MessageBox mb(this, tr["Loading"]);
+		mb.setAutoHide(1);
+		mb.setBgAlpha(0);
+		mb.exec();
+	} else {
+		MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now to reset GMenu2X settings"]);
+		mb.setAutoHide(1000);
+		mb.setBgAlpha(0);
+		mb.exec();
+	}
+	
+	input.update(false);
+	if (input[MANUAL]){ //Reset GMenu2X settings
+		string tmppath = exe_path() + "/gmenu2x.conf";
+		unlink(tmppath.c_str());
+		reinit();
+	}
+	
 	menu = new Menu(this);
 	initMenu();
 
@@ -302,11 +314,11 @@ void GMenu2X::main(bool autoStart) {
 
 	if (readTmp() && confInt["outputLogs"]) {
 		viewLog();
-	};
+	}
 
 	if (confInt["dialogAutoStart"] && confStr["lastCommand"] != "" && confStr["lastDirectory"] != "") {
 		viewAutoStart();
-	};
+	}
 
 	if(confStr["lastCommand"] != "" && confStr["lastDirectory"] != "")  {
 		INFO("Starting autostart()");
@@ -326,7 +338,10 @@ void GMenu2X::main(bool autoStart) {
 		string c = a + b ;
 		execlp("/bin/sh", "/bin/sh", "-c", c.c_str(),  NULL);
 	}
-
+	currBackdrop = confStr["wallpaper"];
+	confStr["wallpaper"] = setBackground(s, currBackdrop);
+	bg = new Surface(s);
+	
 	input.dropEvents();
 
 	SDL_TimerID hwCheckTimer = SDL_AddTimer(1000, hwCheck, NULL);
