@@ -329,14 +329,16 @@ void GMenu2X::main(bool autoStart) {
 		setTefix(confInt["lastTefix"]);
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
-		string a = confStr["lastCommand"].c_str();
+		string prevCmd = confStr["lastCommand"].c_str();
+		string tmppath = exe_path() + "/gmenu2x.conf";
+		string writeDateCmd = "; sed -i \"1s/.*/datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"/\" ";
 #if defined(TARGET_LINUX)
-		string b = "; exit" ;
+		string exitCmd = "; exit" ;
 #else
-		string b = "; sync; mount -o remount,ro $HOME; poweroff" ;
+		string exitCmd = "; sync; mount -o remount,ro $HOME; poweroff";
 #endif
-		string c = a + b ;
-		execlp("/bin/sh", "/bin/sh", "-c", c.c_str(),  NULL);
+		string launchCmd = prevCmd + writeDateCmd + tmppath + exitCmd;
+		execlp("/bin/sh", "/bin/sh", "-c", launchCmd.c_str(),  NULL);
 	}
 	currBackdrop = confStr["wallpaper"];
 	confStr["wallpaper"] = setBackground(s, currBackdrop);

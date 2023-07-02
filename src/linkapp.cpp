@@ -460,14 +460,16 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 
 	// execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, environ);
 	if (gmenu2x->confInt["saveAutoStart"]) {
-		string a = command.c_str();
+		string prevCmd = command.c_str();
+		string tmppath = exe_path() + "/gmenu2x.conf";
+		string writeDateCmd = "; sed -i \"1s/.*/datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"/\" ";
 #if defined(TARGET_LINUX)
-		string b = "; exit" ;
+		string exitCmd = "; exit" ;
 #else
-		string b = "; sync; mount -o remount,ro $HOME; poweroff" ;
+		string exitCmd = "; sync; mount -o remount,ro $HOME; poweroff";
 #endif
-		string c = a + b ;
-		execlp("/bin/sh", "/bin/sh", "-c", c.c_str(),  NULL);
+		string launchCmd = prevCmd + writeDateCmd + tmppath + exitCmd;
+		execlp("/bin/sh", "/bin/sh", "-c", launchCmd.c_str(),  NULL);
 	} else {
 		execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
 	}
