@@ -312,10 +312,6 @@ void GMenu2X::main(bool autoStart) {
 	numJoyPrev = numJoy = getDevStatus();
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
 
-	if (readTmp() && confInt["outputLogs"]) {
-		viewLog();
-	}
-
 	if (confInt["dialogAutoStart"] && confStr["lastCommand"] != "" && confStr["lastDirectory"] != "") {
 		viewAutoStart();
 	}
@@ -343,6 +339,10 @@ void GMenu2X::main(bool autoStart) {
 	currBackdrop = confStr["wallpaper"];
 	confStr["wallpaper"] = setBackground(s, currBackdrop);
 	bg = new Surface(s);
+	
+	if (readTmp() && confInt["outputLogs"]) {
+		viewLog();
+	}
 	
 	input.dropEvents();
 
