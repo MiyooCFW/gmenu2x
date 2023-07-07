@@ -241,7 +241,7 @@ void GMenu2X::main(bool autoStart) {
 
 	setScaleMode(0);
 
-	setBacklight(confInt["backlight"]);
+	//setBacklight(getBacklight());
 	setVolume(confInt["globalVolume"]);
 	setCPU(confInt["cpuMenu"]);
 	setKbdLayout(confInt["keyboardLayoutMenu"]);
@@ -447,7 +447,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		setVolume(confInt["globalVolume"], true);
 
 	} else if (input[BACKLIGHT]) {
-		setBacklight(confInt["backlight"], true);
+		setBacklight(getBacklight()*10, true);
 
 	} else if (input[UDC_CONNECT]) {
 		powerManager->setPowerTimeout(0);
@@ -840,7 +840,7 @@ void GMenu2X::readConfig() {
 	confStr["skinFont"] = "Custom";
 	confInt["backlightTimeout"] = 30;
 	confInt["powerTimeout"] = 0;
-	confInt["backlight"] = 90;
+	//confInt["backlight"] = 90;
 	
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;

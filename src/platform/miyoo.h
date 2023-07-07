@@ -39,6 +39,15 @@
 #define MIYOO_FB0_SET_TEFIX   _IOWR(0x106, 0, unsigned long)
 #define MIYOO_FB0_GET_TEFIX   _IOWR(0x107, 0, unsigned long)
 
+#define MIYOO_FBP_FILE        "/mnt/.fpbp.conf"
+#define MIYOO_LID_FILE        "/mnt/.backlight.conf"
+#define MIYOO_VOL_FILE        "/mnt/.volume.conf"
+#define MIYOO_LID_CONF        "/sys/devices/platform/backlight/backlight/backlight/brightness"
+#define MIYOO_BUTTON_FILE     "/mnt/.buttons.conf"
+#define MIYOO_BATTERY         "/sys/class/power_supply/miyoo-battery/voltage_now"
+#define MIYOO_BATTERY_FILE    "/mnt/.batterylow.conf"
+#define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
+
 #define MULTI_INT
 #define DEFAULT_CPU 720
 #define DEFAULT_LAYOUT 1
@@ -138,6 +147,21 @@ int getKbdLayoutHW() {
 		WARNING("Could not open /dev/miyoo_kbd");
 		return 0;
 	}
+}
+
+int readConfigurationFile(const char *filename) {
+	FILE *file = fopen(filename, "r");
+	if (file == NULL) {
+		WARNING("Error opening file.\n");
+		return 5;
+	}
+
+	int val;
+	if (file){
+		fscanf(file, "%i", &val);
+		fclose(file);
+	}
+	return val;
 }
 
 int getTefixHW() {
@@ -256,12 +280,15 @@ public:
 	int setBacklight(int val, bool popup = false) {
 		val = GMenu2X::setBacklight(val, popup);
 		char buf[128] = {0};
+		char buf2[128] = {0};
 		if (FILE *f = fopen("/mnt/tvout", "r")) {
 			return 0;
 		} else {
 			sprintf(buf, "echo %d > /sys/devices/platform/backlight/backlight/backlight/brightness", val / 10);
+			sprintf(buf2, "echo %i > /mnt/.backlight.conf", val / 10);
 		}
 		system(buf);
+		system(buf2);
 		return val;
 	}
 
