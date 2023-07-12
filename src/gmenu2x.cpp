@@ -398,7 +398,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		}
 	}
 
-	while (input[SETTINGS]) { // SETTINGS HOLD
+	while (input[SETTINGS] && wasActive != 0) { // SETTINGS HOLD
 		wasActive = SETTINGS;
 
 		input.update();
@@ -434,7 +434,6 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	input[wasActive] = true;
 
 	if (input[POWER]) {
-		// powerManager->doSuspend(1);
 		poweroffDialog();
 
 	} else if (input[SCREENSHOT]) {
