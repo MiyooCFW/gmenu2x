@@ -4,27 +4,27 @@
 #include <sys/mman.h>
 #include <bitset>
 
-/*	MiyooCFW 2.0 Key Codes. Apaczer, 2023
-	BUTTON     GMENU          SDL             NUMERIC   GPIO
-	-----------------------------------------------------------------------------
-	A          CONFIRM        SDLK_LALT       308
-	B          CANCEL         SDLK_LCTRL      306
-	X          MODIFIER       SDLK_LSHIFT     304
-	Y          MANUAL         SDLK_SPACE      32
-	L1         SECTION_PREV   SDLK_TAB        9
-	R1         SECTION_NEXT   BACKSPACE       8
-	L2         DEC            SDLK_PAGEUP     280
-	R2         INC            SDLK_PAGEDOWN   281
-	L3         DEC            SDLK_RALT       307
-	R3         INC            SDLK_RSHIFT     303
-	RESET      POWER          SDLK_RCTRL      305
-	START      SETTINGS       SDLK_RETURN     13
-	SELECT     MENU           SDLK_ESCAPE     27
-	UP         UP             SDLK_UP         273
-	DOWN       DOWN           SDLK_DOWN       274
-	RIGHT      RIGHT          SDLK_RIGHT      275
-	LEFT       LEFT           SDLK_LEFT       276
-*/
+// 	MiyooCFW 2.0 Key Codes. Apaczer, 2023
+// 	BUTTON     GMENU          SDL             NUMERIC   GPIO
+// 	-----------------------------------------------------------------------------
+// 	A          CONFIRM        SDLK_LALT       308
+// 	B          CANCEL         SDLK_LCTRL      306
+// 	X          MODIFIER       SDLK_LSHIFT     304
+// 	Y          MANUAL         SDLK_SPACE      32
+// 	L1         SECTION_PREV   SDLK_TAB        9
+// 	R1         SECTION_NEXT   BACKSPACE       8
+// 	L2         DEC            SDLK_PAGEUP     280
+// 	R2         INC            SDLK_PAGEDOWN   281
+// 	L3         DEC            SDLK_RALT       307
+// 	R3         INC            SDLK_RSHIFT     303
+// 	RESET      POWER          SDLK_RCTRL      305
+// 	START      SETTINGS       SDLK_RETURN     13
+// 	SELECT     MENU           SDLK_ESCAPE     27
+// 	UP         UP             SDLK_UP         273
+// 	DOWN       DOWN           SDLK_DOWN       274
+// 	RIGHT      RIGHT          SDLK_RIGHT      275
+// 	LEFT       LEFT           SDLK_LEFT       276
+//
 
 #define MIYOO_SND_SET_VOLUME  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_KBD_GET_HOTKEY  _IOWR(0x100, 0, unsigned long)
@@ -49,16 +49,17 @@
 #define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
 
 #define MULTI_INT
+#define HW_BACKLID
 #define DEFAULT_CPU 720
 #define DEFAULT_LAYOUT 1
 #define DEFAULT_TEFIX 0
 
 static uint32_t oc_table[] = {
-/* F1C100S PLL_CPU Control Register.
- 24MHz*N*K/(M*P) ; N = (Nf+1)<=32 ; K = (Kf+1)<=4 ; M = (Mf+1)<=4 ; P = (00: /1 | 01: /2 | 10: /4); --> CPU_PLL output must be in 200MHz~2.6GHz range
- 27:18 are 10bit non-affecting space thus starting to read "int mhz" value here "(MHz << 18)" up to last 32bit.
-((24 * N * K) << 18) | (Nf << 8) | (Kf << 4) | (Mf << 0) | (Pf << 16),
-*/
+// F1C100S PLL_CPU Control Register.
+// 24MHz*N*K/(M*P) ; N = (Nf+1)<=32 ; K = (Kf+1)<=4 ; M = (Mf+1)<=4 ; P = (00: /1 | 01: /2 | 10: /4); --> CPU_PLL output must be in 200MHz~2.6GHz range
+// 27:18 are 10bit non-affecting space thus starting to read "int mhz" value here "(MHz << 18)" up to last 32bit.
+// ((24 * N * K) << 18) | (Nf << 8) | (Kf << 4) | (Mf << 0) | (Pf << 16),
+//
 	(216 << 18) | (8 << 8) | (0 << 4),// 216MHz = 24MHz*9*1/(1*1)
 	(240 << 18) | (9 << 8) | (0 << 4),
 	(264 << 18) | (10 << 8) | (0 << 4),
@@ -98,36 +99,6 @@ int oc_choices[] = {
 	1008,9999
 }; // last value[] is dummy point - do not modify
 int oc_choices_size = sizeof(oc_choices)/sizeof(int);
-// #define MIYOO_LID_FILE "/mnt/.backlight.conf"
-// static int read_conf(const char *file)
-// {
-// 	int val = 5;
-// 	char buf[10] = {0};
-// 	int fd = open(file, O_RDWR);
-// 	if (fd < 0) val = -1;
-// 	else {
-// 		read(fd, buf, sizeof(buf));
-// 		for (int i = 0; i < strlen(buf); i++) {
-// 			if(buf[i] == '\r' || buf[i] == '\n' || buf[i] == ' ') {
-// 				buf[i] = 0;
-// 			}
-// 		}
-// 		val = atoi(buf);
-// 	}
-// 	close(fd);
-// 	return val;
-// }
-
-// static void info_fb0(int fb0, int lid, int vol, int show_osd)
-// {
-//   unsigned long val;
-
-//   val = (show_osd ? 0x80000000 : 0x00000000) | (vol << 16) | (lid);
-//   ioctl(fb0, MIYOO_FB0_PUT_OSD, val);
-// }
-
-// int SOUND_MIXER_READ = SOUND_MIXER_READ_PCM;
-// int SOUND_MIXER_WRITE = SOUND_MIXER_WRITE_PCM;
 
 int kbd, fb0;
 int32_t tickBattery = 0;
@@ -147,21 +118,6 @@ int getKbdLayoutHW() {
 		WARNING("Could not open /dev/miyoo_kbd");
 		return 0;
 	}
-}
-
-int readConfigurationFile(const char *filename) {
-	FILE *file = fopen(filename, "r");
-	if (file == NULL) {
-		WARNING("Error opening file.\n");
-		return 5;
-	}
-
-	int val;
-	if (file){
-		fscanf(file, "%i", &val);
-		fclose(file);
-	}
-	return val;
 }
 
 int getTefixHW() {
@@ -334,7 +290,7 @@ public:
 						uint32_t v = mem[0];
 						while (std::bitset<32>(v).test(28) == 0) {
 							v = mem[0];
-//							INFO("PLL unstable wait for register lock");
+							//INFO("PLL unstable wait for register lock");
 						}
 						INFO("Set CPU clock: %d(0x%08x)", mhz, v);
 						break;

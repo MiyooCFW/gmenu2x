@@ -240,8 +240,11 @@ void GMenu2X::main(bool autoStart) {
 	readConfig();
 
 	setScaleMode(0);
-
-	//setBacklight(getBacklight());
+#if defined(HW_BACKLID)
+	setBacklight(getBacklight()*10);
+#else
+	setBacklight(confInt["backlight"]);
+#endif
 	setVolume(confInt["globalVolume"]);
 	setCPU(confInt["cpuMenu"]);
 	setKbdLayout(confInt["keyboardLayoutMenu"]);
@@ -605,6 +608,9 @@ void GMenu2X::settings_date() {
 void GMenu2X::settings() {
 	powerManager->clearTimer();
 
+#if defined(HW_BACKLID)
+	confInt["backlight"] = getBacklight()*10;
+#endif
 	// int prevgamma = confInt["gamma"];
 	FileLister fl_tr("translations");
 	fl_tr.browse();
@@ -840,8 +846,9 @@ void GMenu2X::readConfig() {
 	confStr["skinFont"] = "Custom";
 	confInt["backlightTimeout"] = 30;
 	confInt["powerTimeout"] = 0;
-	//confInt["backlight"] = 90;
-	
+#if !defined(HW_BACKLID)
+	confInt["backlight"] = 50;
+#endif	
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;
 	confInt["cpuMin"] = CPU_MIN;
@@ -2047,7 +2054,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 				val = setBacklight(min(100, val + backlightStep), false);
 			} else if (input[BACKLIGHT]) {
 				SDL_Delay(50);
-				val = getBacklight();
+				val = getBacklight()*10;
 			}
 
 			val = constrain(val, 5, 100);
@@ -2057,8 +2064,10 @@ int GMenu2X::setBacklight(int val, bool popup) {
 		s->flip();
 
 		powerManager->resetSuspendTimer();
+#if !defined(HW_BACKLID)
 		confInt["backlight"] = val;
 		writeConfig();
+#endif
 	}
 
 	return val;
