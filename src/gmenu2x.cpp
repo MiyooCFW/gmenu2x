@@ -403,11 +403,13 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 		input.update();
 
-		if (SDL_GetTicks() - button_hold > 1000) {
+		if (SDL_GetTicks() - button_hold > 1000 && !actionPerformed) {
 			wasActive = 0;
+			actionPerformed = true;
 			powerManager->doSuspend(1);
 		}
 	}
+	
 
 	while (input[MENU]) { // MENU HOLD
 		wasActive = MENU;
@@ -435,7 +437,8 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	if (input[POWER]) {
 		poweroffDialog();
-
+//	} else if (input[SETTINGS] && !actionPerformed) {
+//		settings();
 	} else if (input[SCREENSHOT]) {
 		if (!saveScreenshot(confStr["homePath"])) {
 			ERROR("Can't save screenshot");
