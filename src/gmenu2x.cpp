@@ -398,7 +398,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		}
 	}
 
-	while (input[SETTINGS] && wasActive != 0) { // SETTINGS HOLD
+	while (input[SETTINGS]) { // SETTINGS HOLD
 		wasActive = SETTINGS;
 
 		input.update();
