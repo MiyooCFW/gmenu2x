@@ -235,16 +235,15 @@ public:
 
 	int setBacklight(int val, bool popup = false) {
 		val = GMenu2X::setBacklight(val, popup);
+		int lid = val / 10;
+		if (lid > 10) lid = 10;
 		char buf[128] = {0};
-		char buf2[128] = {0};
 		if (FILE *f = fopen("/mnt/tvout", "r")) {
 			return 0;
 		} else {
-			sprintf(buf, "echo %d > /sys/devices/platform/backlight/backlight/backlight/brightness", val / 10);
-			sprintf(buf2, "echo %i > /mnt/.backlight.conf", val / 10);
+			sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
 		}
 		system(buf);
-		system(buf2);
 		return val;
 	}
 

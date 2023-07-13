@@ -649,7 +649,7 @@ void GMenu2X::settings() {
 
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Suspend timeout"], tr["Seconds until suspend the device when inactive"], &confInt["backlightTimeout"], 30, 0, 300))->setOff(9));
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 300))->setOff(9));
-	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
+	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 50, 10, 100, 10));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], DEFAULT_LAYOUT, 1, confInt["keyboardLayoutMax"]));
 	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], DEFAULT_TEFIX, 0, confInt["tefixMax"]));
