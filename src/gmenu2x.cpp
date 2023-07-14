@@ -241,7 +241,7 @@ void GMenu2X::main(bool autoStart) {
 
 	setScaleMode(0);
 #if defined(HW_BACKLID)
-	setBacklight(getBacklight()*10);
+	setBacklight(getBacklight());
 #else
 	setBacklight(confInt["backlight"]);
 #endif
@@ -452,7 +452,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		setVolume(confInt["globalVolume"], true);
 
 	} else if (input[BACKLIGHT]) {
-		setBacklight(getBacklight()*10, true);
+		setBacklight(getBacklight(), true);
 
 	} else if (input[UDC_CONNECT]) {
 		powerManager->setPowerTimeout(0);
@@ -611,7 +611,7 @@ void GMenu2X::settings() {
 	powerManager->clearTimer();
 
 #if defined(HW_BACKLID)
-	confInt["backlight"] = getBacklight()*10;
+	confInt["backlight"] = getBacklight();
 #endif
 	// int prevgamma = confInt["gamma"];
 	FileLister fl_tr("translations");
@@ -2051,12 +2051,12 @@ int GMenu2X::setBacklight(int val, bool popup) {
 			if (input[SETTINGS] || input[CONFIRM] || input[CANCEL]) {
 				break;
 			} else if (input[LEFT] || input[DEC] || input[SECTION_PREV]) {
-				val = setBacklight(max(5, val - backlightStep), false);
+				val = setBacklight(max(10, val - backlightStep), false);
 			} else if (input[RIGHT] || input[INC] || input[SECTION_NEXT]) {
 				val = setBacklight(min(100, val + backlightStep), false);
 			} else if (input[BACKLIGHT]) {
 				SDL_Delay(50);
-				val = getBacklight()*10;
+				val = getBacklight();
 			}
 
 			val = constrain(val, 5, 100);

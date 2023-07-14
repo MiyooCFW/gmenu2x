@@ -47,6 +47,7 @@
 #define MIYOO_BATTERY         "/sys/class/power_supply/miyoo-battery/voltage_now"
 #define MIYOO_BATTERY_FILE    "/mnt/.batterylow.conf"
 #define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
+#define MIYOO_TVOUT_FILE      "/mnt/tvout"
 
 #define MULTI_INT
 #define HW_BACKLID
@@ -135,7 +136,7 @@ int getTefixHW() {
 
 int32_t getBatteryLevel() {
 	int val = -1;
-	if (FILE *f = fopen("/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now", "r")) {
+	if (FILE *f = fopen(MIYOO_BATTERY, "r")) {
 		fscanf(f, "%i", &val);
 		fclose(f);
 	}
@@ -208,11 +209,14 @@ private:
 
 	int getBacklight() {
 		int val = -1;
-		FILE *f = fopen("/sys/devices/platform/backlight/backlight/backlight/brightness", "r");
+		int lid = -1;
+		FILE *f = fopen(MIYOO_LID_CONF, "r");
 		if (f) {
-			fscanf(f, "%i", &val);
+			fscanf(f, "%i", &lid);
 			fclose(f);
 		}
+		if (lid >= 0 && lid <= 10) val = lid * 10;
+		else if (lid > 10) val = 100;
 		return val;
 	}
 
@@ -238,7 +242,7 @@ public:
 		int lid = val / 10;
 		if (lid > 10) lid = 10;
 		char buf[128] = {0};
-		if (FILE *f = fopen("/mnt/tvout", "r")) {
+		if (FILE *f = fopen(MIYOO_TVOUT_FILE, "r")) {
 			return 0;
 		} else {
 			sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);

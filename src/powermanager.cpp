@@ -47,7 +47,7 @@ void PowerManager::resetPowerTimer() {
 uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 	if (interval > 0) {
 #if defined(HW_BACKLID)
-		PowerManager::instance->gmenu2x->confInt["backlight"] = PowerManager::instance->gmenu2x->getBacklight()*10;
+		PowerManager::instance->gmenu2x->confInt["backlight"] = PowerManager::instance->gmenu2x->getBacklight();
 //		INFO("%i", PowerManager::instance->gmenu2x->confInt["backlight"]);
 #endif
 		PowerManager::instance->gmenu2x->setBacklight(0);
