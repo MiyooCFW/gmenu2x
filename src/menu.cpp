@@ -886,7 +886,7 @@ void Menu::exec() {
 			selLink()->run();
 		}
 		else if (gmenu2x->input[CANCEL])	continue;
-		else if (gmenu2x->input[SETTINGS])	gmenu2x->settings();
+		else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed))	gmenu2x->settings();
 		else if (gmenu2x->input[MENU])		gmenu2x->contextMenu();
 
 		// LINK NAVIGATION

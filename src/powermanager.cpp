@@ -1,5 +1,9 @@
 #include "powermanager.h"
 
+#ifdef TARGET_MIYOO
+#define HW_BACKLID
+#endif
+
 PowerManager *PowerManager::instance = NULL;
 
 PowerManager::PowerManager(GMenu2X *gmenu2x, uint32_t suspendTimeout, uint32_t powerTimeout):
@@ -42,6 +46,10 @@ void PowerManager::resetPowerTimer() {
 
 uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 	if (interval > 0) {
+#if defined(HW_BACKLID)
+		PowerManager::instance->gmenu2x->confInt["backlight"] = PowerManager::instance->gmenu2x->getBacklight();
+//		INFO("%i", PowerManager::instance->gmenu2x->confInt["backlight"]);
+#endif
 		PowerManager::instance->gmenu2x->setBacklight(0);
 		PowerManager::instance->resetPowerTimer();
 		PowerManager::instance->gmenu2x->cls();
@@ -50,10 +58,12 @@ uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 		return interval;
 	}
 
+//	INFO("%i", PowerManager::instance->gmenu2x->confInt["backlight"]);
 	PowerManager::instance->gmenu2x->setBacklight(max(10, PowerManager::instance->gmenu2x->confInt["backlight"]));
 	PowerManager::instance->gmenu2x->setCPU(PowerManager::instance->gmenu2x->confInt["cpuMenu"]);
 	PowerManager::instance->suspendActive = false;
 	PowerManager::instance->resetSuspendTimer();
+	PowerManager::instance->gmenu2x->actionPerformed = false;
 	return interval;
 };
 

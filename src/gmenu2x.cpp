@@ -205,6 +205,9 @@ void GMenu2X::quit() {
 	powerManager->clearTimer();
 	get_date_time(); // update sw clock
 	confStr["datetime"] = get_date_time();
+#if defined(HW_BACKLID)
+	setBacklight(getBacklight());
+#endif	
 	writeConfig();
 
 	s->free();
@@ -240,8 +243,11 @@ void GMenu2X::main(bool autoStart) {
 	readConfig();
 
 	setScaleMode(0);
-
+#if defined(HW_BACKLID)
+	setBacklight(getBacklight());
+#else
 	setBacklight(confInt["backlight"]);
+#endif
 	setVolume(confInt["globalVolume"]);
 	setCPU(confInt["cpuMenu"]);
 	setKbdLayout(confInt["keyboardLayoutMenu"]);
@@ -400,11 +406,13 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 		input.update();
 
-		if (SDL_GetTicks() - button_hold > 1000) {
+		if (SDL_GetTicks() - button_hold > 1000 && !actionPerformed) {
 			wasActive = 0;
+			actionPerformed = true;
 			powerManager->doSuspend(1);
 		}
 	}
+	
 
 	while (input[MENU]) { // MENU HOLD
 		wasActive = MENU;
@@ -431,9 +439,9 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	input[wasActive] = true;
 
 	if (input[POWER]) {
-		// powerManager->doSuspend(1);
 		poweroffDialog();
-
+//	} else if (input[SETTINGS] && !actionPerformed) {
+//		settings();
 	} else if (input[SCREENSHOT]) {
 		if (!saveScreenshot(confStr["homePath"])) {
 			ERROR("Can't save screenshot");
@@ -447,7 +455,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		setVolume(confInt["globalVolume"], true);
 
 	} else if (input[BACKLIGHT]) {
-		setBacklight(confInt["backlight"], true);
+		setBacklight(getBacklight(), true);
 
 	} else if (input[UDC_CONNECT]) {
 		powerManager->setPowerTimeout(0);
@@ -605,6 +613,9 @@ void GMenu2X::settings_date() {
 void GMenu2X::settings() {
 	powerManager->clearTimer();
 
+#if defined(HW_BACKLID)
+	confInt["backlight"] = getBacklight();
+#endif
 	// int prevgamma = confInt["gamma"];
 	FileLister fl_tr("translations");
 	fl_tr.browse();
@@ -644,7 +655,7 @@ void GMenu2X::settings() {
 
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Suspend timeout"], tr["Seconds until suspend the device when inactive"], &confInt["backlightTimeout"], 30, 0, 300))->setOff(9));
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 300))->setOff(9));
-	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 70, 1, 100));
+	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 50, 10, 100, 10));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
 	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], DEFAULT_LAYOUT, 1, confInt["keyboardLayoutMax"]));
 	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], DEFAULT_TEFIX, 0, confInt["tefixMax"]));
@@ -840,8 +851,9 @@ void GMenu2X::readConfig() {
 	confStr["skinFont"] = "Custom";
 	confInt["backlightTimeout"] = 30;
 	confInt["powerTimeout"] = 0;
-	confInt["backlight"] = 90;
-	
+#if !defined(HW_BACKLID)
+	confInt["backlight"] = 50;
+#endif	
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;
 	confInt["cpuMin"] = CPU_MIN;
@@ -2042,7 +2054,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 			if (input[SETTINGS] || input[CONFIRM] || input[CANCEL]) {
 				break;
 			} else if (input[LEFT] || input[DEC] || input[SECTION_PREV]) {
-				val = setBacklight(max(5, val - backlightStep), false);
+				val = setBacklight(max(10, val - backlightStep), false);
 			} else if (input[RIGHT] || input[INC] || input[SECTION_NEXT]) {
 				val = setBacklight(min(100, val + backlightStep), false);
 			} else if (input[BACKLIGHT]) {
@@ -2057,8 +2069,10 @@ int GMenu2X::setBacklight(int val, bool popup) {
 		s->flip();
 
 		powerManager->resetSuspendTimer();
+#if !defined(HW_BACKLID)
 		confInt["backlight"] = val;
 		writeConfig();
+#endif
 	}
 
 	return val;

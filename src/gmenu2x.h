@@ -175,6 +175,7 @@ public:
 	bool inputCommonActions(bool &inputAction);
 
 	bool autoStart;
+	bool actionPerformed = false;
 
 	void cls(Surface *s = NULL, bool flip = true);
 
