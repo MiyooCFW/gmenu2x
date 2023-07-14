@@ -205,6 +205,9 @@ void GMenu2X::quit() {
 	powerManager->clearTimer();
 	get_date_time(); // update sw clock
 	confStr["datetime"] = get_date_time();
+#if defined(HW_BACKLID)
+	setBacklight(getBacklight());
+#endif	
 	writeConfig();
 
 	s->free();
