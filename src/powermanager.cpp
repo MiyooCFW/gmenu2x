@@ -1,7 +1,7 @@
 #include "powermanager.h"
 
 #ifdef TARGET_MIYOO
-#define HW_BACKLID
+#define HW_LIDVOL
 #endif
 
 PowerManager *PowerManager::instance = NULL;
@@ -46,11 +46,14 @@ void PowerManager::resetPowerTimer() {
 
 uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 	if (interval > 0) {
-#if defined(HW_BACKLID)
+#if defined(HW_LIDVOL)
 		PowerManager::instance->gmenu2x->confInt["backlight"] = PowerManager::instance->gmenu2x->getBacklight();
+		PowerManager::instance->gmenu2x->confInt["globalVolume"] = PowerManager::instance->gmenu2x->getVolume();
 //		INFO("%i", PowerManager::instance->gmenu2x->confInt["backlight"]);
+//		INFO("%i", PowerManager::instance->gmenu2x->confInt["globalVolume"]);
 #endif
 		PowerManager::instance->gmenu2x->setBacklight(0);
+		PowerManager::instance->gmenu2x->setVolume(0);
 		PowerManager::instance->resetPowerTimer();
 		PowerManager::instance->gmenu2x->cls();
 		PowerManager::instance->gmenu2x->setCPU(PowerManager::instance->gmenu2x->confInt["cpuMin"]);
@@ -59,7 +62,9 @@ uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 	}
 
 //	INFO("%i", PowerManager::instance->gmenu2x->confInt["backlight"]);
+//	INFO("%i", PowerManager::instance->gmenu2x->confInt["globalVolume"]);
 	PowerManager::instance->gmenu2x->setBacklight(max(10, PowerManager::instance->gmenu2x->confInt["backlight"]));
+	PowerManager::instance->gmenu2x->setVolume(PowerManager::instance->gmenu2x->confInt["globalVolume"]);
 	PowerManager::instance->gmenu2x->setCPU(PowerManager::instance->gmenu2x->confInt["cpuMenu"]);
 	PowerManager::instance->suspendActive = false;
 	PowerManager::instance->resetSuspendTimer();

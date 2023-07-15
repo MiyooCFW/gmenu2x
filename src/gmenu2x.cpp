@@ -205,8 +205,9 @@ void GMenu2X::quit() {
 	powerManager->clearTimer();
 	get_date_time(); // update sw clock
 	confStr["datetime"] = get_date_time();
-#if defined(HW_BACKLID)
+#if defined(HW_LIDVOL)
 	setBacklight(getBacklight());
+	setVolume(getVolume());
 #endif	
 	writeConfig();
 
@@ -243,12 +244,13 @@ void GMenu2X::main(bool autoStart) {
 	readConfig();
 
 	setScaleMode(0);
-#if defined(HW_BACKLID)
+#if defined(HW_LIDVOL)
 	setBacklight(getBacklight());
+	setVolume(getVolume());
 #else
 	setBacklight(confInt["backlight"]);
-#endif
 	setVolume(confInt["globalVolume"]);
+#endif
 	setCPU(confInt["cpuMenu"]);
 	setKbdLayout(confInt["keyboardLayoutMenu"]);
 	setTefix(confInt["tefixMenu"]);
@@ -440,8 +442,6 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	if (input[POWER]) {
 		poweroffDialog();
-//	} else if (input[SETTINGS] && !actionPerformed) {
-//		settings();
 	} else if (input[SCREENSHOT]) {
 		if (!saveScreenshot(confStr["homePath"])) {
 			ERROR("Can't save screenshot");
@@ -452,7 +452,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		mb.exec();
 
 	} else if (input[VOLUP] || input[VOLDOWN]) {
-		setVolume(confInt["globalVolume"], true);
+		setVolume(getVolume(), true);
 
 	} else if (input[BACKLIGHT]) {
 		setBacklight(getBacklight(), true);
@@ -613,8 +613,9 @@ void GMenu2X::settings_date() {
 void GMenu2X::settings() {
 	powerManager->clearTimer();
 
-#if defined(HW_BACKLID)
+#if defined(HW_LIDVOL)
 	confInt["backlight"] = getBacklight();
+	confInt["globalVolume"] = getVolume();
 #endif
 	// int prevgamma = confInt["gamma"];
 	FileLister fl_tr("translations");
@@ -656,7 +657,7 @@ void GMenu2X::settings() {
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Suspend timeout"], tr["Seconds until suspend the device when inactive"], &confInt["backlightTimeout"], 30, 0, 300))->setOff(9));
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 300))->setOff(9));
 	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 50, 10, 100, 10));
-	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 60, 0, 100));
+	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 50, 0, 90, 10));
 	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], DEFAULT_LAYOUT, 1, confInt["keyboardLayoutMax"]));
 	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], DEFAULT_TEFIX, 0, confInt["tefixMax"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
@@ -842,7 +843,6 @@ void GMenu2X::readConfig() {
 	confStr["datetime"] = xstr(__BUILDTIME__);
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
-	confInt["globalVolume"] = 60;
 	confInt["keyboardLayoutMenu"] = LAYOUT_VERSION;
 	confInt["keyboardLayoutMax"] = LAYOUT_VERSION_MAX;
 	confInt["tefixMenu"] = TEFIX;
@@ -851,8 +851,9 @@ void GMenu2X::readConfig() {
 	confStr["skinFont"] = "Custom";
 	confInt["backlightTimeout"] = 30;
 	confInt["powerTimeout"] = 0;
-#if !defined(HW_BACKLID)
+#if !defined(HW_LIDVOL)
 	confInt["backlight"] = 50;
+	confInt["globalVolume"] = 50;
 #endif	
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;
@@ -1576,7 +1577,7 @@ void GMenu2X::poweroffDialog() {
 			MessageBox mb(this, tr["Poweroff"]);
 			mb.setAutoHide(1);
 			mb.exec();
-			setVolume(0);
+		//	setVolume(0);
 			quit();
 #if !defined(TARGET_LINUX)
 			system("sync; mount -o remount,ro $HOME; poweroff");
@@ -1587,7 +1588,7 @@ void GMenu2X::poweroffDialog() {
 			MessageBox mb(this, tr["Rebooting"]);
 			mb.setAutoHide(1);
 			mb.exec();
-			setVolume(0);
+		//	setVolume(0);
 			quit();
 #if !defined(TARGET_LINUX)
 			system("sync; mount -o remount,ro $HOME; reboot");
@@ -1987,7 +1988,7 @@ void GMenu2X::setInputSpeed() {
 int GMenu2X::setVolume(int val, bool popup) {
 	int volumeStep = 10;
 
-	val = constrain(val, 0, 100);
+	val = constrain(val, 0, 90);
 
 	if (popup) {
 		Surface bg(s);
@@ -2000,7 +2001,7 @@ int GMenu2X::setVolume(int val, bool popup) {
 
 		powerManager->clearTimer();
 		while (true) {
-			drawSlider(val, 0, 100, *iconVolume[getVolumeMode(val)], bg);
+			drawSlider(val, 0, 90, *iconVolume[getVolumeMode(val)], bg);
 
 			input.update();
 
@@ -2009,18 +2010,20 @@ int GMenu2X::setVolume(int val, bool popup) {
 			} else if (input[LEFT] || input[DEC] || input[VOLDOWN] || input[SECTION_PREV]) {
 				val = max(0, val - volumeStep);
 			} else if (input[RIGHT] || input[INC] || input[VOLUP] || input[SECTION_NEXT]) {
-				val = min(100, val + volumeStep);
+				val = min(90, val + volumeStep);
 			}
 
-			val = constrain(val, 0, 100);
+			val = constrain(val, 0, 90);
 		}
 
 		bg.blit(s, 0, 0);
 		s->flip();
 
 		powerManager->resetSuspendTimer();
+#if !defined(HW_LIDVOL)
 		confInt["globalVolume"] = val;
 		writeConfig();
+#endif
 	}
 
 	return val;
@@ -2029,7 +2032,7 @@ int GMenu2X::setVolume(int val, bool popup) {
 int GMenu2X::setBacklight(int val, bool popup) {
 	if (popup) {
 		int backlightStep = 10;
-		val = constrain(val, 5, 100);
+		val = constrain(val, 10, 100);
 
 		Surface bg(s);
 
@@ -2069,7 +2072,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 		s->flip();
 
 		powerManager->resetSuspendTimer();
-#if !defined(HW_BACKLID)
+#if !defined(HW_LIDVOL)
 		confInt["backlight"] = val;
 		writeConfig();
 #endif

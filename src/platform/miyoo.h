@@ -26,31 +26,41 @@
 // 	LEFT       LEFT           SDLK_LEFT       276
 //
 
+#define MIYOO_VIR_SET_MODE    _IOWR(0x100, 0, unsigned long)
+#define MIYOO_VIR_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_SND_SET_VOLUME  _IOWR(0x100, 0, unsigned long)
+#define MIYOO_SND_GET_VOLUME  _IOWR(0x101, 0, unsigned long)
 #define MIYOO_KBD_GET_HOTKEY  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_KBD_SET_VER     _IOWR(0x101, 0, unsigned long)
+#define MIYOO_KBD_LOCK_KEY    _IOWR(0x102, 0, unsigned long) //unused
 #define MIYOO_LAY_SET_VER     _IOWR(0x103, 0, unsigned long)
+#define MIYOO_KBD_GET_VER     _IOWR(0x104, 0, unsigned long)
 #define MIYOO_LAY_GET_VER     _IOWR(0x105, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
 #define MIYOO_FB0_SET_MODE    _IOWR(0x101, 0, unsigned long)
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
-#define MIYOO_FB0_SET_FLIP    _IOWR(0x103, 0, unsigned long)
+#define MIYOO_FB0_SET_FLIP    _IOWR(0x103, 0, unsigned long) //unused
 #define MIYOO_FB0_SET_FPBP    _IOWR(0x104, 0, unsigned long)
+#define MIYOO_FB0_GET_FPBP    _IOWR(0x105, 0, unsigned long)
 #define MIYOO_FB0_SET_TEFIX   _IOWR(0x106, 0, unsigned long)
 #define MIYOO_FB0_GET_TEFIX   _IOWR(0x107, 0, unsigned long)
 
 #define MIYOO_FBP_FILE        "/mnt/.fpbp.conf"
 #define MIYOO_LID_FILE        "/mnt/.backlight.conf"
 #define MIYOO_VOL_FILE        "/mnt/.volume.conf"
-#define MIYOO_LID_CONF        "/sys/devices/platform/backlight/backlight/backlight/brightness"
 #define MIYOO_BUTTON_FILE     "/mnt/.buttons.conf"
-#define MIYOO_BATTERY         "/sys/class/power_supply/miyoo-battery/voltage_now"
 #define MIYOO_BATTERY_FILE    "/mnt/.batterylow.conf"
+#define MIYOO_LID_CONF        "/sys/devices/platform/backlight/backlight/backlight/brightness"
+#define MIYOO_BATTERY         "/sys/class/power_supply/miyoo-battery/voltage_now"
 #define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
 #define MIYOO_TVOUT_FILE      "/mnt/tvout"
+#define MIYOO_SND_FILE        "/dev/miyoo_snd"
+#define MIYOO_FB0_FILE        "/dev/miyoo_fb0"
+#define MIYOO_KBD_FILE        "/dev/miyoo_kbd"
+#define MIYOO_VIR_FILE        "/dev/miyoo_vir"
 
 #define MULTI_INT
-#define HW_BACKLID
+#define HW_LIDVOL
 #define DEFAULT_CPU 720
 #define DEFAULT_LAYOUT 1
 #define DEFAULT_TEFIX 0
@@ -101,7 +111,7 @@ int oc_choices[] = {
 }; // last value[] is dummy point - do not modify
 int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 
-int kbd, fb0;
+int kbd, fb0, snd;
 int32_t tickBattery = 0;
 
 void setTVoff() {
@@ -209,29 +219,44 @@ private:
 
 	int getBacklight() {
 		int val = -1;
-		int lid = -1;
 		FILE *f = fopen(MIYOO_LID_CONF, "r");
 		if (f) {
-			fscanf(f, "%i", &lid);
+			fscanf(f, "%i", &val);
 			fclose(f);
+			val = val * 10;
 		}
-		if (lid >= 0 && lid <= 10) val = lid * 10;
-		else if (lid > 10) val = 100;
+		return val;
+	}
+	
+	int getVolume() {
+		int val = -1;
+		snd = open("/dev/miyoo_snd", O_RDWR);
+		
+		if (snd > 0) {
+			ioctl(snd, MIYOO_SND_GET_VOLUME, &val);
+			close(snd);
+			val = val * 10; 
+		} else {
+		WARNING("Could not open /dev/miyoo_snd");
+		}
 		return val;
 	}
 
 public:
 	int setVolume(int val, bool popup = false) {
 		val = GMenu2X::setVolume(val, popup);
-
-		uint32_t snd = open("/dev/miyoo_snd", O_RDWR);
-
-		if (snd) {
-			int vol = val / 10;
-			if (vol > 9) vol = 9;
+		char buf[128] = {0};
+		int vol = val / 10;
+		if (vol > 9) vol = 9;
+		else if (vol < 0) vol = 0;
+		
+		snd = open("/dev/miyoo_snd", O_RDWR);
+		if (snd > 0) {
 			ioctl(snd, MIYOO_SND_SET_VOLUME, vol);
 			close(snd);
 		}
+
+		sprintf(buf, "echo %i > " MIYOO_VOL_FILE, vol);
 		volumeMode = getVolumeMode(val);
 
 		return val;
