@@ -1,9 +1,5 @@
 #include "powermanager.h"
 
-#ifdef TARGET_MIYOO
-#define HW_LIDVOL
-#endif
-
 PowerManager *PowerManager::instance = NULL;
 
 PowerManager::PowerManager(GMenu2X *gmenu2x, uint32_t suspendTimeout, uint32_t powerTimeout):

@@ -659,14 +659,22 @@ void Menu::drawStatusBar() {
 
 		// Volume indicator
 		// TODO: use drawButton(gmenu2x->s, iconVolume[volumeMode], confInt["globalVolume"], x);
+#if defined(HW_LIDVOL)
+		{ stringstream ss; ss << gmenu2x->getVolume() /*<< "%"*/; ss.get(&buf[0], sizeof(buf)); }
+#else
 		{ stringstream ss; ss << gmenu2x->confInt["globalVolume"] /*<< "%"*/; ss.get(&buf[0], sizeof(buf)); }
+#endif
 		x = iconPadding; // 1 * (iconWidth + 2 * iconPadding) + iconPadding + 1 * pctWidth;
 		iconVolume[volumeMode]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
 		gmenu2x->s->write(gmenu2x->font, buf, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
 
 		// Brightness indicator
+#if defined(HW_LIDVOL)
+		{ stringstream ss; ss << gmenu2x->getBacklight() /*<< "%"*/; ss.get(&buf[0], sizeof(buf)); }
+#else
 		{ stringstream ss; ss << gmenu2x->confInt["backlight"] /*<< "%"*/; ss.get(&buf[0], sizeof(buf)); }
+#endif
 		x += iconPadding + pctWidth;
 		iconBrightness[brightnessIcon]->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;

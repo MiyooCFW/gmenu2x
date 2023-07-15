@@ -60,7 +60,6 @@
 #define MIYOO_VIR_FILE        "/dev/miyoo_vir"
 
 #define MULTI_INT
-#define HW_LIDVOL
 #define DEFAULT_CPU 720
 #define DEFAULT_LAYOUT 1
 #define DEFAULT_TEFIX 0

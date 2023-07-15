@@ -18,7 +18,7 @@ CFLAGS = -DPLATFORM=\"$(PLATFORM)\" -D__BUILDTIME__=$(BUILDTIME) -D__COMMIT_HASH
 CFLAGS += -Isrc
 # Zero optimization flag due to unexpected behavior on 2022 clibs
 CFLAGS += -O0 -ggdb -g3 $(SDL_CFLAGS)
-CFLAGS += -DTARGET_MIYOO
+CFLAGS += -DTARGET_MIYOO -DHW_LIDVOL
 
 LDFLAGS = $(SDL_LIBS) -lfreetype -lSDL -lSDL_image -lSDL_ttf
 
