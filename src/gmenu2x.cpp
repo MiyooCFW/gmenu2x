@@ -205,10 +205,10 @@ void GMenu2X::quit() {
 	powerManager->clearTimer();
 	get_date_time(); // update sw clock
 	confStr["datetime"] = get_date_time();
-#if defined(HW_LIDVOL)
-	setBacklight(getBacklight());
-	setVolume(getVolume());
-#endif	
+//#if defined(HW_LIDVOL)
+// 	setBacklight(getBacklight());
+// 	setVolume(getVolume());
+//#endif	
 	writeConfig();
 
 	s->free();
