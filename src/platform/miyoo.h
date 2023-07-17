@@ -268,8 +268,10 @@ public:
 		char buf[128] = {0};
 		if (FILE *f = fopen(MIYOO_TVOUT_FILE, "r")) {
 			return 0;
-		} else {
+		} else if (lid != 0) {
 			sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
+		} else {
+			sprintf(buf, "echo %i > " MIYOO_LID_CONF, lid);
 		}
 		system(buf);
 		return val;
