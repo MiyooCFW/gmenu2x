@@ -114,31 +114,31 @@ int kbd, fb0, snd;
 int32_t tickBattery = 0;
 
 void setTVoff() {
-	system("/mnt/apps/tvoff/tvout-off.sh");
+	system("rm " MIYOO_TVOUT_FILE " ; sync ; reboot");
 }
 
 int getKbdLayoutHW() {
-	kbd = open("/dev/miyoo_kbd", O_RDWR);
+	kbd = open(MIYOO_KBD_FILE, O_RDWR);
 	if (kbd > 0) {
 		ioctl(kbd, MIYOO_LAY_GET_VER, &LAYOUT_VERSION);
 		int val = LAYOUT_VERSION;
 		close(kbd);
 		return val;
 	} else {
-		WARNING("Could not open /dev/miyoo_kbd");
+		WARNING("Could not open " MIYOO_KBD_FILE);
 		return 0;
 	}
 }
 
 int getTefixHW() {
-	fb0 = open("/dev/miyoo_fb0", O_RDWR);
+	fb0 = open(MIYOO_FB0_FILE, O_RDWR);
 	if (fb0 > 0) {
 		ioctl(fb0, MIYOO_FB0_GET_TEFIX, &TEFIX);
 		int val = TEFIX;
 		close(fb0);
 		return val;
 	} else {
-		WARNING("Could not open /dev/miyoo_fb0");
+		WARNING("Could not open " MIYOO_FB0_FILE);
 		return -1;
 	}
 }
@@ -229,14 +229,14 @@ private:
 	
 	int getVolume() {
 		int val = -1;
-		snd = open("/dev/miyoo_snd", O_RDWR);
+		snd = open(MIYOO_SND_FILE, O_RDWR);
 		
 		if (snd > 0) {
 			ioctl(snd, MIYOO_SND_GET_VOLUME, &val);
 			close(snd);
 			val = val * 10; 
 		} else {
-		WARNING("Could not open /dev/miyoo_snd");
+		WARNING("Could not open " MIYOO_SND_FILE);
 		}
 		return val;
 	}
@@ -249,7 +249,7 @@ public:
 		if (vol > 9) vol = 9;
 		else if (vol < 0) vol = 0;
 		
-		snd = open("/dev/miyoo_snd", O_RDWR);
+		snd = open(MIYOO_SND_FILE, O_RDWR);
 		if (snd > 0) {
 			ioctl(snd, MIYOO_SND_SET_VOLUME, vol);
 			close(snd);
@@ -278,27 +278,27 @@ public:
 	}
 
 	void setKbdLayout(int val) {
-		int f = open("/dev/miyoo_kbd", O_RDWR);
+		int f = open(MIYOO_KBD_FILE, O_RDWR);
 
 		if (f > 0) {
 			if (val <= 0 || val > LAYOUT_VERSION_MAX) val = DEFAULT_LAYOUT;
 			ioctl(f, MIYOO_LAY_SET_VER, val);
 			close(f);
 		} else {
-			WARNING("Could not open /dev/miyoo_kbd");
+			WARNING("Could not open " MIYOO_KBD_FILE);
 			val = 0;
 		}
 	}
 
 	void setTefix(int val) {
-		int f = open("/dev/miyoo_fb0", O_RDWR);
+		int f = open(MIYOO_FB0_FILE, O_RDWR);
 
 		if (f > 0) {
 			if (val < 0 || val > TEFIX_MAX) val = DEFAULT_TEFIX;
 			ioctl(f, MIYOO_FB0_SET_TEFIX, val);
 			close(f);
 		} else {
-			WARNING("Could not open /dev/miyoo_fb0");
+			WARNING("Could not open " MIYOO_FB0_FILE);
 			val = -1;
 		}
 	}
