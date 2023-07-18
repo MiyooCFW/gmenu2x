@@ -49,7 +49,7 @@ uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 //		INFO("%i", PowerManager::instance->gmenu2x->confInt["globalVolume"]);
 #endif
 		PowerManager::instance->gmenu2x->setBacklight(0);
-		PowerManager::instance->gmenu2x->setVolume(0);
+//		PowerManager::instance->gmenu2x->setVolume(0);
 		PowerManager::instance->resetPowerTimer();
 		PowerManager::instance->gmenu2x->cls();
 		PowerManager::instance->gmenu2x->setCPU(PowerManager::instance->gmenu2x->confInt["cpuMin"]);
