@@ -1417,7 +1417,7 @@ void GMenu2X::viewLog() {
 }
 
 void GMenu2X::viewAutoStart() {
-	MessageBox mb(this, tr["Disable AutoStart feature?"]);
+	MessageBox mb(this, tr["Continue with the AutoStart selected app?"]);
 	mb.setButton(CONFIRM, tr["Yes"]);
 	mb.setButton(CANCEL,  tr["No"]);
 	mb.setButton(MODIFIER,  tr["Remove this dialog!"]);
@@ -1425,7 +1425,7 @@ void GMenu2X::viewAutoStart() {
 	int res = mb.exec();
 
 	switch (res) {
-			case CONFIRM:
+			case CANCEL:
 				confInt["saveAutoStart"] = 0;
 				confStr["lastDirectory"] = "";
 				confInt["dialogAutoStart"] = 0;
