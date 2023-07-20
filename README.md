@@ -37,6 +37,16 @@ In settings:
 * START: Save edits and return;
 * SELECT: Clear or set default value.
 
+## AutoStart
+* In Settings - enable AUTOSTART feature.
+* Start app/game you would like to be launched every time at first after boot/reboot.
+* Every time you launch a device you will be welcomed with AutoStart selection menu.
+* Next previously launched app will start with all the settings you provide it with from GMenu2X linkapp config.
+* When you disable AutoStart msgbox there are only 2 ways to turn OFF this feature:
+	* press "Y" at startup during GMenu2X loading screen
+	* discard `dialogAutoStart=1` line in gmenu2x.conf file
+	* remove gmenu2x.conf file entirely
+
 ## Parameters
 
 You can pass useful variables before launching app in the editLink menu under "Parameters" option
@@ -60,8 +70,8 @@ You can pass useful variables before launching app in the editLink menu under "P
 ## Contacts
 
 GMenu2X Copyright (c) 2006-2010 [Massimiliano Torromeo](mailto:massimiliano.torromeo@gmail.com);  
-GMenuNX 2018-2019 by [@pingflood](https://boards.dingoonity.org/profile/pingflood/);  
-GMenu2X 2022 (modded GMenuNX) by [@Apaczer](apaczer.git@gmail.com);
+GMenuNX 2018-2019 by [@pingflood](https://github.com/pingflood);  
+GMenu2X 2022 (modded GMenuNX) by [@Apaczer](https://github.com/Apaczer);
 
 ## Credits
 
@@ -70,7 +80,7 @@ NoidZ for his gp2x' buttons graphics;
 Pickle for the initial Wiz and Caanoo ports; 
 Steward-Fu for the initial RetroGame ports; 
 TonyJih for the new RetroFW features; 
-Fontes for the RetroFW graphics; 
+Fontes for the RetroFW graphics;
 
 ### Beta testers
 Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X); 

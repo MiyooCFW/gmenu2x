@@ -288,55 +288,86 @@ void GMenu2X::main(bool autoStart) {
 	setSkin(confStr["skin"], true);
 
 	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
-	
+
 	srand(time(0));  // Seed the rand with current time to get different number sequences
-	int randomInt = rand() % 6; // Generate a random val={0..6} to print "Hint" msg occasionally
+	int randomInt = rand() % 9; // Generate a random val={0..6} to print "Hint" msg occasionally
 	//Hint messages
-	switch (randomInt) {
-		case 0: case 1: {
+	if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
+		switch (randomInt) {
+			case 0: case 1: case 6: case 8: {
+			MessageBox mb(this, tr["Loading"]);
+			mb.setAutoHide(1);
+			mb.setBgAlpha(0);
+			mb.exec();
+			break;
+			}
+			case 2: {
+			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+			mb.setAutoHide(1000);
+			mb.setBgAlpha(0);
+			mb.exec();
+			break;
+			}
+			case 3: {
+			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'X' to change Date & Time"]);
+			mb.setAutoHide(1000);
+			mb.setBgAlpha(0);
+			mb.exec();		
+			break;
+			}
+			case 4: {
+			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'SELECT' to disable TV-output"]);
+			mb.setAutoHide(1000);
+			mb.setBgAlpha(0);
+			mb.exec();		
+			break;
+			}
+			case 5: {
+			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'START' to enter Suspend Mode"]);
+			mb.setAutoHide(1000);
+			mb.setBgAlpha(0);
+			mb.exec();		
+			break;
+			}
+			case 7: {
+			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!? See settings"]);
+			mb.setAutoHide(1000);
+			mb.setBgAlpha(0);
+			mb.exec();		
+			break;
+			}
+		}
+	} else if (!confInt["dialogAutoStart"]) {
+		switch (randomInt) {
+			case 0: case 1: case 2: case 3: case 4: case 5: {
+			MessageBox mb(this, tr["Loading"]);
+			mb.setAutoHide(1);
+			mb.setBgAlpha(0);
+			mb.exec();
+			break;
+			}
+			case 6: case 7: case 8: {
+			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+			mb.setAutoHide(1000);
+			mb.setBgAlpha(0);
+			mb.exec();
+			break;
+			}
+		}
+	} else {
 		MessageBox mb(this, tr["Loading"]);
 		mb.setAutoHide(1);
 		mb.setBgAlpha(0);
 		mb.exec();
-		break;
-		}
-		case 2: {
-		MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
-		mb.setAutoHide(1000);
-		mb.setBgAlpha(0);
-		mb.exec();
-		break;
-		}
-		case 3: {
-		MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'X' to change Date & Time"]);
-		mb.setAutoHide(1000);
-		mb.setBgAlpha(0);
-		mb.exec();		
-		break;
-		}
-		case 4: {
-		MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'SELECT' to disable TV-output"]);
-		mb.setAutoHide(1000);
-		mb.setBgAlpha(0);
-		mb.exec();		
-		break;
-		}
-		case 5: {
-		MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'START' to enter Suspend Mode"]);
-		mb.setAutoHide(1000);
-		mb.setBgAlpha(0);
-		mb.exec();		
-		break;
-		}
 	}
-	
+
 	input.update(false);
 	if (input[MANUAL]){ //Reset GMenu2X settings
 		string tmppath = exe_path() + "/gmenu2x.conf";
 		unlink(tmppath.c_str());
 		reinit();
 	}
-	
+
 	menu = new Menu(this);
 	initMenu();
 
