@@ -1,4 +1,5 @@
 PLATFORM := miyoo
+PLATFORM_SUPPORT := bittboy
 
 BUILDTIME := "$(shell date +%F\ %H:%M)"
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
@@ -58,6 +59,8 @@ dist: dir shared
 	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
 	cp -RH assets/skins/FontiGrid/* $(DISTDIR)/skins/Default
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
+	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)/input_$(PLATFORM).conf
+	cp -RH assets/$(PLATFORM_SUPPORT)/input.conf $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
 
 zip: dist
 	cd $(DISTDIR)/ && rm -f ../gmenu2x-$(PLATFORM).zip && zip -r ../gmenu2x-$(PLATFORM).zip skins translations COPYING gmenu2x input.conf about.txt
