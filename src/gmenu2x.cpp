@@ -290,69 +290,76 @@ void GMenu2X::main(bool autoStart) {
 	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
 
 	srand(time(0));  // Seed the rand with current time to get different number sequences
-	int randomInt = rand() % 9; // Generate a random val={0..6} to print "Hint" msg occasionally
+	int randomInt = rand() % 9; // Generate a random val={0..x} to print "Hint" msg occasionally
 	//Hint messages
-	if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
-		switch (randomInt) {
-			case 0: case 1: case 6: case 8: {
+	if (confInt["showHints"] == 1) {
+		if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
+			switch (randomInt) {
+				case 0: {
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+				mb.setAutoHide(1000);
+				mb.setBgAlpha(0);
+				mb.exec();
+				break;
+				}
+				case 1: {
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'X' to change Date & Time"]);
+				mb.setAutoHide(1000);
+				mb.setBgAlpha(0);
+				mb.exec();		
+				break;
+				}
+				case 2: {
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'SELECT' to disable TV-output"]);
+				mb.setAutoHide(1000);
+				mb.setBgAlpha(0);
+				mb.exec();		
+				break;
+				}
+				case 3: {
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'START' to enter Suspend Mode"]);
+				mb.setAutoHide(1000);
+				mb.setBgAlpha(0);
+				mb.exec();		
+				break;
+				}
+				case 4: {
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!? See settings"]);
+				mb.setAutoHide(1000);
+				mb.setBgAlpha(0);
+				mb.exec();		
+				break;
+				}
+				default: {
+				MessageBox mb(this, tr["Loading"]);
+				mb.setAutoHide(1);
+				mb.setBgAlpha(0);
+				mb.exec();
+				break;
+				}
+			}
+		} else if (!confInt["dialogAutoStart"]) {
+			switch (randomInt) {
+				case 0: case 1: case 2: {
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+				mb.setAutoHide(1000);
+				mb.setBgAlpha(0);
+				mb.exec();
+				break;
+				}
+				default: {
+				MessageBox mb(this, tr["Loading"]);
+				mb.setAutoHide(1);
+				mb.setBgAlpha(0);
+				mb.exec();
+				break;
+				}
+			}
+		} else {
 			MessageBox mb(this, tr["Loading"]);
 			mb.setAutoHide(1);
 			mb.setBgAlpha(0);
 			mb.exec();
-			break;
-			}
-			case 2: {
-			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
-			mb.setAutoHide(1000);
-			mb.setBgAlpha(0);
-			mb.exec();
-			break;
-			}
-			case 3: {
-			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'X' to change Date & Time"]);
-			mb.setAutoHide(1000);
-			mb.setBgAlpha(0);
-			mb.exec();		
-			break;
-			}
-			case 4: {
-			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'SELECT' to disable TV-output"]);
-			mb.setAutoHide(1000);
-			mb.setBgAlpha(0);
-			mb.exec();		
-			break;
-			}
-			case 5: {
-			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'START' to enter Suspend Mode"]);
-			mb.setAutoHide(1000);
-			mb.setBgAlpha(0);
-			mb.exec();		
-			break;
-			}
-			case 7: {
-			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!? See settings"]);
-			mb.setAutoHide(1000);
-			mb.setBgAlpha(0);
-			mb.exec();		
-			break;
-			}
-		}
-	} else if (!confInt["dialogAutoStart"]) {
-		switch (randomInt) {
-			case 0: case 1: case 2: case 3: case 4: case 5: {
-			MessageBox mb(this, tr["Loading"]);
-			mb.setAutoHide(1);
-			mb.setBgAlpha(0);
-			mb.exec();
-			break;
-			}
-			case 6: case 7: case 8: {
-			MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
-			mb.setAutoHide(1000);
-			mb.setBgAlpha(0);
-			mb.exec();
-			break;
-			}
 		}
 	} else {
 		MessageBox mb(this, tr["Loading"]);
@@ -719,6 +726,7 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], DEFAULT_TEFIX, 0, confInt["tefixMax"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Hints"], tr["Show \"Hint\" messages"], &confInt["showHints"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
@@ -897,6 +905,7 @@ void GMenu2X::readConfig() {
 	// Defaults *** Sync with default values in writeConfig
 	confInt["saveSelection"] = 1;
 	confInt["dialogAutoStart"] = 1;
+	confInt["showHints"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
