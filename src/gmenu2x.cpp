@@ -290,7 +290,7 @@ void GMenu2X::main(bool autoStart) {
 	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
 
 	srand(time(0));  // Seed the rand with current time to get different number sequences
-	int randomInt = rand() % 9; // Generate a random val={0..x} to print "Hint" msg occasionally
+	int randomInt = rand() % 10; // Generate a random val={0..x} to print "Hint" msg occasionally
 	//Hint messages
 	if (confInt["showHints"] == 1) {
 		if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
@@ -325,6 +325,13 @@ void GMenu2X::main(bool autoStart) {
 				}
 				case 4: {
 				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!? See settings"]);
+				mb.setAutoHide(1000);
+				mb.setBgAlpha(0);
+				mb.exec();		
+				break;
+				}
+				case 5: {
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'Y' to restart GMenu2X"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();		
@@ -464,6 +471,17 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 			wasActive = 0;
 			settings_date();
 			powerManager->doSuspend(0);
+		}
+	}
+
+	while (input[MANUAL]) { // MANUAL HOLD
+		wasActive = MANUAL;
+
+		input.update();
+
+		if (SDL_GetTicks() - button_hold > 1000) {
+			wasActive = 0;
+			reinit();
 		}
 	}
 
