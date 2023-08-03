@@ -251,7 +251,6 @@ void GMenu2X::main(bool autoStart) {
 	setBacklight(confInt["backlight"]);
 	setVolume(confInt["globalVolume"]);
 #endif
-	setCPU(confInt["cpuMenu"]);
 	setKbdLayout(confInt["keyboardLayoutMenu"]);
 	setTefix(confInt["tefixMenu"]);
 
@@ -288,6 +287,9 @@ void GMenu2X::main(bool autoStart) {
 	setSkin(confStr["skin"], true);
 
 	powerManager = new PowerManager(this, confInt["backlightTimeout"], confInt["powerTimeout"]);
+
+	// overclock CPU only after first surface has been draw (hopefully won't interfere fb0 init execution)
+	setCPU(confInt["cpuMenu"]);
 
 	srand(time(0));  // Seed the rand with current time to get different number sequences
 	int randomInt = rand() % 10; // Generate a random val={0..x} to print "Hint" msg occasionally
