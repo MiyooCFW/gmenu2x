@@ -470,6 +470,10 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		input.update();
 
 		if (SDL_GetTicks() - button_hold > 1000) {
+#if defined(HW_LIDVOL)
+			confInt["backlight"] = getBacklight();
+			confInt["globalVolume"] = getVolume();
+#endif
 			wasActive = 0;
 			settings_date();
 			powerManager->doSuspend(0);
@@ -759,8 +763,7 @@ void GMenu2X::settings() {
 		}
 	}
 
-		setBacklight(confInt["backlight"], false);
-		
+	setBacklight(confInt["backlight"], false);
 
 #if defined(TARGET_GP2X)
 		if (prevgamma != confInt["gamma"]) {
