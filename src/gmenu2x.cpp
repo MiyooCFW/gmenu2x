@@ -743,7 +743,7 @@ void GMenu2X::settings() {
 #endif
 
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Suspend timeout"], tr["Seconds until suspend the device when inactive"], &confInt["backlightTimeout"], 30, 0, 300))->setOff(9));
-	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 300))->setOff(9));
+	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 60))->setOff(0));
 	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 50, 10, 100, 10));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 50, 0, 90, 10));
 	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], DEFAULT_LAYOUT, 1, confInt["keyboardLayoutMax"]));
@@ -766,15 +766,15 @@ void GMenu2X::settings() {
 	setBacklight(confInt["backlight"], false);
 
 #if defined(TARGET_GP2X)
-		if (prevgamma != confInt["gamma"]) {
-			setGamma(confInt["gamma"]);
-		}
+	if (prevgamma != confInt["gamma"]) {
+		setGamma(confInt["gamma"]);
+	}
 #endif
-		string freshDateTime = confStr["datetime"];
-		if (prevDateTime != confStr["datetime"]) {
-			set_date_time(freshDateTime.c_str());
-			powerManager->doSuspend(0);
-		}
+	string freshDateTime = confStr["datetime"];
+	if (prevDateTime != confStr["datetime"]) {
+		set_date_time(freshDateTime.c_str());
+		powerManager->doSuspend(0);
+	}
 	
 	powerManager->setSuspendTimeout(confInt["backlightTimeout"]);
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
@@ -974,7 +974,7 @@ void GMenu2X::readConfig() {
 	if (confStr["skin"].empty() || !dir_exists("skins/" + confStr["skin"])) confStr["skin"] = "Default";
 
 	evalIntConf(&confInt["backlightTimeout"], 30, 0, 300);
-	evalIntConf(&confInt["powerTimeout"], 10, 0, 300);
+	evalIntConf(&confInt["powerTimeout"], 10, 0, 60);
 	evalIntConf(&confInt["outputLogs"], 0, 0, 1 );
 	// evalIntConf(&confInt["cpuMax"], 2000, 200, 2000 );
 	// evalIntConf(&confInt["cpuMin"], 342, 200, 1200 );
