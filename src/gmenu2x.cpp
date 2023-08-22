@@ -245,10 +245,10 @@ void GMenu2X::main(bool autoStart) {
 
 	setScaleMode(0);
 #if defined(HW_LIDVOL)
-	setBacklight(getBacklight());
+	if (setBacklight(getBacklight()) == 0) setBacklight(50);
 	setVolume(getVolume());
 #else
-	setBacklight(confInt["backlight"]);
+	if (setBacklight(confInt["backlight"]) == 0) setBacklight(50);
 	setVolume(confInt["globalVolume"]);
 #endif
 	setKbdLayout(confInt["keyboardLayoutMenu"]);
