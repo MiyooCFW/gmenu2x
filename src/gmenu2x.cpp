@@ -1956,8 +1956,10 @@ void GMenu2X::deleteLink() {
 				unlink(package.c_str());
 				menu->deleteSelectedLink();
 			} else if (package_type == 2) {
+				system("mount -o remount,rw /");
 				TerminalDialog td(this, tr["Uninstall package"], "opkg remove " + package, "skin:icons/configure.png");
 				td.exec("opkg remove " + package);
+				system("mount -o remount,ro /");
 			}
 			initMenu();
 			break;
@@ -2044,12 +2046,14 @@ string GMenu2X::ipkName(string cmd) {
 }
 
 void GMenu2X::ipkInstall(string path) {
+	system("mount -o remount,rw /");
 	string cmd = "opkg install --force-reinstall --force-overwrite ";
 	input.update(false);
 	if (input[MANUAL]) cmd += "--force-downgrade ";
 	TerminalDialog td(this, tr["Package installer"], "opkg install " + base_name(path), "skin:icons/configure.png");
 	td.exec(cmd + cmdclean(path));
-	system("if [ -d sections/systems ]; then mkdir -p sections/emulators.systems; cp -r sections/systems/* sections/emulators.systems/; rm -rf sections/systems; fi; sync;");
+	system("mount -o remount,ro /");
+	//system("if [ -d sections/systems ]; then mkdir -p sections/emulators.systems; cp -r sections/systems/* sections/emulators.systems/; rm -rf sections/systems; fi; sync;");
 	initMenu();
 }
 #endif
