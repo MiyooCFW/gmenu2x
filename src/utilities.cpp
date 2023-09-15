@@ -302,6 +302,7 @@ bool file_copy(const string &src, const string &dst) {
 	fd = fopen(dst.c_str(), "w");
 	if (fd == NULL) {
 		ERROR("Cannot open destiny file %s\n", src.c_str());
+		fclose(fs);
 		return false;
 	}
 
