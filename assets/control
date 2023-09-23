@@ -1,11 +1,10 @@
-Package: gmenunx
+Package: gmenu2x
 Version:
-Description: GMenu 1X, 2X, 3X (...) NX: GMenuNX is a fork of GMenu2X developed for the RetroGame and RetroArcade gaming devices
-Replaces: gmenu2x,gmenunx
-Section: apps
+Description: GMenu 1X, 2X, 3X (...) NX: GMenu2X-Miyoo is a fork of GMenuNX developed for the RetroFW and is currently aimed at MiyooCFW
+Replaces: gmenu2x
+Section: frontends
 Priority: optional
-Maintainer: pingflood
-Architecture: mipsel
-Homepage: https://github.com/pingflood/gmenunx
-Depends: retrofw(>=2.0)
-Source: https://github.com/pingflood/gmenunx
+Maintainer: Apaczer
+Architecture: arm
+Homepage: https://github.com/TriForceX/MiyooCFW
+Source: https://github.com/MiyooCFW/gmenu2x

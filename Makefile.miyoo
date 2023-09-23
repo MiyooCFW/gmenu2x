@@ -26,6 +26,7 @@ LDFLAGS = $(SDL_LIBS) -lfreetype -lSDL -lSDL_image -lSDL_ttf
 OBJDIR = /tmp/gmenu2x/$(PLATFORM)
 DISTDIR = dist/$(PLATFORM)
 TARGET = $(DISTDIR)/gmenu2x
+HOMEPATH = /mnt
 
 SOURCES := $(wildcard src/*.cpp)
 OBJS := $(patsubst src/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
@@ -49,7 +50,7 @@ shared: debug
 	$(STRIP) $(TARGET)-debug -o $(TARGET)
 
 clean:
-	rm -rf $(OBJDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug $(DISTDIR) dist/gmenu2x-$(PLATFORM).zip
+	rm -rf $(OBJDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug $(DISTDIR) dist/gmenu2x-$(PLATFORM).zip dist/gmenu2x-$(PLATFORM).ipk
 
 dist: dir shared
 	mkdir -p $(DISTDIR)/skins/Default
@@ -62,5 +63,21 @@ dist: dir shared
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)/input_$(PLATFORM).conf
 	cp -RH assets/$(PLATFORM_SUPPORT)/input.conf $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
 
+ipk: dist
+	mkdir -p .$(HOMEPATH)/gmenu2x && mv $(DISTDIR)/* .$(HOMEPATH)/gmenu2x && mv .$(HOMEPATH) $(DISTDIR)
+	rm -rf /tmp/.gmenu-ipk/; mkdir -p /tmp/.gmenu-ipk/
+	sed "s/^Version:.*/Version: $$(date +%Y%m%d)/" assets/control > /tmp/.gmenu-ipk/control
+	cp assets/conffiles /tmp/.gmenu-ipk/
+	echo "#!/bin/sh\nsync; echo 'Installing gmenu2x..'; rm /var/lib/opkg/info/gmenu2x.list; exit 0" > /tmp/.gmenu-ipk/preinst
+	echo "#!/bin/sh\nsync; echo 'Installation finished.' ; echo 'Restarting gmenu2x..'; sleep 1; killall gmenu2x; exit 0" > /tmp/.gmenu-ipk/postinst
+	chmod +x /tmp/.gmenu-ipk/postinst /tmp/.gmenu-ipk/preinst
+	tar --owner=0 --group=0 -czvf /tmp/.gmenu-ipk/control.tar.gz -C /tmp/.gmenu-ipk/ control conffiles postinst preinst
+	tar --owner=0 --group=0 -czvf /tmp/.gmenu-ipk/data.tar.gz -C $(DISTDIR)/ .
+	echo 2.0 > /tmp/.gmenu-ipk/debian-binary
+	ar r dist/gmenu2x-$(PLATFORM).ipk /tmp/.gmenu-ipk/control.tar.gz /tmp/.gmenu-ipk/data.tar.gz /tmp/.gmenu-ipk/debian-binary
+	@rm -rf $(DISTDIR)
+
 zip: dist
-	cd $(DISTDIR)/ && rm -f ../gmenu2x-$(PLATFORM).zip && zip -r ../gmenu2x-$(PLATFORM).zip skins translations COPYING gmenu2x input.conf about.txt
+	mkdir -p .$(HOMEPATH)/gmenu2x && mv $(DISTDIR)/* .$(HOMEPATH)/gmenu2x && mv .$(HOMEPATH)/gmenu2x $(DISTDIR)
+	cd $(DISTDIR)/ && rm -f ../gmenu2x-$(PLATFORM).zip && zip -r ../gmenu2x-$(PLATFORM).zip .
+	@rm -rf $(DISTDIR)
