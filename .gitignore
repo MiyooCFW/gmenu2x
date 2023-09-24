@@ -12,3 +12,4 @@ opkinfo
 *.a
 *~
 *.d
+*.json

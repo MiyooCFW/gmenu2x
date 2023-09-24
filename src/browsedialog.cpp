@@ -129,8 +129,9 @@ bool BrowseDialog::exec() {
 					if (!gmenu2x->sc.exists(preview + "scaled")) {
 						Surface *previm = new Surface(preview);
 						gmenu2x->sc.add(previm, preview + "scaled");
-
-						gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleFit);
+						if (gmenu2x->confStr["bgscale"] == "Stretch") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleStretch);
+						else if (gmenu2x->confStr["bgscale"] == "Crop") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleMax);
+						else if (gmenu2x->confStr["bgscale"] == "Aspect") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleFit);
 					}
 
 					do {
