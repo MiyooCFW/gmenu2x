@@ -776,7 +776,6 @@ void Menu::drawIconTray() {
 }
 
 void Menu::exec() {
-	extern void allyTTS(const char* text);
 	icon_changed = SDL_GetTicks();
 	section_changed = icon_changed;
 
@@ -937,10 +936,10 @@ void Menu::exec() {
 		iconDescription = "";
 		if (selLinkApp() != NULL) {
 			iconDescription = selLinkApp()->getDescription();
-			allyTTS(selLinkApp()->getTitle().c_str());
+			browsedialog->allyTTS(selLinkApp()->getTitle().c_str());
 		} else if (selLink() != NULL) {
 			iconDescription = selLink()->getDescription();
-			allyTTS(selLink()->getDescription().c_str());
+			browsedialog->allyTTS(selLink()->getDescription().c_str());
 		}
 
 		if (

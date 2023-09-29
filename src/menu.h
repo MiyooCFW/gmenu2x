@@ -23,12 +23,14 @@
 #include <string>
 #include <vector>
 #include "link.h"
+#include "browsedialog.h"
 
 using std::string;
 using std::vector;
 
 class LinkApp;
 class GMenu2X;
+class BrowseDialog;
 
 typedef vector<Link*> linklist;
 
@@ -40,6 +42,7 @@ Handles the menu structure
 class Menu {
 private:
 	GMenu2X *gmenu2x;
+	BrowseDialog *browsedialog;
 	int iSection, iLink;
 	int32_t iFirstDispSection, iFirstDispRow;
 	vector<string> sections;

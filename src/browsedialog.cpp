@@ -15,9 +15,8 @@ uint32_t hideAlphaNum(uint32_t interval, void *param) {
 	return 0;
 };
 
-static char rm_tmp_chr[256];
-
-void allyTTS(const char* text) {
+void BrowseDialog::allyTTS(const char* text) {
+	static char rm_tmp_chr[256];
 	char tmp_chr[256];
 
 	if(strcmp(text, rm_tmp_chr) == 0) return;
