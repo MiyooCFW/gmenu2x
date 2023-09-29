@@ -50,6 +50,13 @@ bool SettingsDialog::exec() {
 		voices[selected]->adjustInput();
 
 		this->description = voices[selected]->getDescription();
+		this->title = voices[selected]->getTitle();
+		
+		string readSetting = title;
+		//string readSetting = title + " " + description; //espeak error when reading single quote sign
+		
+		browsedialog->allyTTS(readSetting.c_str());
+		
 		drawDialog(gmenu2x->s);
 
 		//Selection

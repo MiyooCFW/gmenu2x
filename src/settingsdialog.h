@@ -30,6 +30,7 @@ using std::string;
 using std::vector;
 
 class Touchscreen;
+class BrowseDialog;
 
 class SettingsDialog : protected Dialog {
 private:
@@ -46,6 +47,7 @@ private:
 		SD_ACTION_PAGEDOWN,
 	};
 	Touchscreen &ts;
+	BrowseDialog *browsedialog;
 	vector<MenuSetting *> voices;
 
 public:
