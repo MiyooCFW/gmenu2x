@@ -15,6 +15,19 @@ uint32_t hideAlphaNum(uint32_t interval, void *param) {
 	return 0;
 };
 
+static char rm_tmp_chr[256];
+
+void allyTTS(const char* text) {
+	char tmp_chr[256];
+
+	if(strcmp(text, rm_tmp_chr) == 0) return;
+
+	system("killall espeak"); 
+	snprintf(tmp_chr, sizeof(tmp_chr), "espeak '%s' &", text);
+	snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
+	system(tmp_chr);
+}
+
 BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon):
 Dialog(gmenu2x, title, description, icon) {
 	setPath(gmenu2x->confStr["homePath"]);
@@ -94,7 +107,8 @@ bool BrowseDialog::exec() {
 			iY = gmenu2x->listRect.y + 1;
 			for (i = firstElement; i < size() && i <= firstElement + numRows; i++, iY += rowHeight) {
 				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
-
+				
+				allyTTS(getFileName(selected).c_str());
 				iconCur = iconFile;
 
 				if (isDirectory(i)) {
