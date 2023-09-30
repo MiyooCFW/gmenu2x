@@ -52,8 +52,7 @@ bool SettingsDialog::exec() {
 		this->description = voices[selected]->getDescription();
 		this->title = voices[selected]->getTitle();
 		
-		string readSetting = title;
-		//string readSetting = title + " " + description; //espeak error when reading single quote sign
+		string readSetting = title + " " + description; // read whole text for more clarity
 		
 		browsedialog->allyTTS(readSetting.c_str());
 		

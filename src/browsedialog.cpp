@@ -22,7 +22,7 @@ void BrowseDialog::allyTTS(const char* text) {
 	if(strcmp(text, rm_tmp_chr) == 0) return;
 
 	system("killall espeak"); 
-	snprintf(tmp_chr, sizeof(tmp_chr), "espeak '%s' &", text);
+	snprintf(tmp_chr, sizeof(tmp_chr), "espeak \"%s\" &", text);
 	snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
 	system(tmp_chr);
 }
