@@ -68,6 +68,8 @@ gmenu2x(gmenu2x) {
 		}
 
 		do {
+			string readOption = options[selected].text;
+			browsedialog->allyTTS(readOption.c_str());
 			inputAction = gmenu2x->input.update();
 
 			if (gmenu2x->inputCommonActions(inputAction)) continue;
@@ -239,6 +241,8 @@ int MessageBox::exec() {
 		// 	}
 		// }
 
+		string readMessage = text;
+		browsedialog->allyTTS(readMessage.c_str());
 		bool inputAction = gmenu2x->input.update();
 		if (inputAction) {
 			// if (gmenu2x->inputCommonActions(inputAction)) continue; // causes power button bounce
