@@ -406,6 +406,7 @@ void GMenu2X::main(bool autoStart) {
 		setTefix(confInt["lastTefix"]);
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
+		system("killall espeak");
 		string prevCmd = confStr["lastCommand"].c_str();
 		string tmppath = exe_path() + "/gmenu2x.conf";
 		string writeDateCmd = "; sed -i \"1s/.*/datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"/\" ";
