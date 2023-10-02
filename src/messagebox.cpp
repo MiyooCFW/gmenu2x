@@ -240,9 +240,18 @@ int MessageBox::exec() {
 		// 		}
 		// 	}
 		// }
+		
+		string strButtons, strButtonsText;
 
-		string readMessage = text;
+		for (uint32_t i = 0; i < buttonText.size(); i++) {
+			if (buttonText[i] != "") {
+			strButtons += " " + button[i] + " is " + buttonText[i];
+			}
+		}
+		string strMessage = text;
+		string readMessage = strMessage + " " + strButtons;
 		browsedialog->allyTTS(readMessage.c_str());
+
 		bool inputAction = gmenu2x->input.update();
 		if (inputAction) {
 			// if (gmenu2x->inputCommonActions(inputAction)) continue; // causes power button bounce
