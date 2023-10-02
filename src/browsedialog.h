@@ -54,7 +54,7 @@ public:
 	int32_t selected = 0;
 	bool exec();
 	void directoryEnter(const string &path);
-	void allyTTS(const char* text);
+	void allyTTS(const char* text, int g, int s);
 
 	virtual const std::string getFileName(uint32_t i = 0);
 	virtual const std::string getParams(uint32_t i = 0);
