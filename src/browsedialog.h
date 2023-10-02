@@ -27,6 +27,13 @@
 #include "filelister.h"
 #include "menu.h"
 
+extern int SLOW_GAP_TTS;
+extern int SLOW_SPEED_TTS;
+extern int MEDIUM_GAP_TTS;
+extern int MEDIUM_SPEED_TTS;
+extern int FAST_GAP_TTS;
+extern int FAST_SPEED_TTS;
+
 class FileLister;
 
 using std::string;

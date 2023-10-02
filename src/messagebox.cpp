@@ -69,7 +69,7 @@ gmenu2x(gmenu2x) {
 
 		do {
 			string readOption = options[selected].text;
-			browsedialog->allyTTS(readOption.c_str(), 3, 150);
+			browsedialog->allyTTS(readOption.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 			inputAction = gmenu2x->input.update();
 
 			if (gmenu2x->inputCommonActions(inputAction)) continue;
@@ -250,7 +250,7 @@ int MessageBox::exec() {
 		}
 		string strMessage = text;
 		string readMessage = strMessage + " " + strButtons;
-		browsedialog->allyTTS(readMessage.c_str(), 6, 130);
+		browsedialog->allyTTS(readMessage.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS);
 
 		bool inputAction = gmenu2x->input.update();
 		if (inputAction) {

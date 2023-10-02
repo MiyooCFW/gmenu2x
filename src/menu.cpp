@@ -936,10 +936,10 @@ void Menu::exec() {
 		iconDescription = "";
 		if (selLinkApp() != NULL) {
 			iconDescription = selLinkApp()->getDescription();
-			browsedialog->allyTTS(selLinkApp()->getTitle().c_str(), 0, 0);
+			browsedialog->allyTTS(selLinkApp()->getTitle().c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 		} else if (selLink() != NULL) {
 			iconDescription = selLink()->getDescription();
-			browsedialog->allyTTS(selLink()->getDescription().c_str(), 5, 140);
+			browsedialog->allyTTS(selLink()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 		}
 
 		if (

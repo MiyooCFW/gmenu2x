@@ -54,7 +54,7 @@ bool SettingsDialog::exec() {
 		
 		string readSetting = title + " " + description; // read whole text for more clarity
 		
-		browsedialog->allyTTS(readSetting.c_str(), 3, 150);
+		browsedialog->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 		
 		drawDialog(gmenu2x->s);
 

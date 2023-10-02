@@ -7,6 +7,13 @@
 using namespace std;
 extern const char *CARD_ROOT;
 
+int SLOW_GAP_TTS = 5;
+int SLOW_SPEED_TTS = 140;
+int MEDIUM_GAP_TTS = 3;
+int MEDIUM_SPEED_TTS = 150;
+int FAST_GAP_TTS = 0; //default
+int FAST_SPEED_TTS = 175; //default
+
 SDL_TimerID alphanum_timer = NULL;
 
 uint32_t hideAlphaNum(uint32_t interval, void *param) {
@@ -107,7 +114,7 @@ bool BrowseDialog::exec() {
 			for (i = firstElement; i < size() && i <= firstElement + numRows; i++, iY += rowHeight) {
 				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
 				
-				allyTTS(getFileName(selected).c_str(), 0, 0);
+				allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 				iconCur = iconFile;
 
 				if (isDirectory(i)) {
