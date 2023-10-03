@@ -11,6 +11,37 @@ Replace the ``gmenu2x`` binary with the latest one from action builds.
 (Re)Boot your device and enjoy new GMenu2X
 
 
+## Building
+
+### MiyooCFW:
+
+Set up your environment with latest SDK (use [MiyooCFW/buildroot](https://github.com/miyoocfw/buildroot/)). Generated toolchain should be placed at `/opt/miyoo/` directory.
+- build gmenu2x binary:
+```
+make -f Makefile.miyoo
+```
+- build GMenu2X distribution ZIP package:
+```
+make -f Makefile.miyoo zip
+```
+you can find both outputs in `/dist/miyoo/` directory.
+### PC (Linux):
+This is primarily useful for development/testing. 
+First, install the dependencies. This should work for Debian/Ubuntu systems, use the appropriate package manager for other systems:
+```sh
+sudo apt-get install -y build-essential libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libboost-all-dev libfreetype6-dev libbz2-dev libmpg123-dev
+```
+Compile with:
+```sh
+make -f Makefile.linux dist
+```
+Then run it from the `dist/linux/` directory:
+```sh
+cd dist/linux
+./gmenu2x
+```
+
+
 ## Controls
 
 * A: Accept / Launch selected link / Confirm action;
@@ -49,12 +80,12 @@ In settings:
 
 ## Parameters
 
-You can pass useful variables before launching app in the editLink menu under "Parameters" option  
-[selPath] - this string will be replaced by the selector path.  
-[selFile] - this string will be replaced by the selected file's name, in the selector, without its extension.  
-[selExt] - this string will be replaced by the selected file's extension.  
-[selFileFull] - this is a shortcut value that means [selFile][selExt]  
-[selFullPath] - this is a shortcut value that means [selPath][selFile][selExt]  
+You can pass useful variables (which can be treated as arguments for cmd) before launching app in the editLink menu under "Parameters" option: 
+- **[selPath]** - this string will be replaced by the selector path.  
+- **[selFile]** - this string will be replaced by the selected file's name, in the selector, without its extension.  
+- **[selExt]** - this string will be replaced by the selected file's extension.  
+- **[selFileFull]** - this is a shortcut value that means [selFile][selExt]  
+- **[selFullPath]** - this is a shortcut value that means [selPath][selFile][selExt]  
 
 ## [How to have previews in Selector Browser](http://boards.dingoonity.org/ingenic-jz4760-devices/gmenunext-let's-make-gmenu-great-again!/msg177392/#msg177392)
 
@@ -76,40 +107,40 @@ GMenu2X 2022 (modded GMenuNX) by [@Apaczer](https://github.com/Apaczer);
 ## Credits
 
 ### Contributors
-NoidZ for his gp2x' buttons graphics; 
-Pickle for the initial Wiz and Caanoo ports; 
-Steward-Fu for the initial RetroGame ports; 
-TonyJih for the new RetroFW features; 
-Fontes for the RetroFW graphics;
+NoidZ for his gp2x' buttons graphics;  
+Pickle for the initial Wiz and Caanoo ports;  
+Steward-Fu for the initial RetroGame ports;  
+TonyJih for the new RetroFW features;  
+Fontes for the RetroFW graphics;  
 
 ### Beta testers
-Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X); 
-Yann Vaillant (WIZ); 
-msx, jbanes, jutley and scooterpsu (RetroFW); 
-salvacam, SolidOne (MiyooCFW).
+Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X);  
+Yann Vaillant (WIZ);  
+msx, jbanes, jutley and scooterpsu (RetroFW);  
+salvacam, SolidOne (MiyooCFW).  
 
 ### Translators
-Chinese (CN): 蔡蔡哥, simpleasy, KungfuPanda; 
-Chinese (TW): wentao, TonyJih; 
-Danish: claus; 
-Dutch: superfly; 
-English: Massimiliano; 
-Finnish: Jontte Atte; 
-French: Yodaz; 
-German: fusion_power, johnnysnet, Waldteufel; 
-Italian: Massimiliano; 
-Korean: haven-jeon; 
-Norwegian: cowai; 
-Polish: Macmmm81; 
-Portuguese (Brazil): pingflood; 
-Portuguese (Portugal): NightShadow; 
-Russian: XaMMaX90; 
-Slovak: Jozef; 
-Spanish: pedator; 
-Swedish: Esslan Micket; 
+Chinese (CN): 蔡蔡哥, simpleasy, KungfuPanda;  
+Chinese (TW): wentao, TonyJih;  
+Danish: claus;  
+Dutch: superfly;  
+English: Massimiliano;  
+Finnish: Jontte Atte;  
+French: Yodaz;  
+German: fusion_power, johnnysnet, Waldteufel;  
+Italian: Massimiliano;  
+Korean: haven-jeon;  
+Norwegian: cowai;  
+Polish: Macmmm81;  
+Portuguese (Brazil): pingflood;  
+Portuguese (Portugal): NightShadow;  
+Russian: XaMMaX90;  
+Slovak: Jozef;  
+Spanish: pedator;  
+Swedish: Esslan Micket;  
 
 ### Donors
-EvilDragon (www.gp2x.de),
+EvilDragon (www.gp2x.de), 
 Tecnologie Creative (www.tecnologiecreative.it), 
 TelcoLou, 
 gaterooze, 
