@@ -41,6 +41,17 @@ cd dist/linux
 ./gmenu2x
 ```
 
+## Translations
+
+The list of available translations with examples are stored in `gmenu2x/translations/` dir of your GMenu2X distribution package.  
+
+### Dictionary
+The current in use messages from US English language can be read from [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt) file.  
+
+To generate list of available strings' aliases you can run from src:  
+```
+(grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | tr -d '\\' |sort | uniq
+```
 
 ## Controls
 

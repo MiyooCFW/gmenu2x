@@ -1630,7 +1630,7 @@ bool GMenu2X::saveScreenshot(string path) {
 
 void GMenu2X::reinit(bool showDialog) {
 	if (showDialog) {
-		MessageBox mb(this, tr["GMenuNX will restart to apply\nthe settings. Continue?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["GMenuNX will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
 		mb.setButton(CONFIRM, tr["Restart"]);
 		mb.setButton(CANCEL,  tr["Cancel"]);
 		if (mb.exec() == CANCEL) return;
