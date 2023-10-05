@@ -51,6 +51,7 @@ void Translator::setLang(const string &lang) {
 			line = trim(line);
 			if (line=="") continue;
 			if (line[0]=='#') continue;
+			if (line.back() == '=') continue;
 
 			string::size_type position = line.find("=");
 			translations[trim(line.substr(0, position))] = trim(line.substr(position + 1));
