@@ -21,8 +21,10 @@
 #include <fstream>
 #include <sstream>
 #include <stdarg.h>
+#if defined(CHECK_TRANSLATION)
 #include <set>
 #include <algorithm>
+#endif
 
 #include "translator.h"
 #include "debug.h"
@@ -68,6 +70,7 @@ string Translator::translate(const string &term,const char *replacestr,...) {
 		unordered_map<string, string>::iterator i = translations.find(term);
 		if (i != translations.end()) {
 			result = i->second;
+		#if defined(CHECK_TRANSLATION)
 		} else {
 			WARNING("Untranslated string: '%s'", term.c_str());
 			ofstream langLog("untranslated.txt", ios::app);
@@ -99,6 +102,7 @@ string Translator::translate(const string &term,const char *replacestr,...) {
 			} else {
 				WARNING("Unable to open the file.");
 			}
+		#endif
 		}
 	}
 
