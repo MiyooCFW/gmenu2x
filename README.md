@@ -44,11 +44,13 @@ cd dist/linux
 ## Translations
 
 The list of available translations with examples are stored in `gmenu2x/translations/` dir of your GMenu2X distribution package.  
+The current in use messages from US English language can be read from: [translate.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/translate.txt). This does not include appLinks' Title&Description which can be added freely by user.
 
+To generate above list, you have to rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the time of using GMenu2X.
 ### Dictionary
-The current in use messages from US English language can be read from [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt) file.  
+To view the full list of string messages available to translate in source see: [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt)
 
-To generate list of available strings' aliases you can run from src:  
+To generate this list of available strings' aliases you can run from src:  
 ```
 (grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | tr -d '\\' |sort | uniq
 ```
