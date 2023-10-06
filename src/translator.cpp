@@ -21,6 +21,10 @@
 #include <fstream>
 #include <sstream>
 #include <stdarg.h>
+#if defined(CHECK_TRANSLATION)
+#include <set>
+#include <algorithm>
+#endif
 
 #include "translator.h"
 #include "debug.h"
@@ -49,6 +53,7 @@ void Translator::setLang(const string &lang) {
 			line = trim(line);
 			if (line=="") continue;
 			if (line[0]=='#') continue;
+			if (line.back() == '=') continue;
 
 			string::size_type position = line.find("=");
 			translations[trim(line.substr(0, position))] = trim(line.substr(position + 1));
@@ -65,8 +70,40 @@ string Translator::translate(const string &term,const char *replacestr,...) {
 		unordered_map<string, string>::iterator i = translations.find(term);
 		if (i != translations.end()) {
 			result = i->second;
+		#if defined(CHECK_TRANSLATION)
+		} else {
+			WARNING("Untranslated string: '%s'", term.c_str());
+			ofstream langLog("untranslated.txt", ios::app);
+
+			if (langLog.is_open()) {
+				// Write strings to the file, each on a new line
+				langLog << term + "=\n";
+
+				INFO("String written to the file successfully.");
+				langLog.close();
+				
+				//sort and remove double entries in generated list
+				ifstream input("untranslated.txt");
+				if (input.is_open()) {
+					vector<std::string> lines;
+					string line;
+					while (std::getline(input, line)) {
+						lines.push_back(line);
+					}
+					input.close();
+					sort(lines.begin(), lines.end());
+					set<std::string> uniqueLines(lines.begin(), lines.end());
+					ofstream output("untranslated.txt");
+					for (const auto& uniqueLine : uniqueLines) {
+						output << uniqueLine << '\n';
+					}
+					output.close();
+				}
+			} else {
+				WARNING("Unable to open the file.");
+			}
+		#endif
 		}
-		//else WARNING("Untranslated string: '%s'", term.c_str());
 	}
 
 	va_list arglist;
