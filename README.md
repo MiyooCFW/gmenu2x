@@ -20,9 +20,9 @@ Set up your environment with latest SDK (use [MiyooCFW/buildroot](https://github
 ```
 make -f Makefile.miyoo
 ```
-- build GMenu2X distribution ZIP package:
+- build GMenu2X distribution package:
 ```
-make -f Makefile.miyoo zip
+make -f Makefile.miyoo dist
 ```
 you can find both outputs in `/dist/miyoo/` directory.
 ### PC (Linux):
