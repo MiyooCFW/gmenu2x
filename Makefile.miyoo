@@ -27,6 +27,7 @@ OBJDIR = /tmp/gmenu2x/$(PLATFORM)
 DISTDIR = dist/$(PLATFORM)
 TARGET = $(DISTDIR)/gmenu2x
 HOMEPATH = /mnt
+DEFSKIN = FontiGrid
 
 SOURCES := $(wildcard src/*.cpp)
 OBJS := $(patsubst src/%.cpp, $(OBJDIR)/%.o, $(SOURCES))
@@ -53,14 +54,15 @@ clean:
 	rm -rf $(OBJDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug $(DISTDIR) dist/gmenu2x-$(PLATFORM).zip dist/gmenu2x-$(PLATFORM).ipk
 
 dist: dir shared
-	mkdir -p $(DISTDIR)/skins/Default
+	mkdir -p $(DISTDIR)/skins
 	install -m644 -D about.txt $(DISTDIR)/about.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins/* $(DISTDIR)/skins/
+	rm -rf $(DISTDIR)/skins/Default/*
 	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
-	cp -RH assets/skins/FontiGrid/* $(DISTDIR)/skins/Default
-	rm -rf $(DISTDIR)/skins/FontiGrid
+	cp -RH assets/skins/$(DEFSKIN)/* $(DISTDIR)/skins/Default
+	rm -rf $(DISTDIR)/skins/$(DEFSKIN)
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)/input_$(PLATFORM).conf
 	cp -RH assets/$(PLATFORM_SUPPORT)/input.conf $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
