@@ -145,7 +145,7 @@ Italian: Massimiliano;
 Korean: haven-jeon;  
 Norwegian: cowai;  
 Polish: Macmmm81;  
-Portuguese (Brazil): pingflood;  
+Portuguese (Brazil): pingflood, azurejoga;  
 Portuguese (Portugal): NightShadow;  
 Russian: XaMMaX90;  
 Slovak: Jozef;  
