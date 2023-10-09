@@ -133,7 +133,7 @@ msx, jbanes, jutley and scooterpsu (RetroFW);
 salvacam, SolidOne (MiyooCFW).  
 
 ### Translators
-Chinese (CN): 蔡蔡哥, simpleasy, KungfuPanda;  
+Chinese (CN): 蔡蔡哥, simpleasy, KungfuPanda, RUANRUI1995;  
 Chinese (TW): wentao, TonyJih;  
 Danish: claus;  
 Dutch: superfly;  
