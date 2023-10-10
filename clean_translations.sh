@@ -1,5 +1,5 @@
 #!/bin/sh
-#Compares 
+#Compares translations with translate.txt and remove any redundant entries
 for file in assets/translations/*
 do
   if [ -f "$file" ]; then
