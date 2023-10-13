@@ -36,8 +36,12 @@ SettingsDialog::~SettingsDialog() {
 bool SettingsDialog::exec() {
 	bool ts_pressed = false, inputAction = false;
 	uint32_t i, iY, firstElement = 0, action = SD_NO_ACTION, rowHeight, numRows;
+	string readSetting = title + " " + description;
+	//string readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
+	browsedialog->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 
 	while (loop) {
+		bool ally = false;
 		gmenu2x->menu->initLayout();
 		gmenu2x->font->setSize(gmenu2x->skinConfInt["fontSize"])->setColor(gmenu2x->skinConfColors[COLOR_FONT])->setOutlineColor(gmenu2x->skinConfColors[COLOR_FONT_OUTLINE]);
 		gmenu2x->titlefont->setSize(gmenu2x->skinConfInt["fontSizeTitle"])->setColor(gmenu2x->skinConfColors[COLOR_FONT_ALT])->setOutlineColor(gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
@@ -48,14 +52,8 @@ bool SettingsDialog::exec() {
 		if (selected >= voices.size()) selected = 0;
 		gmenu2x->setInputSpeed();
 		voices[selected]->adjustInput();
+		
 
-		this->description = voices[selected]->getDescription();
-		this->title = voices[selected]->getTitle();
-		
-		string readSetting = title + " " + description; // read whole text for more clarity
-		
-		browsedialog->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
-		
 		drawDialog(gmenu2x->s);
 
 		//Selection
@@ -74,21 +72,22 @@ bool SettingsDialog::exec() {
 		gmenu2x->drawScrollBar(numRows, voices.size(), firstElement, gmenu2x->listRect);
 
 		gmenu2x->s->flip();
+
 		do {
 			inputAction = gmenu2x->input.update();
 			if (gmenu2x->inputCommonActions(inputAction)) continue;
 
 			action = SD_NO_ACTION;
 			if (!(action = voices[selected]->manageInput())) {
-				if (gmenu2x->input[UP]) 							action = SD_ACTION_UP;
-				else if (gmenu2x->input[DOWN]) 						action = SD_ACTION_DOWN;
-				else if (gmenu2x->input[PAGEUP]) 					action = SD_ACTION_PAGEUP;
-				else if (gmenu2x->input[PAGEDOWN]) 					action = SD_ACTION_PAGEDOWN;
-				else if (gmenu2x->input[SETTINGS]) 					action = SD_ACTION_SAVE;
+				if (gmenu2x->input[UP])						action = SD_ACTION_UP;
+				else if (gmenu2x->input[DOWN]) 					action = SD_ACTION_DOWN;
+				else if (gmenu2x->input[PAGEUP]) 				action = SD_ACTION_PAGEUP;
+				else if (gmenu2x->input[PAGEDOWN]) 				action = SD_ACTION_PAGEDOWN;
+				else if (gmenu2x->input[SETTINGS]) 				action = SD_ACTION_SAVE;
 				else if (gmenu2x->input[CANCEL] && (allowCancel))		action = SD_ACTION_CLOSE;
 				else if (gmenu2x->input[CANCEL] && (allowCancel_nomb))		action = SD_ACTION_CLOSE_NOMB;
 				else if (gmenu2x->input[CANCEL] && (allowCancel_link))		action = SD_ACTION_CLOSE_LINK;
-				else if (gmenu2x->input[CANCEL] && (allowCancel_link_nomb))		action = SD_ACTION_CLOSE_LINK_NOMB;
+				else if (gmenu2x->input[CANCEL] && (allowCancel_link_nomb))	action = SD_ACTION_CLOSE_LINK_NOMB;
 			}
 
 			switch (action) {
@@ -145,21 +144,27 @@ bool SettingsDialog::exec() {
 					}
 					break;
 				case SD_ACTION_UP:
+					ally = true;
 					selected--;
 					break;
 				case SD_ACTION_DOWN:
+					ally = true;
 					selected++;
 					break;
 				case SD_ACTION_PAGEUP:
+					ally = true;
 					selected -= numRows;
 					if (selected < 0) selected = 0;
 					break;
 				case SD_ACTION_PAGEDOWN:
+					ally = true;
 					selected += numRows;
 					if (selected >= voices.size()) selected = voices.size() - 1;
 					break;
 			}
 		} while (!inputAction);
+		readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
+		if (ally) browsedialog->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 	}
 
 	gmenu2x->setInputSpeed();

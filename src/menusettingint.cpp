@@ -62,10 +62,12 @@ void MenuSettingInt::draw(int y) {
 
 uint32_t MenuSettingInt::manageInput() {
 	if (gmenu2x->input[LEFT])		dec();
-	else if (gmenu2x->input[RIGHT])	inc();
-	else if (gmenu2x->input[DEC])	setValue(value() - 10 * delta);
-	else if (gmenu2x->input[INC])	setValue(value() + 10 * delta);
-	else if (gmenu2x->input[MENU])	setDefault();
+	else if (gmenu2x->input[RIGHT])		inc();
+	else if (gmenu2x->input[DEC])		setValue(value() - 10 * delta);
+	else if (gmenu2x->input[INC])		setValue(value() + 10 * delta);
+	else if (gmenu2x->input[MENU])		setDefault();
+	else if (gmenu2x->input[CONFIRM])	current();
+
 	return 0; // SD_NO_ACTION
 }
 
@@ -75,6 +77,10 @@ void MenuSettingInt::inc() {
 
 void MenuSettingInt::dec() {
 	setValue(value() - delta);
+}
+
+void MenuSettingInt::current() {
+	setValue(*_value);
 }
 
 void MenuSettingInt::setValue(int value) {
@@ -92,6 +98,7 @@ void MenuSettingInt::setValue(int value) {
 	ss << *_value;
 	strvalue = "";
 	ss >> strvalue;
+	browsedialog->allyTTS(strvalue.c_str(), 15, 4);
 }
 
 void MenuSettingInt::setDefault() {

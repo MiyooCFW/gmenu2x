@@ -21,7 +21,9 @@
 #define MENUSETTINGINT_H
 
 #include "menusetting.h"
+#include "browsedialog.h"
 
+class BrowseDialog;
 class MenuSettingInt : public MenuSetting {
 private:
 	int originalValue;
@@ -30,9 +32,10 @@ private:
 	int def, min, max, delta;
 	bool off=false;
 	int offValue;
-
+	BrowseDialog *browsedialog;
 	void inc();
 	void dec();
+	void current();
 
 public:
 	MenuSettingInt(GMenu2X *gmenu2x, const std::string &title, const std::string &description, int *value, int def, int min, int max, int delta=1);
