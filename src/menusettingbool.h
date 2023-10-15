@@ -21,9 +21,11 @@
 #define MENUSETTINGBOOL_H
 
 #include "menusetting.h"
+#include "browsedialog.h"
 
 // class GMenu2X;
 
+class BrowseDialog;
 class MenuSettingBool : public MenuSetting {
 private:
 	void initButton();
@@ -38,6 +40,7 @@ public:
 	MenuSettingBool(GMenu2X *gmenu2x, const std::string &title, const std::string &description, bool *value);
 	MenuSettingBool(GMenu2X *gmenu2x, const std::string &title, const std::string &description, int *value);
 	virtual ~MenuSettingBool() {};
+	BrowseDialog *browsedialog;
 
 	virtual void draw(int y);
 	virtual uint32_t manageInput();
@@ -46,6 +49,7 @@ public:
 	void setValue(int value);
 	void setValue(bool value);
 	bool value();
+	void current();
 };
 
 #endif

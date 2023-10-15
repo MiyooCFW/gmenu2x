@@ -58,13 +58,18 @@ void MenuSettingBool::draw(int y) {
 }
 
 uint32_t MenuSettingBool::manageInput() {
-	if (gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM])
+	if (gmenu2x->input[LEFT] || gmenu2x->input[RIGHT])
 		toggle();
+	else if (gmenu2x->input[CONFIRM]) current();
 	return 0; // SD_NO_ACTION
 }
 
 void MenuSettingBool::toggle() {
 	setValue(!value());
+}
+
+void MenuSettingBool::current() {
+	setValue(value());
 }
 
 void MenuSettingBool::setValue(int value) {
@@ -77,6 +82,7 @@ void MenuSettingBool::setValue(bool value) {
 	else
 		*_value = value;
 	strvalue = value ? "ON" : "OFF";
+	browsedialog->allyTTS(strvalue.c_str(), 15, 4);
 }
 
 bool MenuSettingBool::value() {
