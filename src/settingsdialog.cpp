@@ -36,8 +36,8 @@ SettingsDialog::~SettingsDialog() {
 bool SettingsDialog::exec() {
 	bool ts_pressed = false, inputAction = false;
 	uint32_t i, iY, firstElement = 0, action = SD_NO_ACTION, rowHeight, numRows;
-	string readSetting = title + " " + description;
-	//string readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
+	//string readSetting = title + " " + description;
+	string readSetting = title + " press [[aI]] to read set value [[_::_::_::_::_::_::]]" + voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // use [[_::_::]] for pause between words see ascii-ipa
 	browsedialog->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 
 	while (loop) {
