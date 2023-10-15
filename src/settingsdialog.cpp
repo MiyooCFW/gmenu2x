@@ -48,8 +48,6 @@ bool SettingsDialog::exec() {
 		rowHeight = gmenu2x->font->getHeight() + 1;
 		numRows = (gmenu2x->listRect.h - 2)/rowHeight - 1;
 
-		if (selected < 0) selected = voices.size() - 1;
-		if (selected >= voices.size()) selected = 0;
 		gmenu2x->setInputSpeed();
 		voices[selected]->adjustInput();
 		
@@ -163,6 +161,8 @@ bool SettingsDialog::exec() {
 					break;
 			}
 		} while (!inputAction);
+		if (selected < 0) selected = voices.size() - 1;
+		if (selected >= voices.size()) selected = 0;
 		readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
 		if (ally) browsedialog->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 	}
