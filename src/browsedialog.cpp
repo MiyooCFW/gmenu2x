@@ -11,8 +11,9 @@ int SLOW_GAP_TTS = 5;
 int SLOW_SPEED_TTS = 140;
 int MEDIUM_GAP_TTS = 3;
 int MEDIUM_SPEED_TTS = 150;
-int FAST_GAP_TTS = 0; //default
-int FAST_SPEED_TTS = 175; //default
+int FAST_GAP_TTS = 0; //default for espeak
+int FAST_SPEED_TTS = 175; //default for espeak
+string VOICE_TTS = "en"; //default for espeak
 
 SDL_TimerID alphanum_timer = NULL;
 
@@ -22,14 +23,17 @@ uint32_t hideAlphaNum(uint32_t interval, void *param) {
 	return 0;
 };
 
-void BrowseDialog::allyTTS(const char* text, int g, int s) {
+void BrowseDialog::allyTTS(const char* text, int gap, int speed) {
 	static char rm_tmp_chr[256];
 	char tmp_chr[256];
+	const char* voice;
 
+	voice = VOICE_TTS.c_str();
+	
 	if(strcmp(text, rm_tmp_chr) == 0) return;
 
 	system("killall espeak"); 
-	snprintf(tmp_chr, sizeof(tmp_chr), "espeak \"%s\" -g%i -s%i &", text, g, s);
+	snprintf(tmp_chr, sizeof(tmp_chr), "espeak \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
 	snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
 	system(tmp_chr);
 }
