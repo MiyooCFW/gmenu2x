@@ -82,7 +82,7 @@ void MenuSettingBool::setValue(bool value) {
 	else
 		*_value = value;
 	strvalue = value ? "ON" : "OFF";
-	browsedialog->allyTTS(strvalue.c_str(), 15, 4);
+	browsedialog->allyTTS(strvalue.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS);
 }
 
 bool MenuSettingBool::value() {

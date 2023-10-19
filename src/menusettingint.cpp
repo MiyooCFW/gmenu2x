@@ -98,7 +98,7 @@ void MenuSettingInt::setValue(int value) {
 	ss << *_value;
 	strvalue = "";
 	ss >> strvalue;
-	browsedialog->allyTTS(strvalue.c_str(), 15, 4);
+	browsedialog->allyTTS(strvalue.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS);
 }
 
 void MenuSettingInt::setDefault() {
