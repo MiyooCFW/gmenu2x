@@ -22,7 +22,6 @@
 #include <sstream>
 #include <stdarg.h>
 
-#include "browsedialog.h"
 #include "translator.h"
 #include "debug.h"
 
@@ -56,8 +55,6 @@ void Translator::setLang(const string &lang) {
 		}
 		infile.close();
 		_lang = lang;
-		if (lang == "Polish") VOICE_TTS ="pl";
-		else if (lang == "Spanish") VOICE_TTS ="es";
 	}
 }
 
