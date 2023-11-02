@@ -1,6 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 # usage ./check_translation [Language_Name]
-sed '/[^=]$/d' assets/translations/$1 > LANG_diff
+LANG_diff="$(sed '/[^=]$/d' assets/translations/$1)"
 echo -e "\n\n List of missing translations:\n\n"
-cat LANG_diff
-rm LANG_diff
+echo "$LANG_diff"
