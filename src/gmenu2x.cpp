@@ -972,9 +972,9 @@ void GMenu2X::readConfig() {
 
 	if (!confStr["lang"].empty()) {
 		tr.setLang(confStr["lang"]);
-		string voiceTTS = tr["TTS voice"];
+		string voiceTTS = tr["_TTS voice_"];
 		INFO("voice is set to %s",voiceTTS.c_str());
-		if (voiceTTS != "TTS voice" && !voiceTTS.empty()) VOICE_TTS = voiceTTS;
+		if (voiceTTS != "_TTS voice_" && !voiceTTS.empty()) VOICE_TTS = voiceTTS;
 	}
 	if (!confStr["wallpaper"].empty() && !file_exists(confStr["wallpaper"])) confStr["wallpaper"] = "";
 	if (confStr["skin"].empty() || !dir_exists("skins/" + confStr["skin"])) confStr["skin"] = "Default";
