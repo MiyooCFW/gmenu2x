@@ -583,7 +583,11 @@ void Menu::drawGrid() {
 				labelRect.y = iy + (linkHeight + min(linkHeight, icon->height()))/2;
 				labelRect.w = linkWidth - iconPadding;
 				labelRect.h = linkHeight - iconPadding;
+				#if !defined(CHECK_TRANSLATION)
 				gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], labelRect, HAlignCenter | VAlignMiddle);
+				#else
+				gmenu2x->s->write(gmenu2x->font, sectionLinks()->at(i)->getTitle(), labelRect, HAlignCenter | VAlignMiddle);
+				#endif
 			}
 		}
 	}

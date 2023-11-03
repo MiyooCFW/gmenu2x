@@ -1412,13 +1412,13 @@ void GMenu2X::about() {
 
 	// temp += "----\n";
 #if defined (__COMMIT_HASH__) && defined (__BUILDROOT_HASH__) && defined (__CFW_HASH__)
-	TextDialog td(this, "MiyooCFW build", tr["CFW-ver:"] + xstr(__CFW_HASH__) + " BR2:" + xstr(__BUILDROOT_HASH__) + " GM2X:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
+	TextDialog td(this, "MiyooCFW build", tr[""] + "CFW-ver:" + xstr(__CFW_HASH__) + " BR2:" + xstr(__BUILDROOT_HASH__) + " GM2X:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
 #elif defined (__COMMIT_HASH__) && defined (__BUILDROOT_HASH__)
-	TextDialog td(this, "GMenu2X BR2 package", tr["Build: "] + __DATE__ + " BR2:" + xstr(__BUILDROOT_HASH__) + " GM2X:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
+	TextDialog td(this, "GMenu2X BR2 package", tr["Build"] + ": " + __DATE__ + " BR2:" + xstr(__BUILDROOT_HASH__) + " GM2X:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
 #elif defined (__COMMIT_HASH__)
-	TextDialog td(this, "GMenu2X upstream", tr["Build: "] + __DATE__ + " " + __TIME__ + " with commit:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
+	TextDialog td(this, "GMenu2X upstream", tr["Build"] + ": " + __DATE__ + " " + __TIME__ + " with commit:" xstr(__COMMIT_HASH__), "skin:icons/about.png");
 #else
-	TextDialog td(this, "GMenu2X", tr["Build: "] + __DATE__ + " " + __TIME__, "skin:icons/about.png");
+	TextDialog td(this, "GMenu2X", tr["Build"] + ": " + __DATE__ + " " + __TIME__, "skin:icons/about.png");
 #endif
 	// td.appendText(temp);
 	td.appendFile("about.txt");
@@ -1636,7 +1636,7 @@ bool GMenu2X::saveScreenshot(string path) {
 
 void GMenu2X::reinit(bool showDialog) {
 	if (showDialog) {
-		MessageBox mb(this, tr["GMenuNX will restart to apply\nthe settings. Continue?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["GMenuNX will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
 		mb.setButton(CONFIRM, tr["Restart"]);
 		mb.setButton(CANCEL,  tr["Cancel"]);
 		if (mb.exec() == CANCEL) return;
