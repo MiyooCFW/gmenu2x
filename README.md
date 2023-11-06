@@ -49,6 +49,7 @@ The current in use messages from US English language can be read from: [translat
 To generate above list, you have to rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the runtime of GMenu2X.
 
 *The "\_TTS voice\_" string assigns voice type used by TTS engine e.g. "\_TTS voice\_"=en" for English (check for available voices on your device `/usr/share/espeak-data/voices`)*
+
 ### Dictionary
 To view the full list of string messages available to translate in source see: [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt)
 
