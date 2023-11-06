@@ -21,6 +21,7 @@
 #define MENUSETTINGMULTISTRING_H
 
 #include "menusettingstringbase.h"
+#include "browsedialog.h"
 
 #include <vector>
 #include "debug.h"
@@ -32,18 +33,22 @@ using fastdelegate::MakeDelegate;
 typedef FastDelegate0<uint32_t> msms_onchange_t;
 typedef FastDelegate0<> msms_onselect_t;
 
+class BrowseDialog;
 class MenuSettingMultiString : public MenuSettingStringBase {
 private:
 	virtual void edit() {
 		/* never called because manageInput() is overridden */
 	}
 
+	BrowseDialog *browsedialog;
+	
 	const std::vector<std::string> *choices;
 	int selected;
 
 	void incSel();
 	void decSel();
 	void setSel(int sel);
+	void currentSel();
 
 	msms_onchange_t onChange;
 	msms_onselect_t onSelect; // variable to store function pointer type

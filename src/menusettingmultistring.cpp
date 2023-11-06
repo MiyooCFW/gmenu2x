@@ -49,9 +49,8 @@ uint32_t MenuSettingMultiString::manageInput() {
 		incSel();
 		return this->onChange && this->onChange();
 	}
-	else if (gmenu2x->input[CONFIRM] && this->onSelect) {
-		this->onSelect();
-		return this->onChange && this->onChange();
+	else if (gmenu2x->input[CONFIRM]) {
+		currentSel();
 	}
 	else if (gmenu2x->input[MENU]) {
 		setSel(0);
@@ -68,6 +67,10 @@ void MenuSettingMultiString::decSel() {
 	setSel(selected - 1);
 }
 
+void MenuSettingMultiString::currentSel() {
+	setSel(selected);
+}
+
 void MenuSettingMultiString::setSel(int sel) {
 	if (sel < 0) {
 		sel = choices->size()-1;
@@ -77,6 +80,8 @@ void MenuSettingMultiString::setSel(int sel) {
 	selected = sel;
 
 	setValue((*choices)[sel]);
+
+	browsedialog->allyTTS(value().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 }
 
 void MenuSettingMultiString::draw(int y) {
