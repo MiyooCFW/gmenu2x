@@ -908,6 +908,15 @@ void Menu::exec() {
 		else if (gmenu2x->input[RIGHT])	linkRight();
 		else if (gmenu2x->input[UP])	linkUp();
 		else if (gmenu2x->input[DOWN])	linkDown();
+		else if (gmenu2x->input[MODIFIER]) {
+			if (selLinkApp() != NULL) {
+				// ERROR reads Title instead
+				browsedialog->allyTTS(selLinkApp()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+			} else if (selLink() != NULL) {
+				// ERROR reads Title instead
+				browsedialog->allyTTS(selLink()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+			}
+		}
 
 		// SECTION
 		else if (gmenu2x->input[SECTION_PREV]) decSectionIndex();
