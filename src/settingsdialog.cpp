@@ -38,7 +38,7 @@ bool SettingsDialog::exec() {
 	uint32_t i, iY, firstElement = 0, action = SD_NO_ACTION, rowHeight, numRows;
 	//string readSetting = title + " " + description;
 	string readSetting = title + " " + gmenu2x->tr["to read the set value press"] + " [[aI_::_::_::_::_::_::]]" + voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // use [[_::_::]] for pause between words see ascii-ipa
-	browsedialog->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+	gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 
 	while (loop) {
 		bool ally = false;
@@ -164,7 +164,7 @@ bool SettingsDialog::exec() {
 		if (selected < 0) selected = voices.size() - 1;
 		if (selected >= voices.size()) selected = 0;
 		readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
-		if (ally) browsedialog->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+		if (ally) gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 	}
 
 	gmenu2x->setInputSpeed();

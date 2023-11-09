@@ -911,10 +911,10 @@ void Menu::exec() {
 		else if (gmenu2x->input[MODIFIER]) {
 			if (selLinkApp() != NULL) {
 				// ERROR reads Title instead
-				browsedialog->allyTTS(selLinkApp()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+				gmenu2x->allyTTS(selLinkApp()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 			} else if (selLink() != NULL) {
 				// ERROR reads Title instead
-				browsedialog->allyTTS(selLink()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+				gmenu2x->allyTTS(selLink()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 			}
 		}
 
@@ -949,10 +949,10 @@ void Menu::exec() {
 		iconDescription = "";
 		if (selLinkApp() != NULL) {
 			iconDescription = selLinkApp()->getDescription();
-			browsedialog->allyTTS(selLinkApp()->getTitle().c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
+			gmenu2x->allyTTS(selLinkApp()->getTitle().c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 		} else if (selLink() != NULL) {
 			iconDescription = selLink()->getDescription();
-			browsedialog->allyTTS(selLink()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+			gmenu2x->allyTTS(selLink()->getDescription().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 		}
 
 		if (

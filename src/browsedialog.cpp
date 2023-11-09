@@ -7,36 +7,14 @@
 using namespace std;
 extern const char *CARD_ROOT;
 
-int SLOW_GAP_TTS = 5;
-int SLOW_SPEED_TTS = 140;
-int MEDIUM_GAP_TTS = 3;
-int MEDIUM_SPEED_TTS = 150;
-int FAST_GAP_TTS = 0; //default for espeak
-int FAST_SPEED_TTS = 175; //default for espeak
-string VOICE_TTS = "en"; //default for espeak
-
 SDL_TimerID alphanum_timer = NULL;
 
 uint32_t hideAlphaNum(uint32_t interval, void *param) {
 	SDL_RemoveTimer(alphanum_timer); alphanum_timer = NULL;
 	InputManager::wakeUp(0, (void*)false);
 	return 0;
-};
-
-void BrowseDialog::allyTTS(const char* text, int gap, int speed) {
-	static char rm_tmp_chr[256];
-	char tmp_chr[256];
-	const char* voice;
-
-	voice = VOICE_TTS.c_str();
-	
-	if(strcmp(text, rm_tmp_chr) == 0) return;
-
-	system("killall espeak"); 
-	snprintf(tmp_chr, sizeof(tmp_chr), "espeak \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
-	snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
-	system(tmp_chr);
 }
+
 
 BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon):
 Dialog(gmenu2x, title, description, icon) {
@@ -118,7 +96,7 @@ bool BrowseDialog::exec() {
 			for (i = firstElement; i < size() && i <= firstElement + numRows; i++, iY += rowHeight) {
 				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
 				
-				allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
+				gmenu2x->allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 				iconCur = iconFile;
 
 				if (isDirectory(i)) {

@@ -81,7 +81,7 @@ void MenuSettingMultiString::setSel(int sel) {
 
 	setValue((*choices)[sel]);
 
-	browsedialog->allyTTS(value().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+	gmenu2x->allyTTS(value().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 }
 
 void MenuSettingMultiString::draw(int y) {

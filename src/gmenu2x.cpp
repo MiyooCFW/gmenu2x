@@ -96,6 +96,14 @@ int TEFIX_MAX = -1;
 
 const char *CARD_ROOT = getenv("HOME");
 
+int SLOW_GAP_TTS = 5;
+int SLOW_SPEED_TTS = 140;
+int MEDIUM_GAP_TTS = 3;
+int MEDIUM_SPEED_TTS = 150;
+int FAST_GAP_TTS = 0; //default for espeak
+int FAST_SPEED_TTS = 175; //default for espeak
+string VOICE_TTS = "en"; //default for espeak
+
 #if defined(TARGET_RETROFW)
 	#include "platform/retrofw.h"
 #elif defined(TARGET_RG350)
@@ -197,6 +205,21 @@ GMenu2X::~GMenu2X() {
 	delete s;
 	delete font;
 	delete titlefont;
+}
+
+void GMenu2X::allyTTS(const char* text, int gap, int speed) {
+	static char rm_tmp_chr[256];
+	char tmp_chr[256];
+	const char* voice;
+
+	voice = VOICE_TTS.c_str();
+	
+	if(strcmp(text, rm_tmp_chr) == 0) return;
+
+	system("killall espeak"); 
+	snprintf(tmp_chr, sizeof(tmp_chr), "espeak \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
+	snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
+	system(tmp_chr);
 }
 
 void GMenu2X::quit() {
@@ -383,6 +406,9 @@ void GMenu2X::main(bool autoStart) {
 		unlink(tmppath.c_str());
 		reinit();
 	}
+
+	string readMenu = tr["Welcome to GMenu2X [[_::_::]], to read a selected Link's description  press X"];
+	allyTTS(readMenu.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 
 	menu = new Menu(this);
 	initMenu();

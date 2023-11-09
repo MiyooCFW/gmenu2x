@@ -27,14 +27,6 @@
 #include "filelister.h"
 #include "menu.h"
 
-extern int SLOW_GAP_TTS;
-extern int SLOW_SPEED_TTS;
-extern int MEDIUM_GAP_TTS;
-extern int MEDIUM_SPEED_TTS;
-extern int FAST_GAP_TTS;
-extern int FAST_SPEED_TTS;
-extern string VOICE_TTS;
-
 class FileLister;
 
 using std::string;
@@ -62,7 +54,6 @@ public:
 	int32_t selected = 0;
 	bool exec();
 	void directoryEnter(const string &path);
-	void allyTTS(const char* text, int gap, int speed);
 
 	virtual const std::string getFileName(uint32_t i = 0);
 	virtual const std::string getParams(uint32_t i = 0);

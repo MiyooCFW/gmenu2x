@@ -21,9 +21,7 @@
 #define MENUSETTINGINT_H
 
 #include "menusetting.h"
-#include "browsedialog.h"
 
-class BrowseDialog;
 class MenuSettingInt : public MenuSetting {
 private:
 	int originalValue;
@@ -32,7 +30,6 @@ private:
 	int def, min, max, delta;
 	bool off=false;
 	int offValue;
-	BrowseDialog *browsedialog;
 	void inc();
 	void dec();
 	void current();

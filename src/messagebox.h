@@ -23,7 +23,6 @@
 
 #include <string>
 #include "gmenu2x.h"
-#include "browsedialog.h"
 
 using std::string;
 using std::vector;
@@ -34,8 +33,6 @@ enum {
 	MB_BTN_START,
 	MB_BTN_SELECT
 };
-
-class BrowseDialog;
 
 class MessageBox {
 private:
@@ -50,7 +47,6 @@ public:
 	MessageBox(GMenu2X *gmenu2x, vector<MenuOption> options);
 	MessageBox(GMenu2X *gmenu2x, const string &text, const string &icon = "");
 	~MessageBox();
-	BrowseDialog *browsedialog;
 
 	void setButton(int action, const string &btn);
 	void setAutoHide(uint32_t delay);
