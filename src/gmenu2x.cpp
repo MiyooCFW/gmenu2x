@@ -318,7 +318,27 @@ void GMenu2X::main(bool autoStart) {
 	int randomInt = rand() % 10; // Generate a random val={0..x} to print "Hint" msg occasionally
 	//Hint messages
 	if (confInt["showHints"] == 1) {
-		if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
+		if (confInt["enableTTS"] == 1 && (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "")) {
+			switch (randomInt) {
+				case 0: case 1: case 2: {
+				string readHint = tr["Hint: To read a selected Link's description press X"];
+				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: To read a selected Link's description press X"]);
+				mb.setAutoHide(4000);
+				mb.setBgAlpha(0);
+				mb.exec();
+				break;
+				}
+				default: {
+				allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
+				MessageBox mb(this, tr["Loading"]);
+				mb.setAutoHide(1);
+				mb.setBgAlpha(0);
+				mb.exec();				
+				break;
+				}
+			}
+		} else if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
 			switch (randomInt) {
 				case 0: {
 				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
@@ -407,7 +427,7 @@ void GMenu2X::main(bool autoStart) {
 		reinit();
 	}
 
-	string readMenu = tr["Welcome to GMenu2X [[_::_::]], to read a selected Link's description  press X"];
+	string readMenu = tr["Welcome to GMenu"];
 	allyTTS(readMenu.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 
 	menu = new Menu(this);
