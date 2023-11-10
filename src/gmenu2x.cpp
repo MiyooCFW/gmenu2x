@@ -208,6 +208,7 @@ GMenu2X::~GMenu2X() {
 }
 
 void GMenu2X::allyTTS(const char* text, int gap, int speed) {
+	if (!confInt["enableTTS"]) return;
 	static char rm_tmp_chr[256];
 	char tmp_chr[256];
 	const char* voice;
@@ -799,6 +800,7 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Hints"], tr["Show \"Hint\" messages"], &confInt["showHints"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Text To Speak"], tr["Use TTS engine to read menu out loud"], &confInt["enableTTS"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
@@ -975,6 +977,7 @@ void GMenu2X::readConfig() {
 	// Defaults *** Sync with default values in writeConfig
 	confInt["saveSelection"] = 1;
 	confInt["dialogAutoStart"] = 1;
+	confInt["enableTTS"] = 0;
 	confInt["showHints"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
 	confInt["skinBackdrops"] = 1;
