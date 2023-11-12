@@ -36,11 +36,11 @@ SettingsDialog::~SettingsDialog() {
 bool SettingsDialog::exec() {
 	bool ts_pressed = false, inputAction = false;
 	uint32_t i, iY, firstElement = 0, action = SD_NO_ACTION, rowHeight, numRows;
-	//string readSetting = title + " " + description;
 	string readSetting = title + " " + voices[selected]->getTitle() + " " + voices[selected]->getDescription();
 	gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 
 	while (loop) {
+		// TODO: fix longrun of setttingsDialog with TTS
 		bool ally = false;
 		gmenu2x->menu->initLayout();
 		gmenu2x->font->setSize(gmenu2x->skinConfInt["fontSize"])->setColor(gmenu2x->skinConfColors[COLOR_FONT])->setOutlineColor(gmenu2x->skinConfColors[COLOR_FONT_OUTLINE]);
@@ -51,6 +51,7 @@ bool SettingsDialog::exec() {
 		gmenu2x->setInputSpeed();
 		voices[selected]->adjustInput();
 		
+		this->description = voices[selected]->getDescription();
 
 		drawDialog(gmenu2x->s);
 
@@ -163,8 +164,10 @@ bool SettingsDialog::exec() {
 		} while (!inputAction);
 		if (selected < 0) selected = voices.size() - 1;
 		if (selected >= voices.size()) selected = 0;
-		readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
-		if (ally) gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+		if (ally) {
+			readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
+			gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+		}
 	}
 
 	gmenu2x->setInputSpeed();
