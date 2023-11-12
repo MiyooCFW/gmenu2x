@@ -324,18 +324,18 @@ void GMenu2X::main(bool autoStart) {
 				case 0: case 1: case 2: {
 				string readHint = tr["Hint: To read a selected Link's description press X"];
 				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: To read a selected Link's description press X"]);
-				mb.setAutoHide(4000);
-				mb.setBgAlpha(0);
-				mb.exec();
+				SDL_Delay(3500);
+				break;
+				}
+				case 3: case 4: case 5: {
+				string readHint = tr["Hint: To read the value in settings' dialog press"] + " [[aI]]";
+				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
+				SDL_Delay(3500);
 				break;
 				}
 				default: {
 				allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
-				MessageBox mb(this, tr["Loading"]);
-				mb.setAutoHide(1);
-				mb.setBgAlpha(0);
-				mb.exec();				
+				SDL_Delay(1000);
 				break;
 				}
 			}
