@@ -125,6 +125,7 @@ Pickle for the initial Wiz and Caanoo ports;
 Steward-Fu for the initial RetroGame ports;  
 TonyJih for the new RetroFW features;  
 Fontes for the RetroFW graphics;  
+BryMD for updated FontiGrid icons;  
 
 ### Beta testers
 Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X);  
