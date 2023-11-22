@@ -134,24 +134,10 @@ msx, jbanes, jutley and scooterpsu (RetroFW);
 salvacam, SolidOne (MiyooCFW).  
 
 ### Translators
-Chinese (CN): 蔡蔡哥, simpleasy, KungfuPanda, RUANRUI1995;  
-Chinese (TW): wentao, TonyJih;  
-Danish: claus;  
-Dutch: superfly;  
-English: Massimiliano;  
-Finnish: Jontte Atte;  
-French: Yodaz;  
-German: fusion_power, johnnysnet, Waldteufel;  
-Italian: Massimiliano;  
-Korean: haven-jeon;  
-Norwegian: cowai;  
-Polish: Macmmm81;  
-Portuguese (Brazil): pingflood, azurejoga;  
-Portuguese (Portugal): NightShadow;  
-Russian: XaMMaX90;  
-Slovak: Jozef;  
-Spanish: pedator;  
-Swedish: Esslan Micket;  
+Chinese (CN): RUANRUI1995;  
+Polish: Apaczer;  
+Portuguese (Brazil): azurejoga;  
+Russian: MayanKoyote;  
 
 ### Donors
 EvilDragon (www.gp2x.de), 
