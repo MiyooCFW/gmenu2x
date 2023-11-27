@@ -1,5 +1,6 @@
 #!/bin/bash
-#Compares translations with translate.txt and remove any redundant entries + adds missing ones
+# Compares translations with translate.txt and remove any redundant entries + adds missing ones
+## Usage: run from main dir ./clean_translation [Language_Name] or ALL
 
 #Cleanup tr strings data file
 DATA_sorted="$(sort -f translate.txt)"
@@ -11,8 +12,27 @@ fi
 ##Correct output of translation data file
 echo "$DATA_init" | grep -v '^$' | uniq > translate.txt
 
+languages="$(ls -1b assets/translations/)"
+LANGUAGE="$1"
+
+#Test if correct argument provided or echo usage
+FOUND_LANGUAGE=false
+for i in $languages; do
+	if test "$i" = "$LANGUAGE"; then
+		FOUND_LANGUAGE=true
+		break
+	fi
+done
+if ! ($FOUND_LANGUAGE || test "$LANGUAGE" = "ALL"); then
+	echo -e "\nERROR: Wrong translation file name!\n\nProvide correct \"Language\" name or type ALL to check every one.\n\n"
+	sleep 2
+	exit
+elif test "$LANGUAGE" = "ALL"; then
+	LANGUAGE="*"
+fi
+
 #Check available translations
-for file in assets/translations/*; do
+for file in assets/translations/$LANGUAGE; do
 	if [ -f "$file" ]; then
 	##CODE
 		TEMP="$(sed 's/=.*//' $file)"
