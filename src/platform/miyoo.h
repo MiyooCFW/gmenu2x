@@ -208,7 +208,7 @@ private:
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
-		system("mount -o remount,async /mnt");
+		//system("mount -o remount,async /mnt");
 		getKbdLayoutHW();
 		getTefixHW();
 		w = 320;
@@ -334,7 +334,7 @@ public:
 	}
 
 	string hwPreLinkLaunch() {
-		system("mount -o remount,sync /mnt");
+		//system("mount -o remount,sync /mnt");
 		return "";
 	}
 };
