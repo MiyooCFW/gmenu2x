@@ -71,6 +71,7 @@ uint32_t MenuSettingMultiInt::manageInput() {
 	if ( gmenu2x->input[DEC] ) dec2x();
 	if ( gmenu2x->input[INC] ) inc2x();
 	if ( gmenu2x->input[MENU] ) setDefault();
+	if ( gmenu2x->input[CONFIRM] ) current();
 	return 0; // SD_NO_ACTION
 }
 
@@ -120,12 +121,17 @@ void MenuSettingMultiInt::dec2x() {
 	}
 }
 
+void MenuSettingMultiInt::current() {
+	setValue(*_value);
+}
+
 void MenuSettingMultiInt::setValue(int value) {
 	*_value = value;
 	stringstream ss;
 	ss << *_value;
 	strvalue = "";
 	ss >> strvalue;
+	gmenu2x->allyTTS(strvalue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
 }
 
 void MenuSettingMultiInt::setDefault() {

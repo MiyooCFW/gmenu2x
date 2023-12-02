@@ -34,6 +34,7 @@ private:
 	void dec();
 	void inc2x();
 	void dec2x();
+	void current();
 	int *choices;
 	int reverseLookup(int value);
   
