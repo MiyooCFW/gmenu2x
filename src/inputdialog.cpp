@@ -100,6 +100,9 @@ void InputDialog::setKeyboard(int kb) {
 }
 
 bool InputDialog::exec() {
+	string readWarning = gmenu2x->tr["Entering Text Dialog editor, press B to exit"];
+	gmenu2x->allyTTS(readWarning.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 1);
+	
 	Surface *bg = new Surface(gmenu2x->s);
 
 	SDL_Rect box = {gmenu2x->listRect.x + 2, 0, gmenu2x->listRect.w - 4, gmenu2x->font->getHeight() + 4};
@@ -148,7 +151,9 @@ bool InputDialog::exec() {
 		bool inputAction = gmenu2x->input.update();
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
-		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) return false;
+		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) {
+			return false;
+		}
 		else if (gmenu2x->input[SETTINGS])		return true;
 		else if (gmenu2x->input[UP])			selRow--;
 		else if (gmenu2x->input[DOWN])			selRow++;

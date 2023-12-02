@@ -69,7 +69,7 @@ gmenu2x(gmenu2x) {
 
 		do {
 			string readOption = options[selected].text;
-			gmenu2x->allyTTS(readOption.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+			gmenu2x->allyTTS(readOption.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 			inputAction = gmenu2x->input.update();
 
 			if (gmenu2x->inputCommonActions(inputAction)) continue;
@@ -251,7 +251,7 @@ int MessageBox::exec() {
 		}
 		string strMessage = text;
 		string readMessage = strMessage + " " + strButtons;
-		gmenu2x->allyTTS(readMessage.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS);
+		gmenu2x->allyTTS(readMessage.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS, 0);
 
 		bool inputAction = gmenu2x->input.update();
 		if (inputAction) {

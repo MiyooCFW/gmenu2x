@@ -37,7 +37,7 @@ bool SettingsDialog::exec() {
 	bool ts_pressed = false, inputAction = false;
 	uint32_t i, iY, firstElement = 0, action = SD_NO_ACTION, rowHeight, numRows;
 	string readSetting = title + " " + voices[selected]->getTitle() + " " + voices[selected]->getDescription();
-	gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+	gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 
 	while (loop) {
 		// TODO: fix longrun of setttingsDialog with TTS
@@ -166,7 +166,7 @@ bool SettingsDialog::exec() {
 		if (selected >= voices.size()) selected = 0;
 		if (ally) {
 			readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
-			gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+			gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 		}
 	}
 

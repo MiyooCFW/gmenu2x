@@ -96,7 +96,7 @@ bool BrowseDialog::exec() {
 			for (i = firstElement; i < size() && i <= firstElement + numRows; i++, iY += rowHeight) {
 				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
 				
-				gmenu2x->allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
+				gmenu2x->allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 0);
 				iconCur = iconFile;
 
 				if (isDirectory(i)) {

@@ -210,7 +210,7 @@ GMenu2X::~GMenu2X() {
 	delete titlefont;
 }
 
-void GMenu2X::allyTTS(const char* text, int gap, int speed) {
+void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 	if (!confInt["enableTTS"]) return;
 	static char rm_tmp_chr[256];
 	char tmp_chr[256];
@@ -224,6 +224,11 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed) {
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
 	snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
 	system(tmp_chr);
+	if (wait){
+		while (system("pgrep " TTS_ENGINE) == 0) {
+		sleep(0.1);
+		}
+	}
 }
 
 void GMenu2X::quit() {
@@ -328,19 +333,19 @@ void GMenu2X::main(bool autoStart) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
 				string readHint = tr["Hint: To read a selected Link's description press X"];
-				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
-				SDL_Delay(3500);
+				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+				//SDL_Delay(3500);
 				break;
 				}
 				case 3: case 4: case 5: {
 				string readHint = tr["Hint: To read the value in settings' dialog press"] + " [[aI]]";
-				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
-				SDL_Delay(3500);
+				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+				//SDL_Delay(3500);
 				break;
 				}
 				default: {
-				allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
-				SDL_Delay(1000);
+				allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+				//SDL_Delay(1000);
 				break;
 				}
 			}
@@ -434,7 +439,7 @@ void GMenu2X::main(bool autoStart) {
 	}
 
 	string readMenu = tr["Welcome to GMenu"];
-	allyTTS(readMenu.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+	allyTTS(readMenu.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 
 	menu = new Menu(this);
 	initMenu();

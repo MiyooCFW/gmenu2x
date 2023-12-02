@@ -131,7 +131,7 @@ void MenuSettingMultiInt::setValue(int value) {
 	ss << *_value;
 	strvalue = "";
 	ss >> strvalue;
-	gmenu2x->allyTTS(strvalue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS);
+	gmenu2x->allyTTS(strvalue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 }
 
 void MenuSettingMultiInt::setDefault() {

@@ -82,7 +82,7 @@ void MenuSettingBool::setValue(bool value) {
 	else
 		*_value = value;
 	strvalue = value ? "ON" : "OFF";
-	gmenu2x->allyTTS(strvalue.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS);
+	gmenu2x->allyTTS(strvalue.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS, 0);
 }
 
 bool MenuSettingBool::value() {
