@@ -125,6 +125,9 @@ string VOICE_TTS = "en"; //default for espeak
 #ifndef DEFAULT_TEFIX
 #define DEFAULT_TEFIX -1
 #endif
+#ifndef TTS_ENGINE
+#define TTS_ENGINE ":"
+#endif
 
 #include "menu.h"
 
@@ -217,8 +220,8 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed) {
 	
 	if(strcmp(text, rm_tmp_chr) == 0) return;
 
-	system("killall espeak"); 
-	snprintf(tmp_chr, sizeof(tmp_chr), "espeak \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
+	system("killall " TTS_ENGINE); 
+	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
 	snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
 	system(tmp_chr);
 }
@@ -234,6 +237,8 @@ void GMenu2X::quit() {
 // 	setVolume(getVolume());
 //#endif	
 	writeConfig();
+
+	system("killall " TTS_ENGINE);
 
 	s->free();
 
@@ -453,7 +458,6 @@ void GMenu2X::main(bool autoStart) {
 		setTefix(confInt["lastTefix"]);
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
-		system("killall espeak");
 		string prevCmd = confStr["lastCommand"].c_str();
 		string tmppath = exe_path() + "/gmenu2x.conf";
 		string writeDateCmd = "; sed -i \"1s/.*/datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"/\" ";
