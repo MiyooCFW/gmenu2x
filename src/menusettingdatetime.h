@@ -36,6 +36,7 @@ private:
 
 	void dec();
 	void inc();
+	void current();
 	void leftComponent();
 	void rightComponent();
 
