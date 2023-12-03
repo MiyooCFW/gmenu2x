@@ -333,17 +333,17 @@ void GMenu2X::main(bool autoStart) {
 		if (confInt["enableTTS"] == 1 && (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "")) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
-				string readHint = tr["Hint: To read a selected Link's description press X"];
+				string readHint = tr["Hint: To read a selected value or Link's description press X"];
 				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
 				//SDL_Delay(3500);
 				break;
 				}
-				case 3: case 4: case 5: {
-				string readHint = tr["Hint: To read the value in settings' dialog press"] + " [[aI]]";
-				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
-				//SDL_Delay(3500);
-				break;
-				}
+				// case 3: case 4: case 5: {
+				// string readHint = tr["Hint: To read the value in settings' dialog press"] + " [[aI]]";
+				// allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+				// //SDL_Delay(3500);
+				// break;
+				// }
 				default: {
 				allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
 				//SDL_Delay(1000);

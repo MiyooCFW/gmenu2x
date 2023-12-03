@@ -66,7 +66,7 @@ uint32_t MenuSettingInt::manageInput() {
 	else if (gmenu2x->input[DEC])		setValue(value() - 10 * delta);
 	else if (gmenu2x->input[INC])		setValue(value() + 10 * delta);
 	else if (gmenu2x->input[MENU])		setDefault();
-	else if (gmenu2x->input[CONFIRM])	current();
+	else if (gmenu2x->input[MODIFIER])	current();
 
 	return 0; // SD_NO_ACTION
 }

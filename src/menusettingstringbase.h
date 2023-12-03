@@ -29,6 +29,7 @@ protected:
 
 	virtual void edit() = 0;
 	void clear();
+	void current();
 
 public:
 	MenuSettingStringBase(
