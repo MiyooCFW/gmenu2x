@@ -96,7 +96,6 @@ bool BrowseDialog::exec() {
 			for (i = firstElement; i < size() && i <= firstElement + numRows; i++, iY += rowHeight) {
 				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
 				
-				gmenu2x->allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 0);
 				iconCur = iconFile;
 
 				if (isDirectory(i)) {
@@ -112,6 +111,8 @@ bool BrowseDialog::exec() {
 
 				gmenu2x->s->write(gmenu2x->font, getFileName(i), gmenu2x->listRect.x + 21, iY + rowHeight/2, VAlignMiddle);
 			}
+
+			gmenu2x->allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 0);
 
 			if (gmenu2x->confStr["previewMode"] != "Backdrop") {
 				Surface anim = new Surface(gmenu2x->s);
