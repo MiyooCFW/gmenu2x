@@ -73,6 +73,7 @@ uint32_t MenuSettingRGBA::manageInput() {
 		if (gmenu2x->input[SETTINGS]) return 0;
 		if (gmenu2x->input[INC] || gmenu2x->input[UP]) inc();
 		else if (gmenu2x->input[DEC] || gmenu2x->input[DOWN]) dec();
+		else if (gmenu2x->input[MODIFIER]) current();
 		else if (gmenu2x->input[LEFT]) leftComponent();
 		else if (gmenu2x->input[RIGHT]) rightComponent();
 		else if (gmenu2x->input[CONFIRM] || gmenu2x->input[CANCEL]) {
@@ -83,6 +84,8 @@ uint32_t MenuSettingRGBA::manageInput() {
 			buttonBox.add(btn);
 		}
 		return -1;
+	} else if (gmenu2x->input[MODIFIER]) {
+		current();
 	} else if (gmenu2x->input[CONFIRM]) {
 		editing = true;
 
@@ -116,6 +119,10 @@ void MenuSettingRGBA::dec() {
 
 void MenuSettingRGBA::inc() {
 	setSelPart(constrain(getSelPart()+1,0,255));
+}
+
+void MenuSettingRGBA::current() {
+	setSelPart(getSelPart());
 }
 
 void MenuSettingRGBA::leftComponent() {
@@ -157,6 +164,8 @@ void MenuSettingRGBA::setSelPart(uint16_t value) {
 		case 3: setA(value); break;
 		default: setR(value); break;
 	}
+	string readRGBA = gmenu2x->tr["RGBA values are "] + strR + " " + strG + " " + strB + " " + strA;
+	gmenu2x->allyTTS(readRGBA.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 }
 
 RGBAColor MenuSettingRGBA::value() {
