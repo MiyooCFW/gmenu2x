@@ -81,6 +81,7 @@ bool WallpaperDialog::exec() {
 		}
 
 		gmenu2x->setBackground(this->bg, "skins/" + skin + "/wallpapers/" + wallpapers[selected]);
+		gmenu2x->allyTTS(wallpapers[selected].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 0);
 
 		drawDialog(gmenu2x->s);
 
