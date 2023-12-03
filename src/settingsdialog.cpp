@@ -117,15 +117,15 @@ bool SettingsDialog::exec() {
 				case SD_ACTION_CLOSE_NOMB:
 					loop = false;
 					if (allowCancel_nomb) {
-							if (gmenu2x->input[CONFIRM]) {
-								gmenu2x->writeConfig();
-								gmenu2x->writeSkinConfig();
-								break;
+						if (gmenu2x->input[CONFIRM]) {
+							gmenu2x->writeConfig();
+							gmenu2x->writeSkinConfig();
+							break;
 						}
-							else if (gmenu2x->input[CANCEL]) {
-								gmenu2x->reinit();
-								break;
-							}
+						else if (gmenu2x->input[CANCEL]) {
+							gmenu2x->reinit();
+							break;
+						}
 					}
 				case SD_ACTION_CLOSE_LINK:
 					loop = false;
