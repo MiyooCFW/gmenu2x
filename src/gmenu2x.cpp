@@ -175,7 +175,7 @@ int main(int argc, char * argv[]) {
 	signal(SIGTERM, &quit_all);
 
 	bool autoStart = false;
-	for (int i = 0; i < argc; i++){
+	for (int i = 0; i < argc; i++) {
        		if(strcmp(argv[i],"--autostart")==0) {
 			INFO("Launching Autostart");
 			autoStart = true;
@@ -212,19 +212,20 @@ GMenu2X::~GMenu2X() {
 
 void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 	if (!confInt["enableTTS"]) return;
-	static char rm_tmp_chr[256];
 	char tmp_chr[256];
 	const char* voice;
+	//static char rm_tmp_chr[256];
+	
+	//if (strcmp(text, rm_tmp_chr) == 0) return;
+	//snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
 
 	voice = VOICE_TTS.c_str();
-	
-	if(strcmp(text, rm_tmp_chr) == 0) return;
 
 	system("killall " TTS_ENGINE); 
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
-	snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
 	system(tmp_chr);
-	if (wait){
+	
+	if (wait) {
 		while (system("pgrep " TTS_ENGINE) == 0) {
 		sleep(0.1);
 		}

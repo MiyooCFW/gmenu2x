@@ -116,7 +116,7 @@ bool SettingsDialog::exec() {
 					break;
 				case SD_ACTION_CLOSE_NOMB:
 					loop = false;
-					if (allowCancel_nomb){
+					if (allowCancel_nomb) {
 							if (gmenu2x->input[CONFIRM]) {
 								gmenu2x->writeConfig();
 								gmenu2x->writeSkinConfig();

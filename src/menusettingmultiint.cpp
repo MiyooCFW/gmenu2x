@@ -77,7 +77,7 @@ uint32_t MenuSettingMultiInt::manageInput() {
 
 int MenuSettingMultiInt::reverseLookup(int value) {
   int output;
-  for(int i = 0; i <= selection_max + 1; i++){
+  for(int i = 0; i <= selection_max + 1; i++) {
 	if(choices[i] <= value){
 	  output = i;
 	} else {
