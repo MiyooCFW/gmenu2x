@@ -48,7 +48,7 @@ public:
 	virtual void draw(int);
 	virtual bool edited();
 
-	virtual void setValue(int value);
+	virtual void setValue(int value, bool readValue);
 	virtual void setDefault();
 	
 	int value();

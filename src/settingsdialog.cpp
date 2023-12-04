@@ -40,7 +40,6 @@ bool SettingsDialog::exec() {
 	gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 
 	while (loop) {
-		// TODO: fix longrun of setttingsDialog with TTS
 		bool ally = false;
 		gmenu2x->menu->initLayout();
 		gmenu2x->font->setSize(gmenu2x->skinConfInt["fontSize"])->setColor(gmenu2x->skinConfColors[COLOR_FONT])->setOutlineColor(gmenu2x->skinConfColors[COLOR_FONT_OUTLINE]);

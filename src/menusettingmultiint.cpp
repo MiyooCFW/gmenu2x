@@ -41,7 +41,7 @@ MenuSettingMultiInt::MenuSettingMultiInt(GMenu2X *gmenu2x, const string &title, 
 	this->min = min;
 	this->max = max;
 
-	setValue(evalIntConf(choices[selection], def, min, max));
+	setValue(evalIntConf(choices[selection], def, min, max), 0);
 		
 	//Delegates
 	ButtonAction actionInc = MakeDelegate(this, &MenuSettingMultiInt::inc);
@@ -90,53 +90,53 @@ int MenuSettingMultiInt::reverseLookup(int value) {
 void MenuSettingMultiInt::inc() {
 	if(selection < selection_max && choices[selection + 1] <= max) {
 		selection = selection + 1;
-		setValue(choices[selection]);
+		setValue(choices[selection], 1);
 	}
 }
 
 void MenuSettingMultiInt::inc2x() {
 	if(selection < selection_max && ((choices[selection + 1] < max) || (choices[selection + 2] == max))) {
 		selection = selection + 2;
-		setValue(choices[selection]);
+		setValue(choices[selection], 1);
 	} else if(selection < selection_max && choices[selection + 1] == max) {
 		selection = selection + 1;
-		setValue(choices[selection]);
+		setValue(choices[selection], 1);
 	}
 }
 
 void MenuSettingMultiInt::dec() {
 	if(selection > 0 && choices[selection - 1] >= min) {
 		selection = selection - 1;
-		setValue(choices[selection]);
+		setValue(choices[selection], 1);
 	}
 }
 
 void MenuSettingMultiInt::dec2x() {
 	if(selection > 0 && ((choices[selection - 1] > min) || (choices[selection - 2] == min))) {
 		selection = selection - 2;
-		setValue(choices[selection]);
+		setValue(choices[selection], 1);
 	} else 	if(selection > 0 && choices[selection - 1] == min) {
 		selection = selection - 1;
-		setValue(choices[selection]);
+		setValue(choices[selection], 1);
 	}
 }
 
 void MenuSettingMultiInt::current() {
-	setValue(*_value);
+	setValue(*_value, 1);
 }
 
-void MenuSettingMultiInt::setValue(int value) {
+void MenuSettingMultiInt::setValue(int value, bool readValue) {
 	*_value = value;
 	stringstream ss;
 	ss << *_value;
 	strvalue = "";
 	ss >> strvalue;
-	gmenu2x->allyTTS(strvalue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+	if (readValue) gmenu2x->allyTTS(strvalue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 }
 
 void MenuSettingMultiInt::setDefault() {
 	selection = reverseLookup(def);
-	setValue(choices[selection]);
+	setValue(choices[selection], 1);
 }
 
 int MenuSettingMultiInt::value() {
