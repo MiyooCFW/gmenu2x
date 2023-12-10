@@ -145,23 +145,36 @@ void FontHelper::write(Surface *surface, const string &text, int x, int y, const
 
 void FontHelper::write(Surface *surface, const string &text, SDL_Rect &wrapRect, const uint8_t align) {
 	string textwrap = "";
-	if (getTextWidth(text) > wrapRect.w) {
+	uint32_t maxWidth = wrapRect.w;
+	bool firstline = true;
+	if (getTextWidth(text) > maxWidth) {
 		string line = "";
+		string prvline = "";
 		std::istringstream iss(text);
 		do {
 			string subs;
 			iss >> subs;
-			line += subs + " ";
+			if (getTextWidth(subs) > maxWidth) maxWidth = getTextWidth(subs);
+		} while (iss);
 
-			if (getTextWidth(line) > wrapRect.w) {
+		std::istringstream iss2(text);
+		do {
+			string subs;
+			iss2 >> subs;
+			line += subs + " ";
+			if (getTextWidth(line) > maxWidth) {
 				textwrap += "\n";
-				line = "";
+				if (!firstline) {
+					line = "";
+					firstline = true;
+				} else {
+					firstline = false;
+				}
 			} else {
 				textwrap += " ";
 			}
 			textwrap += subs;
-		} while (iss);
-
+		} while (iss2);
 		textwrap = trim(textwrap);
 	} else {
 		textwrap = trim(text);
