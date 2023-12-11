@@ -40,6 +40,7 @@ Handles the menu structure
 class Menu {
 private:
 	GMenu2X *gmenu2x;
+
 	int iSection, iLink;
 	int32_t iFirstDispSection, iFirstDispRow;
 	vector<string> sections;
@@ -53,6 +54,7 @@ private:
 
 	int8_t brightnessIcon = 5;
 	string iconDescription = "";
+	string iconTitle = "";
 
 	SDL_TimerID sectionChangedTimer, iconChangedTimer;
 
@@ -89,6 +91,7 @@ public:
 	bool addSection(const string &sectionName);
 	void deleteSelectedLink();
 	void deleteSelectedSection();
+	bool allyRead = false;
 
 	void loadIcons();
 	bool linkChangeSection(uint32_t linkIndex, uint32_t oldSectionIndex, uint32_t newSectionIndex);

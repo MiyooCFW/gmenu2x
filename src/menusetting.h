@@ -44,6 +44,7 @@ public:
 	virtual void drawSelected(int y);
 	virtual bool edited() = 0;
 
+	const std::string &getTitle() { return title; };
 	const std::string &getDescription() { return description; }
 };
 

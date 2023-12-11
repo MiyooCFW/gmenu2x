@@ -38,4 +38,5 @@ MenuSettingStringBase(gmenu2x, title, description, value), dialogTitle(dialogTit
 void MenuSettingString::edit() {
 	InputDialog id(gmenu2x, /*gmenu2x->ts,*/ description, value(), dialogTitle, dialogIcon);
 	if (id.exec()) setValue(id.getInput());
+	gmenu2x->allyTTS(value().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 }

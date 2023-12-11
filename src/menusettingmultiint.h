@@ -34,6 +34,7 @@ private:
 	void dec();
 	void inc2x();
 	void dec2x();
+	void current();
 	int *choices;
 	int reverseLookup(int value);
   
@@ -47,7 +48,7 @@ public:
 	virtual void draw(int);
 	virtual bool edited();
 
-	virtual void setValue(int value);
+	virtual void setValue(int value, bool readValue);
 	virtual void setDefault();
 	
 	int value();

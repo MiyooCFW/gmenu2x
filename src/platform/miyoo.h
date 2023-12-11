@@ -58,6 +58,7 @@
 #define MIYOO_FB0_FILE        "/dev/miyoo_fb0"
 #define MIYOO_KBD_FILE        "/dev/miyoo_kbd"
 #define MIYOO_VIR_FILE        "/dev/miyoo_vir"
+#define TTS_ENGINE            "espeak"
 
 #define MULTI_INT
 #define DEFAULT_CPU 720

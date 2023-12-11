@@ -36,11 +36,16 @@ void MenuSettingStringBase::draw(int y) {
 uint32_t MenuSettingStringBase::manageInput() {
 	if (gmenu2x->input[MENU]) clear();
 	if (gmenu2x->input[CONFIRM]) edit();
+	if (gmenu2x->input[MODIFIER]) current();
 	return 0; // SD_NO_ACTION
 }
 
 void MenuSettingStringBase::clear() {
 	setValue("");
+}
+
+void MenuSettingStringBase::current() {
+	gmenu2x->allyTTS(value().c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 }
 
 bool MenuSettingStringBase::edited() {

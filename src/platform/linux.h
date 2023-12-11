@@ -3,6 +3,8 @@
 
 #include <linux/soundcard.h>
 
+#define TTS_ENGINE "espeak"
+
 volatile uint16_t *memregs;
 uint8_t memdev = 0;
 int SOUND_MIXER_READ = SOUND_MIXER_READ_PCM;
