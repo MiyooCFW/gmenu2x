@@ -462,7 +462,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	if (gmenu2x->confInt["saveAutoStart"]) {
 		string prevCmd = command.c_str();
 		string tmppath = exe_path() + "/gmenu2x.conf";
-		string writeDateCmd = "; sed -i \"1s/.*/datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"/\" ";
+		string writeDateCmd = "; sed -i \"/datetime=/c\\datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"\" ";
 #if defined(TARGET_LINUX)
 		string exitCmd = "; exit" ;
 #else
