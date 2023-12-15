@@ -407,8 +407,8 @@ void GMenu2X::main(bool autoStart) {
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
 		string prevCmd = confStr["lastCommand"].c_str();
+		string writeDateCmd = "; sed -i \"/datetime=/c\\datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"\" ";
 		string tmppath = exe_path() + "/gmenu2x.conf";
-		string writeDateCmd = "; sed -i \"1s/.*/datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"/\" ";
 #if defined(TARGET_LINUX)
 		string exitCmd = "; exit" ;
 #else

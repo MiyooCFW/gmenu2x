@@ -146,34 +146,36 @@ void FontHelper::write(Surface *surface, const string &text, int x, int y, const
 void FontHelper::write(Surface *surface, const string &text, SDL_Rect &wrapRect, const uint8_t align) {
 	string textwrap = "";
 	uint32_t maxWidth = wrapRect.w;
+	uint32_t maxString = 0;
 	bool firstline = true;
 	if (getTextWidth(text) > maxWidth) {
 		string line = "";
-		string prvline = "";
+		string prvsub = "";
 		std::istringstream iss(text);
 		do {
 			string subs;
 			iss >> subs;
 			if (getTextWidth(subs) > maxWidth) maxWidth = getTextWidth(subs);
+			if (getTextWidth(subs) > maxString) maxString = getTextWidth(subs);
 		} while (iss);
-
+		if (maxWidth == wrapRect.w) firstline = false;
 		std::istringstream iss2(text);
 		do {
 			string subs;
 			iss2 >> subs;
 			line += subs + " ";
-			if (getTextWidth(line) > maxWidth) {
+			if (getTextWidth(line) > maxWidth || getTextWidth(prvsub) == maxWidth || (getTextWidth(prvsub + " " + line) > maxWidth && maxWidth == wrapRect.w && getTextWidth(prvsub) < maxString && getTextWidth(textwrap) > maxWidth)) {
 				textwrap += "\n";
 				if (!firstline) {
 					line = "";
 					firstline = true;
-				} else {
-					firstline = false;
 				}
 			} else {
 				textwrap += " ";
 			}
+				if (line != "") firstline = false;
 			textwrap += subs;
+			prvsub = subs;
 		} while (iss2);
 		textwrap = trim(textwrap);
 	} else {

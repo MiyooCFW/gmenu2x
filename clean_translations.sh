@@ -23,20 +23,27 @@ for i in $languages; do
 		break
 	fi
 done
-if ! ($FOUND_LANGUAGE || test "$LANGUAGE" = "ALL"); then
-	echo -e "\nERROR: Wrong translation file name!\n\nProvide correct \"Language\" name or type ALL to check every one.\n\n"
+
+if ! ($FOUND_LANGUAGE || test "$LANGUAGE" = "ALL" || test "$LANGUAGE" = "DICTIONARY"); then
+	echo -e "\nERROR: Wrong translation file name!\n\nProvide correct \"Language\" name or type ALL to check every one.\n\
+	Type DICTIONARY to sanitize translate.txt list\n\n"
 	sleep 2
 	exit
 elif test "$LANGUAGE" = "ALL"; then
 	LANGUAGE="*"
+elif test "$LANGUAGE" = "DICTIONARY"; then
+	echo "Opening dictionary.txt..."
+	sleep 1
 fi
 
+
 #Check available translations
+TEMP2="$(sed 's/=.*//' translate.txt)"
+TEMP3="$(sed 's/=.*//' dictionary.txt)"
 for file in assets/translations/$LANGUAGE; do
 	if [ -f "$file" ]; then
 	##CODE
 		TEMP="$(sed 's/=.*//' $file)"
-		TEMP2="$(sed 's/=.*//' translate.txt)"
 		PATTERNS="$(grep "${TEMP}" translate.txt)"
 		LANG_error="$(grep -v "${TEMP2}" <<< "${TEMP}" | sed '/^$/!s/$/=/g')"
 		LANG_lost="$(comm -23 <(sort <<< "$TEMP2") <(sort <<< "$TEMP") | sed '/^$/!s/$/=/g')"
@@ -46,14 +53,25 @@ for file in assets/translations/$LANGUAGE; do
 		sort <<< "${LANG_udiff}"$'\n'"${LANG_missing}"$'\n'"${LANG_lost}" | grep -v '^$' | uniq > $file
 	##LOGS
 		LANG_diff="$(sed '/[^=]$/d' $file)"
-		echo -e "\n\n    Language ${file}:\n\n"
-		echo -e "\n\n List of missing translations:\n\n"
-		echo "$LANG_diff"
+		echo -e "\n\n    Language file ${file}:\n\n"
 		echo -e "\n\n List of valid translations:\n\n"
 		echo "$LANG_udiff"
 		echo -e "\n\n List of wrong and removed translations:\n\n"
 		echo "$LANG_error"
 		echo -e "\n\n List of new and added translations:\n\n"
 		echo "$LANG_lost"
+		echo -e "\n\n List of missing translations:\n\n"
+		echo "$LANG_diff"
 	fi
 done
+
+if test "$LANGUAGE" == "DICTIONARY" ; then
+	echo -e "\n\n Checking translate.txt:\n\n"
+	sleep 1
+	LANG_wrong="$(grep -v "${TEMP3}" <<< "${TEMP2}" | sed '/^$/!s/$/=/g')"
+	echo -e "\n\n List of incorrect translations in translate.txt\n (excluding sections names) pls remove:\n\n"
+	echo "$LANG_wrong"
+else
+	echo "Finished."
+	exit
+fi
