@@ -86,6 +86,7 @@ Directories=
 Directory of the box art for the selector=
 Directory to start the selector=
 Displays last launched program's output=
+Done processing.=
 Done=
 Edit=
 Error loading meta-data=
