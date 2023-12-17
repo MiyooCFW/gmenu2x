@@ -135,6 +135,10 @@ void MessageBox::setButton(int action, const string &btn) {
 }
 
 void MessageBox::setAutoHide(uint32_t autohide) {
+	if (autohide == 0)  {
+		loophide = true;
+		autohide = 1;
+	}
 	this->autohide = autohide;
 }
 
@@ -223,8 +227,12 @@ int MessageBox::exec() {
 	} while (fadeAlpha < bgalpha);
 
 	if (this->autohide) {
-		SDL_Delay(this->autohide);
 		// gmenu2x->powerManager->resetSuspendTimer(); // prevent immediate suspend
+		if (loophide) {
+			while (!(gmenu2x->input[CONFIRM] || gmenu2x->input[CANCEL] || gmenu2x->input[SETTINGS] || gmenu2x->input[MENU]))
+				gmenu2x->input.update();
+		}
+		SDL_Delay(this->autohide);
 		return -1;
 	}
 

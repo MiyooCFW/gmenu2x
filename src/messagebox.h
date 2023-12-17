@@ -52,6 +52,7 @@ public:
 	void setAutoHide(uint32_t delay);
 	void setBgAlpha(uint32_t bgalpha);
 	int exec();
+	bool loophide = false;
 	void exec(uint32_t timeOut);
 	void clearTimer();
 	static uint32_t execTimer(uint32_t interval, void *param);

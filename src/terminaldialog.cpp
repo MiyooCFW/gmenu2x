@@ -64,8 +64,9 @@ void TerminalDialog::exec(string cmd) {
 
 	system("sync &");
 
-	text.push_back("----");
-	text.push_back(gmenu2x->tr["Done"]);
+	MessageBox mb(gmenu2x, gmenu2x->tr["Done processing."]);
+	mb.setAutoHide(0);
+	mb.exec();
 
 	if (text.size() >= rowsPerPage) firstRow = text.size() - rowsPerPage;
 
