@@ -107,9 +107,9 @@ You can pass useful variables (which can be treated as arguments for cmd) before
 * Configure the link to match your directory structure. Important fields:
 	* Selector Directory: The directory of your roms
 	* Selector Browser: Enable selector before launching the app
-	* Selector Filter: Filter extensions to be shown in the selector. Separe multiple extensions with commas.
+	* Selector Filter: Filter extensions to be shown in the selector. Separate multiple extensions with commas.
 	* Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
-* The name of the file of rom and preview have to be exactly the same. Suported image types are .png or .jpg;
+* The name of the file of rom and preview have to be exactly the same. Supported image types are .png or .jpg;
 
 ## Contacts
 
@@ -131,7 +131,7 @@ BryMD for updated FontiGrid icons;
 Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X);  
 Yann Vaillant (WIZ);  
 msx, jbanes, jutley and scooterpsu (RetroFW);  
-salvacam, SolidOne (MiyooCFW).  
+salvacam, SolidOne, MayanKoyote (MiyooCFW).  
 
 ### Translators
 Chinese (CN): RUANRUI1995;  

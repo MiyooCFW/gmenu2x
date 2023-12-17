@@ -538,8 +538,13 @@ void Menu::drawList() {
 		}
 
 		icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+#if !defined(CHECK_TRANSLATION)
 		gmenu2x->s->write(gmenu2x->titlefont, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
 		gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getDescription()], ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
+#else
+		gmenu2x->s->write(gmenu2x->titlefont, sectionLinks()->at(i)->getTitle(), ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
+		gmenu2x->s->write(gmenu2x->font, sectionLinks()->at(i)->getDescription(), ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
+#endif
 	}
 
 	if (sectionLinks()->size() > linkRows) {
@@ -583,11 +588,11 @@ void Menu::drawGrid() {
 				labelRect.y = iy + (linkHeight + min(linkHeight, icon->height()))/2;
 				labelRect.w = linkWidth - iconPadding;
 				labelRect.h = linkHeight - iconPadding;
-				#if !defined(CHECK_TRANSLATION)
+#if !defined(CHECK_TRANSLATION)
 				gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], labelRect, HAlignCenter | VAlignMiddle);
-				#else
+#else
 				gmenu2x->s->write(gmenu2x->font, sectionLinks()->at(i)->getTitle(), labelRect, HAlignCenter | VAlignMiddle);
-				#endif
+#endif
 			}
 		}
 	}
@@ -657,7 +662,11 @@ void Menu::drawStatusBar() {
 		x = iconPadding;
 		iconManual->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
-		gmenu2x->s->write(gmenu2x->font, iconDescription.c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+#if !defined(CHECK_TRANSLATION)
+		gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[iconDescription].c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+#else
+		gmenu2x->s->write(gmenu2x->font, gmenu2x->iconDescription.c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+#endif
 	} else {
 		SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;
 
