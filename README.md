@@ -136,7 +136,7 @@ salvacam, SolidOne, MayanKoyote (MiyooCFW).
 ### Translators
 Chinese (CN): RUANRUI1995;  
 Polish: Apaczer;  
-Portuguese (Brazil): azurejoga;  
+Portuguese (Brazil): azurejoga, oliverbot;  
 Russian: MayanKoyote;  
 
 ### Donors
