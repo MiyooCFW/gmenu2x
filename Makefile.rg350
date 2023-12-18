@@ -56,7 +56,7 @@ shared: debug
 
 clean:
 	make -C src/libopk clean
-	rm -rf $(OBJDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug $(DISTDIR) dist/gmenunx-$(PLATFORM).zip
+	rm -rf $(OBJDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug $(DISTDIR) dist/gmenu2x-$(PLATFORM).zip
 
 dist: dir libopk shared
 	mkdir -p $(DISTDIR)/skins/Default
@@ -67,4 +67,4 @@ dist: dir libopk shared
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
 
 zip: dist
-	cd $(DISTDIR)/ && rm -f ../gmenunx-$(PLATFORM).zip && zip -r ../gmenunx-$(PLATFORM).zip skins translations COPYING gmenu2x input.conf about.txt
+	cd $(DISTDIR)/ && rm -f ../gmenu2x-$(PLATFORM).zip && zip -r ../gmenu2x-$(PLATFORM).zip skins translations COPYING gmenu2x input.conf about.txt

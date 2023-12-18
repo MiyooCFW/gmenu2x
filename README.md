@@ -33,7 +33,7 @@ sudo apt-get install -y build-essential libsdl-dev libsdl-image1.2-dev libsdl-mi
 ```
 Compile with:
 ```sh
-make -f Makefile.linux dist
+make dist
 ```
 Then run it from the `dist/linux/` directory:
 ```sh

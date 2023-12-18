@@ -37,7 +37,7 @@ int32_t getBatteryStatus() {
 	return -1;
 }
 
-class GMenuNX : public GMenu2X {
+class GMenu2X_platform : public GMenu2X {
 private:
 	typedef struct {
 		uint16_t batt;
@@ -528,7 +528,7 @@ public:
 // 	// temp += "\n    " + tr["External: "] + getDiskFree("/mnt/ext_sd");
 // 	temp += "----\n";
 
-// 	TextDialog td(this, "GMenuNX", tr["Info about system"], "skin:icons/about.png");
+// 	TextDialog td(this, "GMenu2X", tr["Info about system"], "skin:icons/about.png");
 
 // // #if defined(TARGET_CAANOO)
 // // 	string versionFile = "";

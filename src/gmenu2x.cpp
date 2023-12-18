@@ -157,7 +157,7 @@ static void quit_all(int err) {
 }
 
 int main(int argc, char * argv[]) {
-	INFO("Starting GMenuNX...");
+	INFO("Starting GMenu2X...");
 
 	signal(SIGINT,  &quit_all);
 	signal(SIGSEGV, &quit_all);
@@ -180,7 +180,7 @@ int main(int argc, char * argv[]) {
 
 	usleep(1000);
 
-	GMenu2X::instance = new GMenuNX();
+	GMenu2X::instance = new GMenu2X_platform();
 	GMenu2X::instance->main(autoStart);
 
 	return 0;
@@ -663,7 +663,7 @@ void GMenu2X::initMenu() {
 				menu->addActionLink(i, tr["Log Viewer"], MakeDelegate(this, &GMenu2X::viewLog), tr["Displays last launched program's output"], "ebook.png");
 			}
 
-			menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenuNX"], "about.png");
+			menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenu2X"], "about.png");
 			menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
 			menu->addActionLink(i, tr["CPU Settings"], MakeDelegate(this, &GMenu2X::cpuSettings), tr["Config CPU clock"], "cpu.png");
 		}
@@ -719,7 +719,7 @@ void GMenu2X::settings() {
 	SettingsDialog sd(this, ts, tr["Settings"], "skin:icons/configure.png");
 	sd.allowCancel = true;
 
-	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenuNX"], &lang, &fl_tr.getFiles()));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenu2X"], &lang, &fl_tr.getFiles()));
 
 	string prevDateTime = confStr["datetime"] = get_date_time();
 	sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date & time"], &confStr["datetime"]));
@@ -801,7 +801,7 @@ void GMenu2X::resetSettings() {
 
 	SettingsDialog sd(this, ts, tr["Reset settings"], "skin:icons/configure.png");
 	sd.allowCancel_link_nomb = true;
-	sd.addSetting(new MenuSettingBool(this, tr["GMenuNX"], tr["Reset GMenuNX settings"], &reset_gmenu));
+	sd.addSetting(new MenuSettingBool(this, tr["GMenu2X"], tr["Reset GMenu2X settings"], &reset_gmenu));
 	sd.addSetting(new MenuSettingBool(this, tr["Default skin"], tr["Reset Default skin settings back to default"], &reset_skin));
 	sd.addSetting(new MenuSettingBool(this, tr["Icons"], tr["Reset link's icon back to default"], &reset_icon));
 	sd.addSetting(new MenuSettingBool(this, tr["Manuals"], tr["Unset link's manual"], &reset_manual));
@@ -817,7 +817,7 @@ void GMenu2X::resetSettings() {
 	  }
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		MessageBox mb(this, tr["Changes will be applied to ALL"]+"\n"+tr["apps and GMenuNX. Are you sure?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["Changes will be applied to ALL"]+"\n"+tr["apps and GMenu2X. Are you sure?"], "skin:icons/exit.png");
 		mb.setButton(CANCEL, tr["Cancel"]);
 		mb.setButton(MANUAL,  tr["Yes"]);
 		if (mb.exec() != MANUAL) return;
@@ -1315,7 +1315,7 @@ void GMenu2X::skinMenu() {
 		SettingsDialog sd(this, ts, tr["Skin"], "skin:icons/skin.png");
 		sd.selected = selected;
 		sd.allowCancel_nomb = true;
-		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenuNX"], &confStr["skin"], &fl_sk.getDirectories(), MakeDelegate(this, &GMenu2X::onChangeSkin)));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories(), MakeDelegate(this, &GMenu2X::onChangeSkin)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], &confStr["tmp_wallpaper"], &wallpapers, MakeDelegate(this, &GMenu2X::onChangeSkin), MakeDelegate(this, &GMenu2X::changeWallpaper)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Background"], tr["How to scale wallpaper, backdrops and game art"], &confStr["bgscale"], &bgScale));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Preview mode"], tr["How to show image preview and game art"], &confStr["previewMode"], &previewMode));
@@ -1630,7 +1630,7 @@ bool GMenu2X::saveScreenshot(string path) {
 
 void GMenu2X::reinit(bool showDialog) {
 	if (showDialog) {
-		MessageBox mb(this, tr["GMenuNX will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["GMenu2X will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
 		mb.setButton(CONFIRM, tr["Restart"]);
 		mb.setButton(CANCEL,  tr["Cancel"]);
 		if (mb.exec() == CANCEL) return;
