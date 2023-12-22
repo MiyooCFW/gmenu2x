@@ -1,6 +1,6 @@
 #!/bin/bash
 # Compares translations with translate.txt and remove any redundant entries + adds missing ones
-## Usage: run from main dir ./clean_translation [Language_Name] or ALL
+## Usage: run from main repo directory ./tools/clean_translation [Language_Name] or ALL or DICTIONARY (to sanitize translate.txt)
 
 #Cleanup tr strings data file
 DATA_sorted="$(sort -f translate.txt)"
