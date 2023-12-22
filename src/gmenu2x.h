@@ -160,7 +160,7 @@ public:
 	void main(bool autoStart);
 	void settings();
 	void settings_date();
-	void reinit(bool showDialog = false);
+	void reinit();
 	void reinit_save();
 	void poweroffDialog();
 	void resetSettings();

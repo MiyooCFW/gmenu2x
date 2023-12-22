@@ -1628,14 +1628,7 @@ bool GMenu2X::saveScreenshot(string path) {
 	return SDL_SaveBMP(s->raw, path.c_str()) == 0;
 }
 
-void GMenu2X::reinit(bool showDialog) {
-	if (showDialog) {
-		MessageBox mb(this, tr["GMenu2X will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
-		mb.setButton(CONFIRM, tr["Restart"]);
-		mb.setButton(CANCEL,  tr["Cancel"]);
-		if (mb.exec() == CANCEL) return;
-	}
-
+void GMenu2X::reinit() {
 	quit_nosave();
 	WARNING("Re-launching gmenu2x");
 	chdir(exe_path().c_str());
@@ -1643,7 +1636,6 @@ void GMenu2X::reinit(bool showDialog) {
 }
 
 void GMenu2X::reinit_save() {
-
 	quit();
 	WARNING("Re-launching gmenu2x");
 	chdir(exe_path().c_str());

@@ -87,9 +87,27 @@ bool SettingsDialog::exec() {
 
 			switch (action) {
 				case SD_ACTION_SAVE:
-					save = true;
-					loop = false;
-					break;
+					if (edited()){
+						MessageBox mb(gmenu2x, gmenu2x->tr["GMenu2X will restart to apply"]+"\n"+gmenu2x->tr["the settings. Continue?"], "skin:icons/exit.png");
+						mb.setButton(CONFIRM, gmenu2x->tr["Restart"]);
+						mb.setButton(CANCEL, gmenu2x->tr["Cancel"]);
+						int res = mb.exec();
+						allowCancel = false;
+						switch (res) {
+							case CONFIRM: {
+								save = true;
+								loop = false;
+								break;
+							}
+							case CANCEL: {
+								loop = false;
+								break;
+							}
+						}
+					} else {
+						loop = false;
+						break;
+					}
 				case SD_ACTION_CLOSE:
 					loop = false;
 					if (allowCancel && edited()) {
