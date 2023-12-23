@@ -764,6 +764,7 @@ void GMenu2X::settings() {
 	}
 
 	setBacklight(confInt["backlight"], false);
+	setVolume(confInt["globalVolume"], false);
 
 #if defined(TARGET_GP2X)
 	if (prevgamma != confInt["gamma"]) {
