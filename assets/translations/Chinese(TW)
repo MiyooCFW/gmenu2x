@@ -1,7 +1,7 @@
 About=關於
 Add link=新增程式鏈接
 Add section=新建分組
-Add to Favourites=
+Add to Favorites=
 Aliases=別名
 Allow the selector to change directory=允許選擇程式瀏覽器改變目錄
 Alt Font Outline=備選字輪廓色彩
@@ -71,7 +71,7 @@ Edit=編輯
 emus=
 Exit=退出
 Explorer=文件管理器
-favourites=
+favorites=
 File containing a list of aliases for the selector=包含選擇器別名列表的文件
 File Filter=ROM文件過濾
 File Selector=文件選擇器

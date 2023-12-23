@@ -1,7 +1,7 @@
 About=Sobre
 Add link=Adicionar link
 Add section=Adicionar Seção
-Add to Favourites=Adicionar aos Favoritos
+Add to Favorites=Adicionar aos Favoritos
 Aliases=Nomes alternativos
 Allow the selector to change directory=Permitir ao seletor que mude de diretório
 Alt Font Outline=Contorno da fonte alternativa
@@ -71,7 +71,7 @@ Edit=Editar
 emus=emus
 Exit=Sair
 Explorer=Explorador
-favourites=favoritos
+favorites=favoritos
 File containing a list of aliases for the selector=Arquivo que contém a lista de nomes alternativos para o seletor 
 File Filter=Filtro de arquivo
 File Selector=Seletor de arquivos

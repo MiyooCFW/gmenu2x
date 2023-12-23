@@ -1,7 +1,7 @@
 About=Информация
 Add link=Добавить ярлык
 Add section=Добавить раздел
-Add to Favourites=Добавить в избранное
+Add to Favorites=Добавить в избранное
 Aliases=Псевдонимы
 Allow the selector to change directory=Разрешить селектору выходить из каталога
 Alt Font Outline=Контур альт. шрифта
@@ -71,7 +71,7 @@ Edit=Изменить
 emus=эмуляторы
 Exit=Выход
 Explorer=Обозреватель
-favourites=избранное
+favorites=избранное
 File containing a list of aliases for the selector=Файл со списком псевдонимов для селектора
 File Filter=Файловый фильтр
 File Selector=Файловый селектор

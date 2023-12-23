@@ -150,17 +150,17 @@ const std::string Selector::getParams(uint32_t i) {
 
 void Selector::customOptions(vector<MenuOption> &options) {
 	if (isFile(selected)) {
-		options.push_back((MenuOption){gmenu2x->tr["Add to Favourites"], MakeDelegate(this, &Selector::addFavourite)});
+		options.push_back((MenuOption){gmenu2x->tr["Add to Favorites"], MakeDelegate(this, &Selector::addFavorite)});
 	}
 }
 
-void Selector::addFavourite() {
+void Selector::addFavorite() {
 	string favicon = getPreview(selected);
 	if (favicon.empty() || favicon == "#") favicon = this->icon;
 
-	gmenu2x->menu->addSection("favourites");
+	gmenu2x->menu->addSection("favorites");
 	string title = base_name(getFileName(selected), true);
-	string linkpath = "sections/favourites/" + title + "." + base_name(link->getExec(), true) + ".lnk";
+	string linkpath = "sections/favorites/" + title + "." + base_name(link->getExec(), true) + ".lnk";
 
 	LinkApp *fav = new LinkApp(gmenu2x, linkpath.c_str());
 

@@ -1,7 +1,7 @@
 About=
 Add link=
 Add section=
-Add to Favourites=
+Add to Favorites=
 Aliases=
 Allow the selector to change directory=
 Alt Font Outline=
@@ -71,7 +71,7 @@ Edit=
 emus=
 Exit=
 Explorer=
-favourites=
+favorites=
 File containing a list of aliases for the selector=
 File Filter=
 File Selector=

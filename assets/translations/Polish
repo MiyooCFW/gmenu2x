@@ -1,7 +1,7 @@
 About=O systemie
 Add link=Dodaj skrót
 Add section=Dodaj sekcję
-Add to Favourites=Dodaj do Ulubionych
+Add to Favorites=Dodaj do Ulubionych
 Aliases=Aliasy
 Allow the selector to change directory=Pozwól selektorowi na zmianę ścieżki
 Alt Font Outline=Granica czcionki alter.
@@ -71,7 +71,7 @@ Edit=Edytuj
 emus=emusy
 Exit=Wyjdź
 Explorer=Eksplorator
-favourites=ulubione
+favorites=ulubione
 File containing a list of aliases for the selector=Plik zawierający listę aliasów selektora
 File Filter=Filtr plików
 File Selector=Selektor plików

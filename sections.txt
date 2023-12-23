@@ -1,6 +1,6 @@
 apps=
 cores=
 emus=
-favourites=
+favorites=
 games=
 settings=
