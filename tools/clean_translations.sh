@@ -69,8 +69,11 @@ if test "$LANGUAGE" == "DICTIONARY" ; then
 	echo -e "\n\n Checking translate.txt:\n\n"
 	sleep 1
 	LANG_wrong="$(grep -v "${TEMP3}" <<< "${TEMP2}" | sed '/^$/!s/$/=/g')"
-	echo -e "\n\n List of incorrect translations in translate.txt\n (excluding sections names) pls remove:\n\n"
-	echo "$LANG_wrong"
+	echo -e "\n\n List of incorrect translations in translate.txt\n not present in dictionary.txt (excluding sections names) pls remove:\n\n"
+	#Exclude sections names
+	SECTIONS="$(cat sections.txt)"
+	LANG_wrong_clean="$(grep -v "${SECTIONS}" <<< "${LANG_wrong}")"
+	echo "$LANG_wrong_clean"
 else
 	echo "Finished."
 	exit
