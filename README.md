@@ -46,7 +46,7 @@ cd dist/linux
 The list of available translations with examples are stored in `gmenu2x/translations/` dir of your GMenu2X distribution package.  
 The current in use messages from US English language can be read from: [translate.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/translate.txt). This does not include appLinks' Title&Description which can be added freely by user.
 
-To generate above list, you have to rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the time of using GMenu2X.
+You can run `tools/gen_translate.sh` to generate above list providing argument in form of txt file with list of #define for your platform. Otherwise you can rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the time of using GMenu2X.
 ### Dictionary
 To view the full list of string messages available to translate in source see: [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt)
 

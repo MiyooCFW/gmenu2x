@@ -1,0 +1,9 @@
+#define __COMMIT_HASH__
+#define __BUILDTIME__
+#define __COMMIT_HASH__
+#define PLATFORM="miyoo"
+#define LOG_LEVEL=3
+#define TARGET_MIYOO
+#define HW_LIDVOL
+#define IPK_SUPPORT
+#define MULTI_INT
