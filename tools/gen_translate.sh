@@ -1,7 +1,19 @@
 #!/bin/bash
 # Strips c++ source and header files and generates translate.txt
-## Usage: run from main repo directory ./tools/miyoo_translate.sh
+## Usage: run from main repo directory ./tools/gen_translate.sh <name_defines>.txt
 ## NOTES: this will remove sections strings from translate.txt!
+
+defines="$1" # undefines - auto-generated
+if ! (test -e $defines); then
+	echo -e "\nUsage: run from main repo directory ./tools/gen_translate.sh <name_defines>.txt\n\n"
+	sleep 1
+	exit
+elif test -z "$(cat "${defines}")"; then
+	echo -e "\nERROR: Empty macros defines file!\n\n\n\
+	Provide correct <name_defines>.txt with #ifdef preprocessors to include in generate src.\n\n"
+	sleep 2
+	exit
+fi
 
 # Generate #undef macros list
 find . -name "*.cpp" -o -name "*.h" | while read F; do
@@ -23,9 +35,10 @@ find . -name "*.cpp" -o -name "*.h" | while read file; do
 	mv /tmp/temp_file $file
 done
 
+
 # Clean source code of unused preprocessors
 find . -name "*.cpp" -o -name "*.h" | while read file; do
-	unifdef -m -t -f ./tools/undefines -f ./tools/miyoo_defines $file; \
+	unifdef -m -t -f ./tools/undefines -f $defines $file; \
 done
 
 # Generate translate.txt
