@@ -200,6 +200,34 @@ bool InputManager::update(bool wait) {
 			anyactions = true;
 			keystate[x] = false;
 			break;
+		case SDL_JOYHATMOTION: {
+				Uint8 hatState ;
+				for (int j = 0; j < joysticks.size(); j++) {
+					hatState = SDL_JoystickGetHat(joysticks[j], 0);
+				}
+				switch (hatState) {
+					case SDL_HAT_CENTERED:
+						dropEvents(false);
+						return false;
+					case SDL_HAT_UP:
+						INFO("UP");
+						isActive(UP);
+						break;
+					case SDL_HAT_DOWN:
+						INFO("DOWN");
+						isActive(DOWN);
+						break;
+					case SDL_HAT_LEFT:
+						INFO("LEFT");
+						isActive(LEFT);
+						break;
+					case SDL_HAT_RIGHT:
+						INFO("RIGHT");
+						isActive(RIGHT);
+						break;
+				}
+				break;
+			}
 		case SDL_USEREVENT:
 			if (event.user.code == WAKE_UP)
 				anyactions = true;
