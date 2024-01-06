@@ -44,6 +44,10 @@ enum actions {
 	NUM_ACTIONS
 };
 
+enum hat_actions {
+	DDOWN, DUP, DLEFT, DRIGHT
+};
+
 #define VOLUME_HOTKEY		SECTION_PREV
 #define BACKLIGHT_HOTKEY	SECTION_NEXT
 
@@ -75,6 +79,7 @@ private:
 
 	vector <SDL_Joystick*> joysticks;
 	vector <InputManagerAction> actions;
+	bool down = false;
 
 	const char konami[10] = {UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT, CANCEL, CONFIRM}; // eegg
 	char input_combo[10] = {POWER}; // eegg
@@ -89,6 +94,7 @@ public:
 
 	bool update(bool wait = true);
 	bool combo();
+	bool hatEvent();
 	void dropEvents(bool drop_timer = true);
 	static void pushEvent(int action);
 	int count();

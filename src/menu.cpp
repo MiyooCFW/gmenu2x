@@ -916,7 +916,7 @@ void Menu::exec() {
 		else if (gmenu2x->input[LEFT])	linkLeft();
 		else if (gmenu2x->input[RIGHT])	linkRight();
 		else if (gmenu2x->input[UP])	linkUp();
-		else if (gmenu2x->input[DOWN])	linkDown();
+		else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent())	linkDown();
 
 		// SECTION
 		else if (gmenu2x->input[SECTION_PREV]) decSectionIndex();

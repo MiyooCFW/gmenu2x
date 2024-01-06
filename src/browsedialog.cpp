@@ -162,7 +162,7 @@ bool BrowseDialog::exec() {
 
 		if (gmenu2x->input[UP]) {
 			selected--;
-		} else if (gmenu2x->input[DOWN]) {
+		} else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent()) {
 			selected++;
 		} else if (gmenu2x->input[LEFT]) {
 			selected -= numRows;

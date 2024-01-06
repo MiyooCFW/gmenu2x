@@ -211,19 +211,17 @@ bool InputManager::update(bool wait) {
 						return false;
 					case SDL_HAT_UP:
 						INFO("UP");
-						isActive(UP);
 						break;
 					case SDL_HAT_DOWN:
 						INFO("DOWN");
-						isActive(DOWN);
+						down = true;
+						anyactions = true;
 						break;
 					case SDL_HAT_LEFT:
 						INFO("LEFT");
-						isActive(LEFT);
 						break;
 					case SDL_HAT_RIGHT:
 						INFO("RIGHT");
-						isActive(RIGHT);
 						break;
 				}
 				break;
@@ -261,6 +259,14 @@ bool InputManager::update(bool wait) {
 
 bool InputManager::combo() { // eegg
 	return !memcmp(input_combo, konami, sizeof(input_combo));
+}
+
+bool InputManager::hatEvent() { // use joystick hat position or 3rd analog (e.g. D-pad)
+	if(down) {
+		down = false;
+		return true;
+	}
+	return false;
 }
 
 void InputManager::dropEvents(bool drop_timer) {
