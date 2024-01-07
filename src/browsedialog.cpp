@@ -160,14 +160,14 @@ bool BrowseDialog::exec() {
 
 		SDL_RemoveTimer(alphanum_timer); alphanum_timer = NULL;
 
-		if (gmenu2x->input[UP]) {
+		if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP) {
 			selected--;
-		} else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent()) {
+		} else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) {
 			selected++;
-		} else if (gmenu2x->input[LEFT]) {
+		} else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) {
 			selected -= numRows;
 			if (selected < 0) selected = 0;
-		} else if (gmenu2x->input[RIGHT]) {
+		} else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) {
 			selected += numRows;
 			if (selected >= this->size()) selected = this->size() - 1;
 		} else if (gmenu2x->input[PAGEDOWN]) {
