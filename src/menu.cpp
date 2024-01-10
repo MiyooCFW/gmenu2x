@@ -958,7 +958,8 @@ void Menu::exec() {
 
 		if (
 			!iconDescription.empty() &&
-			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT])
+			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT] ||
+			gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT || gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN)
 		) {
 			icon_changed = SDL_GetTicks();
 			SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;

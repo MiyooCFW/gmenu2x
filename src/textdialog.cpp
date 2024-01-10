@@ -135,17 +135,17 @@ void TextDialog::exec() {
 			inputAction = gmenu2x->input.update();
 			if (gmenu2x->inputCommonActions(inputAction)) continue;
 
-			if (gmenu2x->input[UP] && firstRow > 0) firstRow--;
-			else if (gmenu2x->input[DOWN] && firstRow + rowsPerPage < text.size()) firstRow++;
-			else if (gmenu2x->input[RIGHT] && firstCol > -1 * (lineWidth - gmenu2x->listRect.w) - 10) firstCol -= 30;
-			else if (gmenu2x->input[LEFT] && firstCol < 0) firstCol += 30;
-			else if (gmenu2x->input[PAGEUP] || (gmenu2x->input[LEFT] && firstCol == 0)) {
+			if ((gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP) && firstRow > 0) firstRow--;
+			else if ((gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) && firstRow + rowsPerPage < text.size()) firstRow++;
+			else if ((gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) && firstCol > -1 * (lineWidth - gmenu2x->listRect.w) - 10) firstCol -= 30;
+			else if ((gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) && firstCol < 0) firstCol += 30;
+			else if (gmenu2x->input[PAGEUP] || ((gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) && firstCol == 0)) {
 				if (firstRow >= rowsPerPage - 1)
 					firstRow -= rowsPerPage - 1;
 				else
 					firstRow = 0;
 			}
-			else if (gmenu2x->input[PAGEDOWN] || (gmenu2x->input[RIGHT] && firstCol == 0)) {
+			else if (gmenu2x->input[PAGEDOWN] || ((gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) && firstCol == 0)) {
 				if (firstRow + rowsPerPage * 2 - 1 < text.size())
 					firstRow += rowsPerPage - 1;
 				else

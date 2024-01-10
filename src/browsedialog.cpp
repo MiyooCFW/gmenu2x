@@ -209,7 +209,8 @@ bool BrowseDialog::exec() {
 			contextMenu();
 			preview = getPreview(selected);
 		}
-	if (gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[PAGEUP] || gmenu2x->input[PAGEDOWN] || gmenu2x->input[MANUAL]) {
+	if (gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[PAGEUP] || gmenu2x->input[PAGEDOWN] || gmenu2x->input[MANUAL] ||
+		gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN || gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) {
 			preview = getPreview(selected);
 		}
 	}

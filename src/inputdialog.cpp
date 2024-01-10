@@ -150,10 +150,10 @@ bool InputDialog::exec() {
 
 		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) return false;
 		else if (gmenu2x->input[SETTINGS])		return true;
-		else if (gmenu2x->input[UP])			selRow--;
-		else if (gmenu2x->input[DOWN])			selRow++;
-		else if (gmenu2x->input[LEFT])			selCol--;
-		else if (gmenu2x->input[RIGHT])			selCol++;
+		else if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP)			selRow--;
+		else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN)			selRow++;
+		else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)			selCol--;
+		else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)			selCol++;
 		else if (gmenu2x->input[CONFIRM])		confirm();
 		else if (gmenu2x->input[MANUAL])		changeKeys();
 		else if (gmenu2x->input[SECTION_PREV])	backspace();
