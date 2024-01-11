@@ -139,6 +139,7 @@ void TextDialog::exec() {
 			else if ((gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) && firstRow + rowsPerPage < text.size()) firstRow++;
 			else if ((gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) && firstCol > -1 * (lineWidth - gmenu2x->listRect.w) - 10) firstCol -= 30;
 			else if ((gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) && firstCol < 0) firstCol += 30;
+			// TODO: Fix HAT events not being registered twice on the same loop run
 			else if (gmenu2x->input[PAGEUP] || ((gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) && firstCol == 0)) {
 				if (firstRow >= rowsPerPage - 1)
 					firstRow -= rowsPerPage - 1;

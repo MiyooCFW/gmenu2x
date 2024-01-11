@@ -210,21 +210,17 @@ bool InputManager::update(bool wait) {
 					dropEvents();
 					return false;
 				case SDL_HAT_UP:
-					INFO("UP");
 					up = true;
-					return true;
+					break;
 				case SDL_HAT_DOWN:
-					INFO("DOWN");
 					down = true;
-					return true;
+					break;
 				case SDL_HAT_LEFT:
-					INFO("LEFT");
 					left = true;
-					return true;
+					break;
 				case SDL_HAT_RIGHT:
-					INFO("RIGHT");
 					right = true;
-					return true;
+					break;
 			}
 				anyactions = true;
 				break;

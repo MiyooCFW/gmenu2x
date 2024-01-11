@@ -955,7 +955,8 @@ void Menu::exec() {
 		} else if (selLink() != NULL) {
 			iconDescription = selLink()->getDescription();
 		}
-
+		
+		// TODO: Fix HAT events not being registered twice on the same loop run
 		if (
 			!iconDescription.empty() &&
 			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT] ||
