@@ -162,24 +162,30 @@ bool BrowseDialog::exec() {
 
 		if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP) {
 			selected--;
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) {
 			selected++;
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) {
 			selected -= numRows;
+			preview = getPreview(selected);
 			if (selected < 0) selected = 0;
 		} else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) {
 			selected += numRows;
+			preview = getPreview(selected);
 			if (selected >= this->size()) selected = this->size() - 1;
 		} else if (gmenu2x->input[PAGEDOWN]) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			int cur = toupper(getFileName(selected).at(0));
 			while ((selected < this->size() - 1) && ++selected && cur == toupper(getFileName(selected).at(0))) {
 			}
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[PAGEUP]) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			int cur = toupper(getFileName(selected).at(0));
 			while (selected > 0 && selected-- && cur == toupper(getFileName(selected).at(0))) {
 			}
+			preview = getPreview(selected);
 		} else if (showDirectories && allowDirUp && (gmenu2x->input[MODIFIER] || (gmenu2x->input[CONFIRM] && getFile(selected) == ".."))) { /*Directory Up */
 			selected = 0;
 				preview = "";
@@ -205,13 +211,9 @@ bool BrowseDialog::exec() {
 		} else if (gmenu2x->input[MANUAL]) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			selected = (rand() % fileCount()) + dirCount();
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[MENU]) {
 			contextMenu();
-			preview = getPreview(selected);
-		}
-	// TODO: Fix HAT events not being registered twice on the same loop run
-	if (gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[PAGEUP] || gmenu2x->input[PAGEDOWN] || gmenu2x->input[MANUAL] ||
-		gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN || gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) {
 			preview = getPreview(selected);
 		}
 	}
