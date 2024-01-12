@@ -911,11 +911,8 @@ void Menu::exec() {
 		else if (gmenu2x->input[MENU])		gmenu2x->contextMenu();
 
 		// LINK NAVIGATION
-		else if (gmenu2x->input[LEFT] && linkCols == 1 && linkRows > 1) pageUp();
-		else if (gmenu2x->input[RIGHT] && linkCols == 1 && linkRows > 1) pageDown();
-		// WARNING: following two lines may or may not brake DLEFT/DRIGHT normal menu events, so disable tmp
-		// else if (gmenu2x->input.hatEvent(DLEFT) == DLEFT  && linkCols == 1 && linkRows > 1) pageUp();
-		// else if (gmenu2x->input.hatEvent(DRIGHT) == DRIGHT  && linkCols == 1 && linkRows > 1) pageDown();
+		else if ((gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) && linkCols == 1 && linkRows > 1) pageUp();
+		else if ((gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) && linkCols == 1 && linkRows > 1) pageDown();
 		else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)	linkLeft();
 		else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)	linkRight();
 		else if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP)	linkUp();
@@ -955,12 +952,11 @@ void Menu::exec() {
 		} else if (selLink() != NULL) {
 			iconDescription = selLink()->getDescription();
 		}
-		
-		// TODO: Fix HAT events not being registered twice on the same loop run (the TextDialog received workaround in form of separate conditions for these events)
+
 		if (
 			!iconDescription.empty() &&
 			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT]
-			/* || gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT || gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN*/)
+			|| gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT || gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN)
 		) {
 			icon_changed = SDL_GetTicks();
 			SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;

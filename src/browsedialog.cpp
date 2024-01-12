@@ -168,12 +168,12 @@ bool BrowseDialog::exec() {
 			preview = getPreview(selected);
 		} else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) {
 			selected -= numRows;
-			preview = getPreview(selected);
 			if (selected < 0) selected = 0;
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) {
 			selected += numRows;
-			preview = getPreview(selected);
 			if (selected >= this->size()) selected = this->size() - 1;
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[PAGEDOWN]) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			int cur = toupper(getFileName(selected).at(0));
