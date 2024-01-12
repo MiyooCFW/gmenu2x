@@ -61,8 +61,8 @@ void MenuSettingInt::draw(int y) {
 }
 
 uint32_t MenuSettingInt::manageInput() {
-	if (gmenu2x->input[LEFT])		dec();
-	else if (gmenu2x->input[RIGHT])	inc();
+	if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)		dec();
+	else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)	inc();
 	else if (gmenu2x->input[DEC])	setValue(value() - 10 * delta);
 	else if (gmenu2x->input[INC])	setValue(value() + 10 * delta);
 	else if (gmenu2x->input[MENU])	setDefault();

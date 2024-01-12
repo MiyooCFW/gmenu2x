@@ -74,15 +74,15 @@ bool SettingsDialog::exec() {
 
 			action = SD_NO_ACTION;
 			if (!(action = voices[selected]->manageInput())) {
-				if (gmenu2x->input[UP]) 							action = SD_ACTION_UP;
-				else if (gmenu2x->input[DOWN]) 						action = SD_ACTION_DOWN;
-				else if (gmenu2x->input[PAGEUP]) 					action = SD_ACTION_PAGEUP;
-				else if (gmenu2x->input[PAGEDOWN]) 					action = SD_ACTION_PAGEDOWN;
-				else if (gmenu2x->input[SETTINGS]) 					action = SD_ACTION_SAVE;
-				else if (gmenu2x->input[CANCEL] && (allowCancel))		action = SD_ACTION_CLOSE;
-				else if (gmenu2x->input[CANCEL] && (allowCancel_nomb))		action = SD_ACTION_CLOSE_NOMB;
-				else if (gmenu2x->input[CANCEL] && (allowCancel_link))		action = SD_ACTION_CLOSE_LINK;
-				else if (gmenu2x->input[CANCEL] && (allowCancel_link_nomb))		action = SD_ACTION_CLOSE_LINK_NOMB;
+				if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP)	action = SD_ACTION_UP;
+				else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN)	action = SD_ACTION_DOWN;
+				else if (gmenu2x->input[PAGEUP])	action = SD_ACTION_PAGEUP;
+				else if (gmenu2x->input[PAGEDOWN])	action = SD_ACTION_PAGEDOWN;
+				else if (gmenu2x->input[SETTINGS])	action = SD_ACTION_SAVE;
+				else if (gmenu2x->input[CANCEL] && (allowCancel))	action = SD_ACTION_CLOSE;
+				else if (gmenu2x->input[CANCEL] && (allowCancel_nomb))	action = SD_ACTION_CLOSE_NOMB;
+				else if (gmenu2x->input[CANCEL] && (allowCancel_link))	action = SD_ACTION_CLOSE_LINK;
+				else if (gmenu2x->input[CANCEL] && (allowCancel_link_nomb))	action = SD_ACTION_CLOSE_LINK_NOMB;
 			}
 
 			switch (action) {
