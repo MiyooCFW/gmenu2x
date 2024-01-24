@@ -1213,7 +1213,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	evalIntConf(&skinConfInt["sectionBarSize"], 40, 1, this->w);
 	evalIntConf(&skinConfInt["bottomBarHeight"], 16, 1, this->h);
 	evalIntConf(&skinConfInt["previewWidth"], 128, 1, this->w);
-	evalIntConf(&skinConfInt["fontSize"], 12, 6, 60);
+	evalIntConf(&skinConfInt["fontSize"], 14, 6, 60);
 	evalIntConf(&skinConfInt["fontSizeTitle"], 20, 1, 60);
 	evalIntConf(&skinConfInt["sectionBar"], SB_CLASSIC, 0, 5);
 	evalIntConf(&skinConfInt["linkCols"], 4, 1, 8);
