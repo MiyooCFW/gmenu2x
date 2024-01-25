@@ -24,7 +24,7 @@ make -f Makefile.miyoo
 ```
 make -f Makefile.miyoo dist
 ```
-you can find both outputs in `/dist/miyoo/` directory.
+you can find both outputs in `./dist/miyoo/` directory.
 ### PC (Linux):
 This is primarily useful for development/testing. 
 First, install the dependencies. This should work for Debian/Ubuntu systems, use the appropriate package manager for other systems:
@@ -86,6 +86,8 @@ skins
     └── LICENSE_skin-GPLv2.txt
 ```
 
+Fonts under OFL license has been expanded with GNU_Unifont.ttf using `font_merge.sh` tool to include most of the UNICODE glyphs and all CJK characters, thus transforming to Pan-Unicode font type. 
+
 ## Controls
 
 * A: Accept / Launch selected link / Confirm action;
@@ -103,7 +105,6 @@ skins
 * SELECT + R, BRIGHTNESS: Change screen brightness;
 * SELECT + START: Take a screenshot;
 * POWER: Bring up Poweroff dialog;
-* TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal.
 
 In settings:
 
