@@ -55,6 +55,37 @@ To generate this list of available strings' aliases you can run from src:
 (grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | tr -d '\\' |sort | uniq
 ```
 
+## Themes & fonts
+
+Please refer to directory containing appropriate skin for detailed information about authors and licensing of specific theme and its fonts. See below schema for general info:
+```
+skins
+├── Default
+│   ├── GNU_Unifont.ttf
+│   ├── LICENSE_font-GPLv2.txt
+│   └── LICENSE_skin.txt
+├── FontiGrid
+│   ├── BebasKai.ttf
+│   ├── LICENSE_font-OFL.txt
+│   └── LICENSE_skin-GPLv2.txt
+├── GameShow
+│   ├── LICENSE_font-EULA.pdf
+│   ├── LICENSE_skin-CC_BY_3.0_US.txt
+│   └── ZrnicRg.ttf
+├── NeonWave
+│   ├── GoodTimesRg.ttf
+│   ├── LICENSE_font-EULA.pdf
+│   └── LICENSE_skin-CC_BY_3.0_US.txt
+├── NewComicBook
+│   ├── BublinaTheMongrel.ttf
+│   ├── LICENSE_font-OFL.txt
+│   └── LICENSE_skin-CC-BY-NC-ND_4.0.txt
+└── Nsdark
+    ├── BebasKai.ttf
+    ├── LICENSE_font-APACHE.txt
+    └── LICENSE_skin-GPLv2.txt
+```
+
 ## Controls
 
 * A: Accept / Launch selected link / Confirm action;
