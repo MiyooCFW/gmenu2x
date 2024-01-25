@@ -2,7 +2,7 @@
 
 This GMenu2X is a fork of [GMenuNX](https://github.com/pingflood/GMenuNX/) and is developed for the MiyooCFW, released under the GNU GPL license v2.
 
-View changelog in [changelog](https://github.com/MiyooCFW/gmenu2x/blob/master/ChangeLog.md) file.
+View changelog in [changelog](https://github.com/MiyooCFW/gmenu2x/blob/master/ChangeLog.md) file & [release](https://github.com/MiyooCFW/gmenu2x/releases) page.
 
 ## Installation
 
@@ -100,7 +100,7 @@ You can pass useful variables (which can be treated as arguments for cmd) before
 - **[selFileFull]** - this is a shortcut value that means [selFile][selExt]  
 - **[selFullPath]** - this is a shortcut value that means [selPath][selFile][selExt]  
 
-## [How to have previews in Selector Browser](http://boards.dingoonity.org/ingenic-jz4760-devices/gmenunext-let's-make-gmenu-great-again!/msg177392/#msg177392)
+## How to have previews in Selector Browser
 
 * Select the link you want to edit and press "menu";
 * Edit the link;
@@ -110,46 +110,3 @@ You can pass useful variables (which can be treated as arguments for cmd) before
 	* Selector Filter: Filter extensions to be shown in the selector. Separate multiple extensions with commas.
 	* Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
 * The name of the file of rom and preview have to be exactly the same. Supported image types are .png or .jpg;
-
-## Contacts
-
-GMenu2X Copyright (c) 2006-2010 [Massimiliano Torromeo](mailto:massimiliano.torromeo@gmail.com);  
-GMenuNX 2018-2019 by [@pingflood](https://github.com/pingflood);  
-GMenu2X 2022 (modded GMenuNX) by [@Apaczer](https://github.com/Apaczer);
-
-## Credits
-
-### Contributors
-NoidZ for his gp2x' buttons graphics;  
-Pickle for the initial Wiz and Caanoo ports;  
-Steward-Fu for the initial RetroGame ports;  
-TonyJih for the new RetroFW features;  
-Fontes for the RetroFW graphics;  
-BryMD for updated FontiGrid icons;  
-
-### Beta testers
-Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X);  
-Yann Vaillant (WIZ);  
-msx, jbanes, jutley and scooterpsu (RetroFW);  
-salvacam, SolidOne, MayanKoyote (MiyooCFW).  
-
-### Translators
-Chinese (CN): RUANRUI1995;  
-Polish: Apaczer;  
-Portuguese (Brazil): azurejoga, oliverbot;  
-Russian: MayanKoyote;  
-
-### Donors
-EvilDragon (www.gp2x.de), 
-Tecnologie Creative (www.tecnologiecreative.it), 
-TelcoLou, 
-gaterooze, 
-deepmenace, 
-superfly, 
-halo9, 
-sbock, 
-b._.o._.b, 
-Jacopastorius, 
-lorystorm90.
-
-and all the anonymous colaborators...
