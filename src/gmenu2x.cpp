@@ -350,7 +350,7 @@ void GMenu2X::main(bool autoStart) {
 		} else if (!confInt["dialogAutoStart"]) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to disable AutoStart"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();
@@ -378,10 +378,17 @@ void GMenu2X::main(bool autoStart) {
 	}
 
 	input.update(false);
-	if (input[MANUAL]){ //Reset GMenu2X settings
-		string tmppath = exe_path() + "/gmenu2x.conf";
-		unlink(tmppath.c_str());
-		reinit();
+	if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "" || confInt["dialogAutoStart"]) {
+		if (input[MANUAL]) { // Reset GMenu2X settings
+			string tmppath = exe_path() + "/gmenu2x.conf";
+			unlink(tmppath.c_str());
+			reinit();
+		}
+	} else {
+		if (input[MANUAL]) { // Reset AutoStart settings
+			confStr["lastDirectory"] = "";
+			reinit_save();
+		}
 	}
 
 	menu = new Menu(this);
