@@ -47,12 +47,14 @@ grep -o -rn . -e '>tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"
 sed 's/.*\[\(.*\)\].*/\1/' | \
 sed 's/\"\(.*\)\"/\1=/' | \
 tr -d '\\' | \
-sort | \
+sort -f | \
 uniq > translate.txt
 
 #Re-add sections' strings to translate.txt
 cat sections.txt >> translate.txt
-cat translate.txt | sort | uniq > translate.txt
+cat translate.txt | sort -f > /tmp/translate.txt
+uniq /tmp/translate.txt > translate.txt
+rm /tmp/translate.txt
 
 # CLEAN
 rm ./tools/undefines

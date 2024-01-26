@@ -50,7 +50,7 @@ for file in assets/translations/$LANGUAGE; do
 		LANG_udiff="$(grep "${PATTERNS}" $file)"
 		LANG_missing="$(grep -v "${PATTERNS}" translate.txt)"
 		###Correct output of translation asset file
-		sort <<< "${LANG_udiff}"$'\n'"${LANG_missing}"$'\n'"${LANG_lost}" | grep -v '^$' | uniq > $file
+		sort -f <<< "${LANG_udiff}"$'\n'"${LANG_missing}"$'\n'"${LANG_lost}" | grep -v '^$' | uniq > $file
 	##LOGS
 		LANG_diff="$(sed '/[^=]$/d' $file)"
 		echo -e "\n\n    Language file ${file}:\n\n"
