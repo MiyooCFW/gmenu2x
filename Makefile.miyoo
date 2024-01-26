@@ -61,9 +61,11 @@ dist: dir shared
 	install -m644 -D COPYING $(DISTDIR)/COPYING
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins/* $(DISTDIR)/skins/
+ifneq ($(DEFSKIN), Default)
 	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
 	cp -RH assets/skins/$(DEFSKIN)/* $(DISTDIR)/skins/Default
 	rm -rf $(DISTDIR)/skins/$(DEFSKIN)
+endif
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)/input_$(PLATFORM).conf
 	cp -RH assets/$(PLATFORM_SUPPORT)/input.conf $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
