@@ -1,25 +1,27 @@
 GMenu2X is developed for the MiyooCFW and released under the GNU GPL license v2.
-This fork has been based of RetroFW src.
+This fork has been based of GMenuNX by pingflood.
 Source code for current build: https://github.com/MiyooCFW/gmenu2x
 
 Controls
 ----
+(Bittboy's specific in round brackets)
+
 * A: Accept / Launch selected link / Confirm action;
 * B: Back / Cancel action;
 * X: Goes up one directory in file browser;
-* X (hold): Bring up Date&Time quick dialog;
+* X-hold: Bring up Date&Time quick dialog;
 * Y: Bring up the manual/readme;
-* Y (hold): Restart the GMenu2X;
+* Y-hold: Restart the GMenu2X;
 * L1(TB), R1(TA): Switch between sections left/right or PageUp/PageDown on lists;
 * L2, R2: Fast Decrement/Increment of selected value;
 * START: GMenu2X settings;
-* START (hold):  Toggle Suspend mode;
+* START-hold:  Toggle Suspend mode;
 * SELECT: Bring up the contextual menu;
-* SELECT (hold): Disconnect TV-out;
-* SELECT + L: Volume control;
-* SELECT + R, BRIGHTNESS: Change screen brightness;
+* SELECT-hold: Disable TV-output;
+* SELECT + L1(TB): Volume control;
+* SELECT + R1(TA): Change screen brightness;
 * SELECT + START: Take a screenshot;
-* POWER: Bring up Poweroff dialog;
+* RESET: Bring up Poweroff dialog;
 
 In settings:
 
@@ -27,22 +29,3 @@ In settings:
 * B: Back or cancel edits and return;
 * START: Save edits and return;
 * SELECT: Clear or set default value.
-
-
-How to have previews in Selector Browser
-----
-* Select the link you want to edit and press "menu";
-* Edit the link;
-* Configure the link to match your directory structure. Important fields:
-+-- Selector Directory: The directory of your roms
-+-- Selector Browser: Enable selector before launching the app
-+-- Selector Filter: Filter extensions to be shown in the selector. Separate multiple extensions with commas.
-+-- Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
-* The name of the file of rom and preview have to be exactly the same. Supported image types are .png or .jpg;
-
-
-Thanks goes to...
-
-Massimiliano "Ryo" Torromeo, by the original GMenu2X code.
-pingflood for adding Bittboy specific HW handling in his GMenuNX fork.
-

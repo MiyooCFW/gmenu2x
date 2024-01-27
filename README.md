@@ -47,12 +47,15 @@ The list of available translations with examples are stored in `gmenu2x/translat
 The current in use messages from U.S. English language can be read from: [translate.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/translate.txt). This does not include appLinks' Title&Description which can be added freely by user.
 
 You can run `tools/gen_translate.sh` to generate above list providing argument in form of txt file with list of #define for your platform. Otherwise you can rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the time of using GMenu2X.
+
+The "\_about\_" string (in translation file) assigns corresponding text file for displaying _About_ message, e.g. "\_about\_=\_about\_en" means _about_en.txt is being used for English translation.
+
 ### Dictionary
 To view the full list of string messages available to translate in source see: [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt)
 
 To generate this list of available strings' aliases you can run from src:  
 ```
-(grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | tr -d '\\' |sort | uniq
+(grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|(tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | tr -d '\\' | sort | uniq
 ```
 
 ## Themes & fonts
@@ -90,21 +93,24 @@ Fonts under OFL license has been expanded with GNU_Unifont.ttf using `font_merge
 
 ## Controls
 
+(Bittboy's specific mapping in round brackets)
+
 * A: Accept / Launch selected link / Confirm action;
 * B: Back / Cancel action;
 * X: Goes up one directory in file browser;
-* X (hold): Bring up Date&Time quick dialog;
+* X-hold: Bring up Date&Time quick dialog;
 * Y: Bring up the manual/readme;
-* L1, R1: Switch between sections / PageUp/PageDown on lists;
+* Y-hold: Restart the GMenu2X;
+* L1(TB), R1(TA): Switch between sections left/right or PageUp/PageDown on lists;
 * L2, R2: Fast Decrement/Increment of selected value;
 * START: GMenu2X settings;
-* START (hold):  Toggle Suspend mode;
+* START-hold:  Toggle Suspend mode;
 * SELECT: Bring up the contextual menu;
-* SELECT (hold): Disconnect TV-out;
-* SELECT + L: Volume control;
-* SELECT + R, BRIGHTNESS: Change screen brightness;
+* SELECT-hold: Disable TV-output;
+* SELECT + L1(TB): Volume control;
+* SELECT + R1(TA): Change screen brightness;
 * SELECT + START: Take a screenshot;
-* POWER: Bring up Poweroff dialog;
+* RESET: Bring up Poweroff dialog;
 
 In settings:
 
