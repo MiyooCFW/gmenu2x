@@ -200,6 +200,31 @@ bool InputManager::update(bool wait) {
 			anyactions = true;
 			keystate[x] = false;
 			break;
+		case SDL_JOYHATMOTION: {
+			Uint8 hatState;
+			for (int j = 0; j < joysticks.size(); j++) {
+				hatState = SDL_JoystickGetHat(joysticks[j], 0);
+			}
+			switch (hatState) {
+				case SDL_HAT_CENTERED:
+					dropEvents();
+					return false;
+				case SDL_HAT_UP:
+					up = true;
+					break;
+				case SDL_HAT_DOWN:
+					down = true;
+					break;
+				case SDL_HAT_LEFT:
+					left = true;
+					break;
+				case SDL_HAT_RIGHT:
+					right = true;
+					break;
+			}
+				anyactions = true;
+				break;
+		}
 		case SDL_USEREVENT:
 			if (event.user.code == WAKE_UP)
 				anyactions = true;
@@ -235,7 +260,30 @@ bool InputManager::combo() { // eegg
 	return !memcmp(input_combo, konami, sizeof(input_combo));
 }
 
+int InputManager::hatEvent(int hat_action) { // use joystick hat position or 3rd analog (e.g. D-pad)
+	switch (hat_action) {
+		case DUP:
+			if (up) return DUP;
+			break;
+		case DDOWN:
+			if (down) return DDOWN;
+			break;
+		case DLEFT:
+			if (left) return DLEFT;
+			break;
+		case DRIGHT: 
+			if (right) return DRIGHT;
+			break;
+		default:
+			return -1;
+			break;
+	}
+	return -1;
+}
+
 void InputManager::dropEvents(bool drop_timer) {
+	down = up = left = right = false;
+
 	if (drop_timer) {
 		SDL_RemoveTimer(timer); timer = NULL;
 	}

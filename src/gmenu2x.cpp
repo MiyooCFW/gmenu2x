@@ -350,7 +350,7 @@ void GMenu2X::main(bool autoStart) {
 		} else if (!confInt["dialogAutoStart"]) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to disable AutoStart"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();
@@ -378,10 +378,17 @@ void GMenu2X::main(bool autoStart) {
 	}
 
 	input.update(false);
-	if (input[MANUAL]){ //Reset GMenu2X settings
-		string tmppath = exe_path() + "/gmenu2x.conf";
-		unlink(tmppath.c_str());
-		reinit();
+	if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "" || confInt["dialogAutoStart"]) {
+		if (input[MANUAL]) { // Reset GMenu2X settings
+			string tmppath = exe_path() + "/gmenu2x.conf";
+			unlink(tmppath.c_str());
+			reinit();
+		}
+	} else {
+		if (input[MANUAL]) { // Reset AutoStart settings
+			confStr["lastDirectory"] = "";
+			reinit_save();
+		}
 	}
 
 	menu = new Menu(this);
@@ -1213,7 +1220,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	evalIntConf(&skinConfInt["sectionBarSize"], 40, 1, this->w);
 	evalIntConf(&skinConfInt["bottomBarHeight"], 16, 1, this->h);
 	evalIntConf(&skinConfInt["previewWidth"], 128, 1, this->w);
-	evalIntConf(&skinConfInt["fontSize"], 12, 6, 60);
+	evalIntConf(&skinConfInt["fontSize"], 14, 6, 60);
 	evalIntConf(&skinConfInt["fontSizeTitle"], 20, 1, 60);
 	evalIntConf(&skinConfInt["sectionBar"], SB_CLASSIC, 0, 5);
 	evalIntConf(&skinConfInt["linkCols"], 4, 1, 8);
@@ -2101,9 +2108,9 @@ int GMenu2X::setVolume(int val, bool popup) {
 
 			if (input[SETTINGS] || input[CONFIRM] || input[CANCEL]) {
 				break;
-			} else if (input[LEFT] || input[DEC] || input[VOLDOWN] || input[SECTION_PREV]) {
+			} else if (input[LEFT] || input.hatEvent(DLEFT) == DLEFT || input[DEC] || input[VOLDOWN] || input[SECTION_PREV]) {
 				val = max(0, val - volumeStep);
-			} else if (input[RIGHT] || input[INC] || input[VOLUP] || input[SECTION_NEXT]) {
+			} else if (input[RIGHT] || input.hatEvent(DRIGHT) == DRIGHT || input[INC] || input[VOLUP] || input[SECTION_NEXT]) {
 				val = min(90, val + volumeStep);
 			}
 
@@ -2150,9 +2157,9 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 			if (input[SETTINGS] || input[CONFIRM] || input[CANCEL]) {
 				break;
-			} else if (input[LEFT] || input[DEC] || input[SECTION_PREV]) {
+			} else if (input[LEFT] || input.hatEvent(DLEFT) == DLEFT || input[DEC] || input[SECTION_PREV]) {
 				val = setBacklight(max(10, val - backlightStep), false);
-			} else if (input[RIGHT] || input[INC] || input[SECTION_NEXT]) {
+			} else if (input[RIGHT] || input.hatEvent(DRIGHT) == DRIGHT || input[INC] || input[SECTION_NEXT]) {
 				val = setBacklight(min(100, val + backlightStep), false);
 			} else if (input[BACKLIGHT]) {
 				SDL_Delay(50);

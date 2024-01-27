@@ -23,6 +23,8 @@ OBJDIR = /tmp/gmenu2x/$(PLATFORM)
 DISTDIR = dist/$(PLATFORM)
 TARGET = dist/$(PLATFORM)/gmenu2x
 
+DEFSKIN = FontiGrid
+
 SOURCES := $(wildcard src/*.cpp)
 OBJS := $(patsubst src/%.cpp, $(OBJDIR)/src/%.o, $(SOURCES))
 
@@ -53,11 +55,17 @@ clean:
 	rm -rf $(OBJDIR) $(DISTDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug
 
 dist: dir libopk shared
+	install -m644 -D about.txt $(DISTDIR)/about.txt
 	install -m644 -D README.md $(DISTDIR)/README.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING
 	install -m644 -D ChangeLog.md $(DISTDIR)/ChangeLog
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins $(DISTDIR)
+ifneq ($(DEFSKIN), Default)
+	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
+	cp -RH assets/skins/$(DEFSKIN)/* $(DISTDIR)/skins/Default
+	rm -rf $(DISTDIR)/skins/$(DEFSKIN)
+endif
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
 
 zip: dist

@@ -41,11 +41,11 @@ MenuSettingStringBase(gmenu2x, title, description, value), choices(choices), onC
 }
 
 uint32_t MenuSettingMultiString::manageInput() {
-	if (gmenu2x->input[LEFT]) {
+	if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) {
 		decSel();
 		return this->onChange && this->onChange();
 	}
-	else if (gmenu2x->input[RIGHT]) {
+	else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) {
 		incSel();
 		return this->onChange && this->onChange();
 	}

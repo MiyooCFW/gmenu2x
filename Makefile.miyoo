@@ -1,5 +1,6 @@
 PLATFORM := miyoo
 PLATFORM_SUPPORT := bittboy
+GAMEPAD := generic
 
 BUILDTIME := "$(shell date +%F\ %H:%M)"
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
@@ -60,12 +61,17 @@ dist: dir shared
 	install -m644 -D COPYING $(DISTDIR)/COPYING
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins/* $(DISTDIR)/skins/
+ifneq ($(DEFSKIN), Default)
 	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
 	cp -RH assets/skins/$(DEFSKIN)/* $(DISTDIR)/skins/Default
 	rm -rf $(DISTDIR)/skins/$(DEFSKIN)
+endif
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)/input_$(PLATFORM).conf
 	cp -RH assets/$(PLATFORM_SUPPORT)/input.conf $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
+	cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input.conf
+	cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input_$(PLATFORM).conf
+	cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
 
 ipk: dist
 	mkdir -p .$(HOMEPATH)/gmenu2x && mv $(DISTDIR)/* .$(HOMEPATH)/gmenu2x && mv .$(HOMEPATH) $(DISTDIR)
