@@ -57,8 +57,9 @@ clean:
 
 dist: dir shared
 	mkdir -p $(DISTDIR)/skins
-	install -m644 -D about.txt $(DISTDIR)/about.txt
+	install -m644 -D *about*.txt $(DISTDIR)/
 	install -m644 -D COPYING $(DISTDIR)/COPYING
+	install -m644 -D CONTRIBUTORS.md $(DISTDIR)/CONTRIBUTORS
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins/* $(DISTDIR)/skins/
 ifneq ($(DEFSKIN), Default)

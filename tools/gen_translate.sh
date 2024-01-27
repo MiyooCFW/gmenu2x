@@ -1,11 +1,14 @@
 #!/bin/bash
 # Strips c++ source and header files and generates translate.txt
 ## Usage: run from main repo directory ./tools/gen_translate.sh <name_defines>.txt
-## NOTES: this will remove sections strings from translate.txt!
+## WARNING: remember to commit your src changes BEFORE running this script, or they will be cleaned!!
 
-defines="$1" # undefines - auto-generated
-if ! (test -e $defines); then
-	echo -e "\nUsage: run from main repo directory ./tools/gen_translate.sh <name_defines>.txt\n\n"
+defines="$1" # "defines" need to be provided, "undefines" are auto-generated
+platform="$2" # provide platform to be used for translations
+
+# Sanity checks
+if  (test -z $defines || test -z $platform); then
+	echo -e "\nUsage: run from main repo directory ./tools/gen_translate.sh <name_defines> <platform>\n\n"
 	sleep 1
 	exit
 elif test -z "$(cat "${defines}")"; then
@@ -13,7 +16,14 @@ elif test -z "$(cat "${defines}")"; then
 	Provide correct <name_defines>.txt with #ifdef preprocessors to include in generate src.\n\n"
 	sleep 2
 	exit
+elif ! (test -f /usr/bin/unifdef); then
+	echo -e "\nERROR: Missing dependencie! Please install \"unfidef\" app from your package manager!\n\n\n\
+	On Debian distro run \"apt update && apt install unifdef\".\n\n"
+	sleep 2
+	exit
 fi
+
+echo -e "\nINFO: Running generate translate.txt script, pls wait a few seconds..."
 
 # Generate #undef macros list
 find . -name "*.cpp" -o -name "*.h" | while read F; do
@@ -23,11 +33,13 @@ sed -i 's/^/#undef /' ./tools/undefines
 
 # Generate #ifdef macros list
 ## TODO
-## miyoo_defines (read from Makefile.miyoo & src/platform/miyoo.h)
+## e.g. miyoo_defines (read from Makefile.miyoo & src/platform/miyoo.h)
 
 # Remove unused platform headers
-cp src/platform/miyoo.h /tmp/miyoo.h & rm src/platform/*
-mv /tmp/miyoo.h src/platform/miyoo.h
+cp -r src/platform/* /tmp/ && rm -r src/platform/*
+
+# Re-add specific platform header
+mv /tmp/${platform}.h src/platform/
 
 # Remove comments
 find . -name "*.cpp" -o -name "*.h" | while read file; do
@@ -43,7 +55,7 @@ done
 
 # Generate translate.txt
 (grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; \
-grep -o -rn . -e '>tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | \
+grep -o -rn . -e '>tr\["[^]]*"\]\|(tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | \
 sed 's/.*\[\(.*\)\].*/\1/' | \
 sed 's/\"\(.*\)\"/\1=/' | \
 tr -d '\\' | \

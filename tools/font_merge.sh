@@ -13,16 +13,24 @@ MAIN_FONT=$1
 SECOND_FONT=$2
 FINAL_FONT="$3"
 
-# Grab enumaration size of main_font to apply to rest of the fonts before/after merge
-ENUM=$(fontforge -lang=ff -c 'Open($1); Print($em); Close()' "${MAIN_FONT}")
-
+# Sanity checks
 if (test "$MAIN_FONT" == "" || test "$SECOND_FONT" = ""); then
 	echo -e "\nUSAGE: ./font_merge.sh <main_font.ttf> <second_font.ttf> <final_font_name>.ttf \n"
+	sleep 1
 	exit
 elif ! (test "$(file -b --mime-type ${MAIN_FONT})" = "font/sfnt" && test "$(file -b --mime-type ${SECOND_FONT})" = "font/sfnt"); then
 	echo -e "\nERROR: provide correct TTF font format\n"
+	sleep 1
+	exit
+elif ! (test -f /usr/bin/fontforge); then
+	echo -e "\nERROR: Missing dependencie! Please install \"fontforge\" app from your package manager!\n\n\n\
+	On Debian distro run \"apt update && apt install fontforge\".\n\n"
+	sleep 2
 	exit
 fi
+
+# Grab enumaration size of main_font to apply to rest of the fonts before/after merge
+ENUM=$(fontforge -lang=ff -c 'Open($1); Print($em); Close()' "${MAIN_FONT}")
 
 echo -e "\nProcessing new font, pls wait a few seconds.."
 

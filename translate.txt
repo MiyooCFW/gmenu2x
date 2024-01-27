@@ -242,3 +242,4 @@ Use file browser selector=
 Wallpaper=
 Yes=
 Zip content=
+_about_=
