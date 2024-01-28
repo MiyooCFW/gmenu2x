@@ -55,9 +55,10 @@ clean:
 	rm -rf $(OBJDIR) $(DISTDIR) *.gcda *.gcno $(TARGET) $(TARGET)-debug
 
 dist: dir libopk shared
-	install -m644 -D about.txt $(DISTDIR)/about.txt
+	install -m644 -D *about*.txt $(DISTDIR)/
 	install -m644 -D README.md $(DISTDIR)/README.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING
+	install -m644 -D CONTRIBUTORS.md $(DISTDIR)/CONTRIBUTORS
 	install -m644 -D ChangeLog.md $(DISTDIR)/ChangeLog
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins $(DISTDIR)

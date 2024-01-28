@@ -60,7 +60,6 @@ clean:
 
 dist: dir libopk shared
 	mkdir -p $(DISTDIR)/skins/Default
-	install -m644 -D about.txt $(DISTDIR)/about.txt
 	install -m644 -D COPYING $(DISTDIR)/COPYING
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins/FontiGrid/* $(DISTDIR)/skins/Default

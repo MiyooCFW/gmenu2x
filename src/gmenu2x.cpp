@@ -1423,7 +1423,7 @@ void GMenu2X::about() {
 	TextDialog td(this, "GMenu2X", tr["Build"] + ": " + __DATE__ + " " + __TIME__, "skin:icons/about.png");
 #endif
 	// td.appendText(temp);
-	td.appendFile("about.txt");
+	td.appendFile(tr["_about_"] + ".txt");
 	td.exec();
 }
 
