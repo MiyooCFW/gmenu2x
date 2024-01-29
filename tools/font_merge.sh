@@ -5,10 +5,6 @@
 # USAGE:  
 ## <main_font>.ttf <second_font>.ttf <final_font_name>
 
-# Supress stderr output
-exec 3>&2
-exec 2> /dev/null
-
 MAIN_FONT=$1
 SECOND_FONT=$2
 FINAL_FONT="$3"
@@ -28,6 +24,10 @@ elif ! (test -f /usr/bin/fontforge); then
 	sleep 2
 	exit
 fi
+
+# Supress stderr output
+exec 3>&2
+exec 2> /dev/null
 
 # Grab enumaration size of main_font to apply to rest of the fonts before/after merge
 ENUM=$(fontforge -lang=ff -c 'Open($1); Print($em); Close()' "${MAIN_FONT}")

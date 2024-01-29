@@ -21,6 +21,17 @@ elif ! (test -f /usr/bin/unifdef); then
 	On Debian distro run \"apt update && apt install unifdef\".\n\n"
 	sleep 2
 	exit
+elif ! (test -z "$(git status -z --porcelain src/*)"); then
+        echo -e "\n\nWARNING: Please commit/stage your src changes before continuing or they will be stashed!\n\n"
+	while true; do
+		read -p "Do you want to proceed anyway? [y/n]: " yn
+		case $yn in
+		[Yy]* ) echo "Yes. Continuing..."; break;;
+		[Nn]* ) echo "No. Exiting..."; sleep 2; exit;;
+		* ) echo "Please answer yes(Y) or no(N).";;
+		esac
+	done
+	sleep 2
 fi
 
 echo -e "\nINFO: Running generate translate.txt script, pls wait a few seconds..."
