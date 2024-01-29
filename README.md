@@ -69,23 +69,24 @@ skins
 │   └── LICENSE_skin.txt
 ├── FontiGrid
 │   ├── BebasKai.ttf
+│   ├── BebasNeue-Bold.ttf
+│   ├── font-merged.info
 │   ├── LICENSE_font-OFL.txt
 │   └── LICENSE_skin-GPLv2.txt
 ├── GameShow
-│   ├── LICENSE_font-EULA.pdf
-│   ├── LICENSE_skin-CC_BY_3.0_US.txt
-│   └── ZrnicRg.ttf
+│   └── LICENSE_skin-CC_BY_3.0_US.txt
 ├── NeonWave
-│   ├── GoodTimesRg.ttf
-│   ├── LICENSE_font-EULA.pdf
 │   └── LICENSE_skin-CC_BY_3.0_US.txt
 ├── NewComicBook
 │   ├── BublinaTheMongrel.ttf
+│   ├── font-merged.info
 │   ├── LICENSE_font-OFL.txt
 │   └── LICENSE_skin-CC-BY-NC-ND_4.0.txt
 └── Nsdark
     ├── BebasKai.ttf
-    ├── LICENSE_font-APACHE.txt
+    ├── BebasNeue-Bold.ttf
+    ├── font-merged.info
+    ├── LICENSE_font-OFL.txt
     └── LICENSE_skin-GPLv2.txt
 ```
 
