@@ -10,7 +10,7 @@ SECOND_FONT=$2
 FINAL_FONT="$3"
 
 # Sanity checks
-if (test "$MAIN_FONT" == "" || test "$SECOND_FONT" = ""); then
+if (test "$MAIN_FONT" == "" || test "$SECOND_FONT" = "" || test "$FINAL_FONT" = ""); then
 	echo -e "\nUSAGE: ./font_merge.sh <main_font.ttf> <second_font.ttf> <final_font_name>.ttf \n"
 	sleep 1
 	exit
