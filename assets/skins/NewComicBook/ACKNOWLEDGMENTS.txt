@@ -1,5 +1,0 @@
-NewComicBook skin made by Brynjar Saunes (Segich)
-
-support:
-- "SimplEasy"
-- "Jutleys"
