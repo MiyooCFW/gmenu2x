@@ -58,7 +58,7 @@ To generate this list of available strings' aliases you can run from src:
 (grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|(tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | tr -d '\\' | sort | uniq
 ```
 
-## Themes & fonts
+## Skins & fonts
 
 Please refer to directory containing appropriate skin for detailed information about authors and licensing of specific theme and its fonts. See below schema for general info:
 ```
@@ -70,23 +70,29 @@ skins
 ├── FontiGrid
 │   ├── BebasKai.ttf
 │   ├── BebasNeue-Bold.ttf
-│   ├── font-merged.info
-│   ├── LICENSE_font-OFL.txt
+│   ├── font-modify.info
+│   ├── LICENSE_font-OFLv1.1.txt
 │   └── LICENSE_skin-GPLv2.txt
 ├── GameShow
+│   ├── font-modify.info
+│   ├── KdamThmorPro-Regular.ttf
+│   ├── LICENSE_font-OFLv1.1.txt
 │   └── LICENSE_skin-CC_BY_3.0_US.txt
 ├── NeonWave
+│   ├── Audiowide-Regular.ttf
+│   ├── font-modify.info
+│   ├── LICENSE_font-OFLv1.1.txt
 │   └── LICENSE_skin-CC_BY_3.0_US.txt
 ├── NewComicBook
-│   ├── BublinaTheMongrel.ttf
-│   ├── font-merged.info
-│   ├── LICENSE_font-OFL.txt
-│   └── LICENSE_skin-CC-BY-NC-ND_4.0.txt
+│   ├── font-modify.info
+│   ├── LICENSE_font-OFLv1.1.txt
+│   ├── LICENSE_skin-CC-BY-NC-ND_4.0.txt
+│   └── PlaypenSans-ExtraBold.ttf
 └── Nsdark
     ├── BebasKai.ttf
     ├── BebasNeue-Bold.ttf
-    ├── font-merged.info
-    ├── LICENSE_font-OFL.txt
+    ├── font-modify.info
+    ├── LICENSE_font-OFLv1.1.txt
     └── LICENSE_skin-GPLv2.txt
 ```
 
