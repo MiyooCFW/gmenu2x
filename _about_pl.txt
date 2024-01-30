@@ -4,7 +4,7 @@ Kod źródłowy obecnego pliku binarnego: https://github.com/MiyooCFW/gmenu2x
 
 Sterowanie
 ----
-(Bittboy's specific in round brackets)
+(w okrągłych nawiasach specyficzne dla Bittboy)
 
 * A: Akceptuj / Uruchom zaznaczony skrót / Potwierdź akcję;
 * B: Cofnij / Anuluj akcję;
@@ -16,7 +16,7 @@ Sterowanie
 * L2, R2: Szybkie Pomniejszenie/Powiększenie zaznaczonej wartości;
 * START: Ustawienia GMenu2X;
 * START-trzymaj:  Przełącz tryb Uśpienia;
-* SELECT: Bring up the contextual menu;
+* SELECT: Wyświetl menu kontekstowe;
 * SELECT-trzymaj: Dezaktywuj sygnał wyjściowy TV;
 * SELECT + L1(TB): Sterowanie Głośnością;
 * SELECT + R1(TA): Zmień jasność ekranu;
