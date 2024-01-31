@@ -58,7 +58,7 @@ clean:
 dist: dir shared
 	mkdir -p $(DISTDIR)/skins
 	install -m644 -D *about*.txt $(DISTDIR)/
-	install -m644 -D COPYING $(DISTDIR)/COPYING
+	install -m644 -D COPYING $(DISTDIR)/LICENSE
 	install -m644 -D CONTRIBUTORS.md $(DISTDIR)/CONTRIBUTORS
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins/* $(DISTDIR)/skins/
@@ -66,6 +66,7 @@ ifneq ($(DEFSKIN), Default)
 	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
 	cp -RH assets/skins/$(DEFSKIN)/* $(DISTDIR)/skins/Default
 	rm -rf $(DISTDIR)/skins/$(DEFSKIN)
+	sed -i '/wallpaper/d' $(DISTDIR)/skins/Default/skin.conf
 endif
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)/input_$(PLATFORM).conf
@@ -89,6 +90,4 @@ ipk: dist
 	@rm -rf $(DISTDIR)
 
 zip: dist
-	mkdir -p .$(HOMEPATH)/gmenu2x && mv $(DISTDIR)/* .$(HOMEPATH)/gmenu2x && mv .$(HOMEPATH)/gmenu2x $(DISTDIR)
-	cd $(DISTDIR)/ && rm -f ../gmenu2x-$(PLATFORM).zip && zip -r ../gmenu2x-$(PLATFORM).zip .
-	@rm -rf $(DISTDIR)
+	cd $(DISTDIR)/ && zip -r ../gmenu2x-$(PLATFORM).zip *
