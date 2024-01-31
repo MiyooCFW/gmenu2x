@@ -57,22 +57,30 @@ gmenu2x(gmenu2x) {
 	keyboard[2].push_back("()[]{}@#$%^~");
 	keyboard[2].push_back("_\"'`.,:;!?");
 
-	keyboard[3].push_back("àáâãäåèéêëęěìíîï");
-	keyboard[3].push_back("ąćčòóôôõöùúûüůýÿ");
-	keyboard[3].push_back("ďĺľłñńňŕřśšťźżž");
+	string lang = gmenu2x->tr.lang();
+	if (lang == "") {
+		keyboard[3].push_back("qwertyuiop-789");
+		keyboard[3].push_back("asdfghjkl\\/456");
+		keyboard[3].push_back("_zxcvbnm,.0123");
 
-	keyboard[4].push_back("ÀÁÂÃÄÅÈÉÊËĘĚÌÍÎÏ");
-	keyboard[4].push_back("ĄĆČÒÓÔÔÕÖÙÚÛÜŮÝŸ");
-	keyboard[4].push_back("ĎĹĽŁÑŃŇŔŘŚŠŤŹŻŽ");
+		keyboard[4].push_back("QWERTYUIOP_-+=");
+		keyboard[4].push_back("@ASDFGHJKL'\"`");
+		keyboard[4].push_back("#ZXCVBNM:;/?");
 
-	keyboard[5].push_back("æçабвгдеёжзий");
-	keyboard[5].push_back("клмнопрстуфхцч");
-	keyboard[5].push_back("шщъыьэюяøðßÐÞþ");
+		keyboard[5].push_back("¡¿*+-/\\&<=>|");
+		keyboard[5].push_back("()[]{}@#$%^~");
+		keyboard[5].push_back("_\"'`.,:;!?");
 
-	keyboard[6].push_back("ÆÇАБВГДЕЁЖЗИЙ");
-	keyboard[6].push_back("КЛМНОПРСТУФХЦЧ");
-	keyboard[6].push_back("ШЩЪЫЬЭЮЯØðßÐÞþ");
+		keyboard[6].push_back("");
+	} else {
+		keyboard[3].push_back(gmenu2x->tr["_keyboard_layout_r1"]);
 
+		keyboard[4].push_back(gmenu2x->tr["_keyboard_layout_r2"]);
+
+		keyboard[5].push_back(gmenu2x->tr["_keyboard_layout_r3"]);
+
+		keyboard[6].push_back(" ");
+	}
 	setKeyboard(0);
 }
 
