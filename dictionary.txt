@@ -238,7 +238,7 @@ Set directory as $HOME for this link=
 Set LCD backlight=
 Set LinkApp default CPU frequency=
 Set Speaker mode. 0 = Mute, 1 = Phones, 2 = Speaker=
-Set Step default CPU frequency=
+Set default step for CPU frequency=
 Set system's date & time=
 Set system's software clock=
 Set the appropriate A/B/X/Y layout=

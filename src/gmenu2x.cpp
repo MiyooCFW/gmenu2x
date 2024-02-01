@@ -875,7 +875,7 @@ sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the defa
 sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], 864, 720, 1248, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], 192, 48, 720, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], 720, 480, 1248, 48));
-sd.addSetting(new MenuSettingInt(this, tr["Step for clock values"], tr["Set Step default CPU frequency"], &confInt["cpuStep"], 48, 48, 240, 48));
+sd.addSetting(new MenuSettingInt(this, tr["Step for clock values"], tr["Set default step for CPU frequency"], &confInt["cpuStep"], 48, 48, 240, 48));
 #endif
 if (sd.exec() && sd.edited() && sd.save) {
 		setCPU(confInt["cpuMenu"]);
