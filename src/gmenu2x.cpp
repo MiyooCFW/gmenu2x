@@ -1052,6 +1052,7 @@ void GMenu2X::writeConfig() {
 				curr->first == "linkCols" ||
 				curr->first == "linkRows" ||
 				curr->first == "sectionBar" ||
+				curr->first == "sectionBackdrops" ||
 				curr->first == "sectionLabel" ||
 				curr->first == "linkLabel" ||
 
@@ -1110,6 +1111,7 @@ void GMenu2X::writeSkinConfig() {
 			(curr->first == "linkRows" && curr->second == 4) ||
 			(curr->first == "sectionBar" && curr->second == SB_CLASSIC) ||
 			(curr->first == "sectionLabel" && curr->second == 1) ||
+			(curr->first == "sectionBackdrops" && curr->second == 0) ||
 			(curr->first == "linkLabel" && curr->second == 1) ||
 			(curr->first == "showDialogIcon" && curr->second == 1) ||
 
@@ -1143,6 +1145,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	// Defaults *** Sync with default values in writeConfig
 	skinConfInt["sectionBar"] = SB_CLASSIC;
 	skinConfInt["sectionLabel"] = 1;
+	skinConfInt["sectionBackdrops"] = 0;
 	skinConfInt["linkLabel"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
 
@@ -1270,6 +1273,7 @@ void GMenu2X::skinMenu() {
 	bdStr.push_back("Menu & Dialog");
 	int bdPrev = confInt["skinBackdrops"];
 	string skinBackdrops = bdStr[confInt["skinBackdrops"]];
+	int sbdPrev = skinConfInt["sectionBackdrops"];
 
 	vector<string> skinFont;
 	skinFont.push_back("Custom");
@@ -1334,6 +1338,7 @@ void GMenu2X::skinMenu() {
 		sd.addSetting(new MenuSettingInt(this, tr["Title font size"], tr["Size of title's text font"], &skinConfInt["fontSizeTitle"], 20, 1, 60));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Section bar layout"], tr["Set the layout and position of the Section Bar"], &sectionBar, &sbStr));
 		sd.addSetting(new MenuSettingInt(this, tr["Section bar size"], tr["Size of section and top bar"], &skinConfInt["sectionBarSize"], 40, 1, this->w));
+		sd.addSetting(new MenuSettingBool(this, tr["Section backdrops"], tr["Load section bakdrop from skin pack"], &skinConfInt["sectionBackdrops"]));
 		sd.addSetting(new MenuSettingInt(this, tr["Bottom bar height"], tr["Height of bottom bar"], &skinConfInt["bottomBarHeight"], 16, 1, this->h));
 		sd.addSetting(new MenuSettingInt(this, tr["Menu columns"], tr["Number of columns of links in main menu"], &skinConfInt["linkCols"], 4, 1, 8));
 		sd.addSetting(new MenuSettingInt(this, tr["Menu rows"], tr["Number of rows of links in main menu"], &skinConfInt["linkRows"], 4, 1, 8));
@@ -1364,6 +1369,7 @@ void GMenu2X::skinMenu() {
 
 	if (
 		bdPrev != confInt["skinBackdrops"] ||
+		sbdPrev != skinConfInt["sectionBackdrops"] ||
 		initSkin != confStr["skin"] ||
 		bgScalePrev != confStr["bgscale"] ||
 		linkColsPrev != skinConfInt["linkCols"] ||
