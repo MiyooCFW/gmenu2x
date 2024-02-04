@@ -163,6 +163,9 @@ const string LinkApp::searchBackdrop() {
 
 	backdropPath = dir_name(exec) + "/backdrop.png";
 	if (file_exists(backdropPath)) return backdropPath;
+	
+	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/generic.png");
+	if (file_exists(backdropPath)) return backdropPath;
 
 	return "";
 }

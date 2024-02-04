@@ -62,7 +62,10 @@ void Link::setBackdrop(const string &backdrop) {
 	this->backdrop = backdrop;
 
 	if (backdrop.compare(0, 5, "skin:") == 0)
-		this->backdropPath = gmenu2x->sc.getSkinFilePath(backdrop.substr(5, string::npos));
+		if (!gmenu2x->sc.getSkinFilePath(backdrop.substr(5, string::npos)).empty())
+			this->backdropPath = gmenu2x->sc.getSkinFilePath(backdrop.substr(5, string::npos));
+		else
+			this->backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/generic.png");
 	else if (file_exists(backdrop))
 		this->backdropPath = backdrop;
 	else
