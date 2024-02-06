@@ -1,6 +1,8 @@
 PLATFORM := linux
 
-BUILDTIME := $(shell date +%s)
+BUILDTIME := "$(shell date +%F\ %H:%M)"
+COMMIT_HASH := $(shell git rev-parse --short HEAD)
+GMENU2X_HASH := -D__BUILDTIME__=$(BUILDTIME) -D__COMMIT_HASH__=$(COMMIT_HASH)
 
 CC			:= gcc
 CXX			:= g++
@@ -10,7 +12,7 @@ SYSROOT     := $(shell $(CC) --print-sysroot)
 SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
 SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
 
-CFLAGS = -DPLATFORM=\"$(PLATFORM)\" -D__BUILDTIME__="$(BUILDTIME)" -DLOG_LEVEL=4
+CFLAGS = -DPLATFORM=\"$(PLATFORM)\" $(GMENU2X_HASH) -DLOG_LEVEL=4
 CFLAGS += -O0 -ggdb -g -pg $(SDL_CFLAGS)
 CFLAGS += -Wundef -Wno-deprecated -Wno-unknown-pragmas -Wno-format -Wno-narrowing
 CFLAGS += -Isrc -Isrc/libopk
