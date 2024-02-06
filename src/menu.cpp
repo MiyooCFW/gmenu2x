@@ -582,7 +582,7 @@ void Menu::drawGrid() {
 
 			icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 
-			if (gmenu2x->skinConfInt["linkLabel"]) {
+			if (gmenu2x->skinConfInt["linkLabel"] || i == (uint32_t)selLinkIndex() && gmenu2x->confInt["skinBackdrops"] && (gmenu2x->currBackdrop == gmenu2x->sc.getSkinFilePath("backdrops/generic.png", false) /*|| gmenu2x->currBackdrop == gmenu2x->confStr["wallpaper"]*/)) {
 				SDL_Rect labelRect;
 				labelRect.x = ix + 2 + linkWidth/2;
 				labelRect.y = iy + (linkHeight + min(linkHeight, icon->height()))/2;
