@@ -833,17 +833,22 @@ void Menu::exec() {
 				gmenu2x->currBackdrop = selLinkApp()->getBackdropPath();
 			}
 		}
+		gmenu2x->setBackground(gmenu2x->s, gmenu2x->currBackdrop);
+
 		if (gmenu2x->skinConfInt["sectionBackdrops"]) {
-			// gmenu2x->currBackdrop = "skins/" + gmenu2x->confStr["skin"] + "/sections/" + selSectionName() + ".png";
-			string sectionBackdrop = gmenu2x->sc.getSkinFilePath("backdrops/" + selSection() + ".png", false);
-			string sectionBackdropGeneric = gmenu2x->sc.getSkinFilePath("backdrops/generic-section.png", false);
-			if (!sectionBackdrop.empty()) {
-				gmenu2x->currBackdrop = sectionBackdrop;
-			} else if (!sectionBackdropGeneric.empty()) {
-				gmenu2x->currBackdrop = sectionBackdropGeneric;
+			// string sectionBackdrop = gmenu2x->sc.getSkinFilePath("backdrops/" + selSection() + ".png", false);
+			// string sectionBackdropGeneric = gmenu2x->sc.getSkinFilePath("backdrops/generic-section.png", false);
+			sectionBackdrop = gmenu2x->sc["skins/" + gmenu2x->confStr["skin"] + "/backdrops/" + selSection() + ".png"];
+			sectionBackdropGeneric = gmenu2x->sc["skins/"+ gmenu2x->confStr["skin"] + "/backdrops/generic-section.png"];
+			if (sectionBackdrop != NULL) {
+				sectionBackdrop->blit(gmenu2x->s, 0, 0, 0, 50);
+				// gmenu2x->currBackdrop = sectionBackdrop;
+			} else if (sectionBackdropGeneric != NULL) {
+				sectionBackdropGeneric->blit(gmenu2x->s, 0, 0, 0, 50);
+				// gmenu2x->currBackdrop = sectionBackdropGeneric;
 			}
 		}
-		gmenu2x->setBackground(gmenu2x->s, gmenu2x->currBackdrop);
+		// gmenu2x->setBackground(gmenu2x->s, gmenu2x->currBackdrop);
 
 		// SECTIONS
 		if (gmenu2x->skinConfInt["sectionBar"]) {
