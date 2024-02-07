@@ -1145,6 +1145,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	// Defaults *** Sync with default values in writeConfig
 	skinConfInt["sectionBar"] = SB_CLASSIC;
 	skinConfInt["sectionLabel"] = 1;
+	skinConfInt["searchBackdrops"] = 0;
 	skinConfInt["sectionBackdrops"] = 0;
 	skinConfInt["linkLabel"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
@@ -1273,7 +1274,13 @@ void GMenu2X::skinMenu() {
 	bdStr.push_back("Menu & Dialog");
 	int bdPrev = confInt["skinBackdrops"];
 	string skinBackdrops = bdStr[confInt["skinBackdrops"]];
-	int sbdPrev = skinConfInt["sectionBackdrops"];
+
+	vector<string> sbdStr;
+	sbdStr.push_back("OFF");
+	sbdStr.push_back("Link name only");
+	sbdStr.push_back("Exec name/path only");
+	int sbdPrev = skinConfInt["searchBackdrops"];
+	string searchBackdrops = sbdStr[skinConfInt["searchBackdrops"]];
 
 	vector<string> skinFont;
 	skinFont.push_back("Custom");
@@ -1333,6 +1340,7 @@ void GMenu2X::skinMenu() {
 		sd.addSetting(new MenuSettingMultiString(this, tr["Preview mode"], tr["How to show image preview and game art"], &confStr["previewMode"], &previewMode));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin colors"], tr["Customize skin colors"], &tmp, &wpLabel, MakeDelegate(this, &GMenu2X::onChangeSkin), MakeDelegate(this, &GMenu2X::skinColors)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin backdrops"], tr["Automatic load backdrops from skin pack"], &skinBackdrops, &bdStr));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Search backdrops"], tr["Narrow backdrops searching"], &searchBackdrops, &sbdStr));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Font face"], tr["Override the skin font face"], &confStr["skinFont"], &skinFont, MakeDelegate(this, &GMenu2X::onChangeSkin)));
 		sd.addSetting(new MenuSettingInt(this, tr["Font size"], tr["Size of text font"], &skinConfInt["fontSize"], 12, 6, 60));
 		sd.addSetting(new MenuSettingInt(this, tr["Title font size"], tr["Size of title's text font"], &skinConfInt["fontSizeTitle"], 20, 1, 60));
@@ -1362,6 +1370,10 @@ void GMenu2X::skinMenu() {
 	else if (sectionBar == "Left") skinConfInt["sectionBar"] = SB_LEFT;
 	else skinConfInt["sectionBar"] = SB_CLASSIC;
 
+	if (searchBackdrops == "OFF") skinConfInt["searchBackdrops"] = SBAK_OFF;
+	else if (searchBackdrops == "Link name only") skinConfInt["searchBackdrops"] = SBAK_LINK;
+	else if (searchBackdrops == "Exec name/path only") skinConfInt["searchBackdrops"] = SBAK_EXEC;
+
 	confStr["tmp_wallpaper"] = "";
 	confStr["wallpaper"] = wpPath;
 	writeSkinConfig();
@@ -1369,7 +1381,7 @@ void GMenu2X::skinMenu() {
 
 	if (
 		bdPrev != confInt["skinBackdrops"] ||
-		sbdPrev != skinConfInt["sectionBackdrops"] ||
+		sbdPrev != skinConfInt["searchBackdrops"] ||
 		initSkin != confStr["skin"] ||
 		bgScalePrev != confStr["bgscale"] ||
 		linkColsPrev != skinConfInt["linkCols"] ||

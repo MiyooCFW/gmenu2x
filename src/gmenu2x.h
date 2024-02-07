@@ -66,6 +66,12 @@ enum sb {
 	SB_CLASSIC,
 };
 
+enum sbak {
+	SBAK_OFF,
+	SBAK_LINK,
+	SBAK_EXEC,
+};
+
 enum bd {
 	BD_OFF,
 	BD_MENU,
