@@ -537,7 +537,8 @@ void Menu::drawList() {
 			icon->softStretch(32, linkHeight - 4, SScaleFit);
 		}
 
-		icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+		if (gmenu2x->skinConfInt["showLinkIcon"])
+			icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
 #if !defined(CHECK_TRANSLATION)
 		gmenu2x->s->write(gmenu2x->titlefont, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
 		gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getDescription()], ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
@@ -579,8 +580,8 @@ void Menu::drawGrid() {
 			} else if (iconBGoff != NULL && icon->width() <= iconBGoff->width() && icon->height() <= iconBGoff->height()) {
 				iconBGoff->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 			}
-
-			icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
+			if (gmenu2x->skinConfInt["showLinkIcon"])
+				icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 
 			if (gmenu2x->skinConfInt["linkLabel"] || i == (uint32_t)selLinkIndex() && gmenu2x->confInt["skinBackdrops"] && (gmenu2x->currBackdrop == gmenu2x->sc.getSkinFilePath("backdrops/generic.png", false) /*|| gmenu2x->currBackdrop == gmenu2x->confStr["wallpaper"]*/)) {
 				SDL_Rect labelRect;
