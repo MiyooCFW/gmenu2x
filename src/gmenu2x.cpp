@@ -1052,6 +1052,7 @@ void GMenu2X::writeConfig() {
 				curr->first == "linkCols" ||
 				curr->first == "linkRows" ||
 				curr->first == "sectionBar" ||
+				curr->first == "searchBackdrops" ||
 				curr->first == "sectionBackdrops" ||
 				curr->first == "sectionLabel" ||
 				curr->first == "linkLabel" ||
@@ -1111,6 +1112,7 @@ void GMenu2X::writeSkinConfig() {
 			(curr->first == "linkRows" && curr->second == 4) ||
 			(curr->first == "sectionBar" && curr->second == SB_CLASSIC) ||
 			(curr->first == "sectionLabel" && curr->second == 1) ||
+			(curr->first == "searchBackdrops" && curr->second == SBAK_OFF) ||
 			(curr->first == "sectionBackdrops" && curr->second == 0) ||
 			(curr->first == "linkLabel" && curr->second == 1) ||
 			(curr->first == "showDialogIcon" && curr->second == 1) ||
@@ -1145,7 +1147,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	// Defaults *** Sync with default values in writeConfig
 	skinConfInt["sectionBar"] = SB_CLASSIC;
 	skinConfInt["sectionLabel"] = 1;
-	skinConfInt["searchBackdrops"] = 0;
+	skinConfInt["searchBackdrops"] = SBAK_OFF;
 	skinConfInt["sectionBackdrops"] = 0;
 	skinConfInt["linkLabel"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
@@ -1303,6 +1305,7 @@ void GMenu2X::skinMenu() {
 
 			setSkin(confStr["skin"], false);
 			sectionBar = sbStr[skinConfInt["sectionBar"]];
+			searchBackdrops = sbdStr[skinConfInt["searchBackdrops"]];
 
 			confStr["tmp_wallpaper"] = (confStr["tmp_wallpaper"].empty() || skinConfStr["wallpaper"].empty()) ? base_name(confStr["wallpaper"]) : skinConfStr["wallpaper"];
 			wallpapers.clear();
