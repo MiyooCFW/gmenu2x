@@ -254,8 +254,9 @@ public:
 			ioctl(snd, MIYOO_SND_SET_VOLUME, vol);
 			close(snd);
 		}
-
 		sprintf(buf, "echo %i > " MIYOO_VOL_FILE, vol);
+		system(buf);		
+		
 		volumeMode = getVolumeMode(val);
 
 		return val;
