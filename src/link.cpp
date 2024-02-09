@@ -47,7 +47,7 @@ void Link::setIcon(const string &icon) {
 	int pos = icon.find('#'); // search for "opkfile.opk#icon.png"
 
 	this->icon = icon;
-	if (icon.compare(0, 5, "skin:") == 0) {
+	if (icon.compare(0, 5, "skin:") == 0 && !gmenu2x->sc.getSkinFilePath(icon.substr(5, string::npos)).empty()) {
 		this->iconPath = gmenu2x->sc.getSkinFilePath(icon.substr(5, string::npos));
 	} else if (file_exists(icon)) {
 		this->iconPath = icon;
@@ -63,11 +63,8 @@ void Link::setBackdrop(const string &backdrop) {
 
 	backdropPathGeneric = gmenu2x->sc.getSkinFilePath("backdrops/generic.png");
 
-	if (backdrop.compare(0, 5, "skin:") == 0)
-		if (!gmenu2x->sc.getSkinFilePath(backdrop.substr(5, string::npos)).empty())
-			this->backdropPath = gmenu2x->sc.getSkinFilePath(backdrop.substr(5, string::npos));
-		else if (file_exists(backdropPathGeneric))
-			this->backdropPath = backdropPathGeneric;
+	if (backdrop.compare(0, 5, "skin:") == 0 && !gmenu2x->sc.getSkinFilePath(backdrop.substr(5, string::npos)).empty())
+		this->backdropPath = gmenu2x->sc.getSkinFilePath(backdrop.substr(5, string::npos));
 	else if (file_exists(backdrop))
 		this->backdropPath = backdrop;
 	else if (file_exists(backdropPathGeneric))
