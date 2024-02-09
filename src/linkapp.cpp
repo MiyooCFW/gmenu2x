@@ -137,31 +137,37 @@ const string LinkApp::searchBackdrop() {
 	pos = linktitle.rfind(".");
 	if (pos != string::npos) linktitle = linktitle.substr(0, pos);
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + sublinktitle + ".png");
-	if (!backdropPath.empty()) return backdropPath;
+	if (gmenu2x->skinConfInt["searchBackdrops"] != SBAK_EXEC) {
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + sublinktitle + ".png");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + sublinktitle + ".jpg");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + sublinktitle + ".jpg");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".png");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".png");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".jpg");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".jpg");
+		if (!backdropPath.empty()) return backdropPath;
+	}
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + exectitle + ".png");
-	if (!backdropPath.empty()) return backdropPath;
+	if (gmenu2x->skinConfInt["searchBackdrops"] != SBAK_LINK) {
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + exectitle + ".png");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + exectitle + ".jpg");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + exectitle + ".jpg");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + dirtitle + ".png");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + dirtitle + ".png");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + dirtitle + ".jpg");
-	if (!backdropPath.empty()) return backdropPath;
-
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + dirtitle + ".jpg");
+		if (!backdropPath.empty()) return backdropPath;
+	}
 	backdropPath = dir_name(exec) + "/backdrop.png";
+	if (file_exists(backdropPath)) return backdropPath;
+	
+	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/generic.png");
 	if (file_exists(backdropPath)) return backdropPath;
 
 	return "";

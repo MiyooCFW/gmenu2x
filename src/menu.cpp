@@ -537,7 +537,8 @@ void Menu::drawList() {
 			icon->softStretch(32, linkHeight - 4, SScaleFit);
 		}
 
-		icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+		if (gmenu2x->skinConfInt["showLinkIcon"])
+			icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
 #if !defined(CHECK_TRANSLATION)
 		gmenu2x->s->write(gmenu2x->titlefont, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
 		gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getDescription()], ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
@@ -579,10 +580,10 @@ void Menu::drawGrid() {
 			} else if (iconBGoff != NULL && icon->width() <= iconBGoff->width() && icon->height() <= iconBGoff->height()) {
 				iconBGoff->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 			}
+			if (gmenu2x->skinConfInt["showLinkIcon"])
+				icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 
-			icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
-
-			if (gmenu2x->skinConfInt["linkLabel"]) {
+			if (gmenu2x->skinConfInt["linkLabel"] || i == (uint32_t)selLinkIndex() && gmenu2x->confInt["skinBackdrops"] && (gmenu2x->currBackdrop == gmenu2x->sc.getSkinFilePath("backdrops/generic.png", false) /*|| gmenu2x->currBackdrop == gmenu2x->confStr["wallpaper"]*/)) {
 				SDL_Rect labelRect;
 				labelRect.x = ix + 2 + linkWidth/2;
 				labelRect.y = iy + (linkHeight + min(linkHeight, icon->height()))/2;
@@ -834,6 +835,21 @@ void Menu::exec() {
 			}
 		}
 		gmenu2x->setBackground(gmenu2x->s, gmenu2x->currBackdrop);
+
+		if (gmenu2x->skinConfInt["sectionBackdrops"]) {
+			// string sectionBackdrop = gmenu2x->sc.getSkinFilePath("backdrops/" + selSection() + ".png", false);
+			// string sectionBackdropGeneric = gmenu2x->sc.getSkinFilePath("backdrops/generic-section.png", false);
+			sectionBackdrop = gmenu2x->sc["skins/" + gmenu2x->confStr["skin"] + "/backdrops/" + selSection() + ".png"];
+			sectionBackdropGeneric = gmenu2x->sc["skins/"+ gmenu2x->confStr["skin"] + "/backdrops/generic-section.png"];
+			if (sectionBackdrop != NULL) {
+				sectionBackdrop->blit(gmenu2x->s, 0, 0, 0, 50);
+				// gmenu2x->currBackdrop = sectionBackdrop;
+			} else if (sectionBackdropGeneric != NULL) {
+				sectionBackdropGeneric->blit(gmenu2x->s, 0, 0, 0, 50);
+				// gmenu2x->currBackdrop = sectionBackdropGeneric;
+			}
+		}
+		// gmenu2x->setBackground(gmenu2x->s, gmenu2x->currBackdrop);
 
 		// SECTIONS
 		if (gmenu2x->skinConfInt["sectionBar"]) {

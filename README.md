@@ -68,7 +68,7 @@ To generate this list of available strings' aliases you can run from src:
 
 Please refer to directory containing appropriate skin for detailed information about authors and licensing of specific theme and its fonts. See below schema for general info:
 ```
-skins
+assets/skins
 ├── Default
 │   ├── GNU_Unifont.ttf
 │   ├── LICENSE_font-GPLv2.txt
@@ -89,11 +89,6 @@ skins
 │   ├── font-modify.info
 │   ├── LICENSE_font-OFLv1.1.txt
 │   └── LICENSE_skin-CC_BY_3.0_US.txt
-├── NewComicBook
-│   ├── font-modify.info
-│   ├── LICENSE_font-OFLv1.1.txt
-│   ├── LICENSE_skin-CC-BY-NC-ND_4.0.txt
-│   └── PlaypenSans-ExtraBold.ttf
 └── Nsdark
     ├── BebasKai.ttf
     ├── BebasNeue-Bold.ttf
@@ -101,6 +96,8 @@ skins
     ├── LICENSE_font-OFLv1.1.txt
     └── LICENSE_skin-GPLv2.txt
 ```
+above list generated with cmd:
+`tree assets/skins -L 2 -I 'icons|imgs|logos*|sections|wallpap*|backdrops|free_backdrop|font.ttf|skin.conf|ACKNOW*' -U` 
 
 Fonts under OFL license has been expanded with GNU_Unifont.ttf using `font_merge.sh` tool to include most of the UNICODE glyphs and all CJK characters, thus transforming to Pan-Unicode font type. 
 

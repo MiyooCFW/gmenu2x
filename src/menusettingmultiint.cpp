@@ -62,7 +62,7 @@ MenuSettingMultiInt::MenuSettingMultiInt(GMenu2X *gmenu2x, const string &title, 
 
 void MenuSettingMultiInt::draw(int y) {
 	MenuSetting::draw(y);
-	gmenu2x->s->write( gmenu2x->font, strvalue, 155, y+gmenu2x->font->getHalfHeight(), VAlignMiddle );
+	gmenu2x->s->write( gmenu2x->font, strvalue, 180, y+gmenu2x->font->getHalfHeight(), VAlignMiddle );
 }
 
 uint32_t MenuSettingMultiInt::manageInput() {

@@ -53,11 +53,11 @@ void MenuSettingInt::draw(int y) {
 		strvalue = "OFF";
 		w = gmenu2x->font->getHeight() / 2.5;
 		RGBAColor color = (RGBAColor){255, 0, 0, 255};
-		gmenu2x->s->box(155, y + 1, w, gmenu2x->font->getHeight() - 2, color);
-		gmenu2x->s->rectangle(155, y + 1, w, gmenu2x->font->getHeight() - 2, 0, 0, 0, 255);
+		gmenu2x->s->box(180, y + 1, w, gmenu2x->font->getHeight() - 2, color);
+		gmenu2x->s->rectangle(180, y + 1, w, gmenu2x->font->getHeight() - 2, 0, 0, 0, 255);
 		w += 2;
 	}
-	gmenu2x->s->write(gmenu2x->font, strvalue, 155 + w, y+gmenu2x->font->getHeight() / 2, VAlignMiddle);
+	gmenu2x->s->write(gmenu2x->font, strvalue, 180 + w, y+gmenu2x->font->getHeight() / 2, VAlignMiddle);
 }
 
 uint32_t MenuSettingInt::manageInput() {
