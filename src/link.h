@@ -57,7 +57,8 @@ protected:
 			icon = "",
 			iconPath = "",
 			backdrop = "",
-			backdropPath = "";
+			backdropPath = "",
+			backdropPathGeneric = "";
 
 public:
 	// linkaction
