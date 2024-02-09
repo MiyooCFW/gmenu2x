@@ -6,10 +6,16 @@ View changelog in [changelog](https://github.com/MiyooCFW/gmenu2x/blob/master/Ch
 
 ## Installation
 
-Replace the ``gmenu2x`` binary with the latest one from action builds.
-
-(Re)Boot your device and enjoy new GMenu2X
-
+#### A) Binary
+1. Replace the ``gmenu2x`` binary with the latest one.
+2. Additionaly for working directory with linux spefific file type partition (e.g.: EXT, BTRFS):
+ ``chmod +x gmenu2x``
+3. (Re)Boot your device and enjoy new GMenu2X
+#### B) ZIP-bundle
+1. Extract the `gmenu2x-*.zip` content to `$HOME/gmenu2x` directory on your device
+#### C) IPK-package
+1. Launch `gmenu2x-*.ipk` from within GMenu2X's Explorer.
+2. Restart GMenu2X frontend or reboot device.
 
 ## Building
 
@@ -29,7 +35,7 @@ you can find both outputs in `./dist/miyoo/` directory.
 This is primarily useful for development/testing. 
 First, install the dependencies. This should work for Debian/Ubuntu systems, use the appropriate package manager for other systems:
 ```sh
-sudo apt-get install -y build-essential libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libboost-all-dev libfreetype6-dev libbz2-dev libmpg123-dev
+sudo apt-get install -y build-essential libsdl1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libboost-all-dev libfreetype6-dev libbz2-dev libmpg123-dev
 ```
 Compile with:
 ```sh
