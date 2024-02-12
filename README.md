@@ -13,6 +13,7 @@ View changelog in [changelog](https://github.com/MiyooCFW/gmenu2x/blob/master/Ch
 3. (Re)Boot your device and enjoy new GMenu2X
 #### B) ZIP-bundle
 1. Extract the `gmenu2x-*.zip` content to `$HOME/gmenu2x` directory on your device
+2. Perform steps 2 & 3 from "Binary" installation process
 #### C) IPK-package
 1. Launch `gmenu2x-*.ipk` from within GMenu2X's Explorer.
 2. Restart GMenu2X frontend or reboot device.

@@ -88,7 +88,7 @@ ipk: dist
 	tar --owner=0 --group=0 -czvf /tmp/.gmenu-ipk/data.tar.gz -C $(DISTDIR)/ .
 	echo 2.0 > /tmp/.gmenu-ipk/debian-binary
 	ar r dist/gmenu2x-$(PLATFORM).ipk /tmp/.gmenu-ipk/control.tar.gz /tmp/.gmenu-ipk/data.tar.gz /tmp/.gmenu-ipk/debian-binary
-	@rm -rf $(DISTDIR)
+	mv $(DISTDIR)$(HOMEPATH)/gmenu2x/* $(DISTDIR) && rmdir $(DISTDIR)$(HOMEPATH)/gmenu2x $(DISTDIR)$(HOMEPATH) 
 
 zip: dist
 	cd $(DISTDIR)/ && zip -r ../gmenu2x-$(PLATFORM).zip *

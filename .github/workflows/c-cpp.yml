@@ -32,6 +32,7 @@ jobs:
       run: |
         cd ${{ inputs.submodule || '.' }}       
         make -f Makefile.miyoo dist COMMIT_HASH="${{ steps.commit.outputs.commit }}"
+        make -f Makefile.miyoo ipk
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X (uClibc)
@@ -41,10 +42,16 @@ jobs:
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
     - uses: actions/upload-artifact@v3
       with:
-        name: GMenu2X Bundle (uClibc)
+        name: GMenu2X ZIP-Bundle (uClibc)
         path: |
           ${{ inputs.submodule || '.' }}/dist/miyoo/
           !${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+    - uses: actions/upload-artifact@v3
+      with:
+        name: GMenu2X IPK-Package (uClibc)
+        path: |
+          ${{ inputs.submodule || '.' }}/dist/gmenu2x-miyoo.ipk
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
 
   build-modern:
@@ -67,6 +74,7 @@ jobs:
       run: |
         cd ${{ inputs.submodule || '.' }}       
         make -f Makefile.miyoo dist COMMIT_HASH="${{ steps.commit.outputs.commit }}"
+        make -f Makefile.miyoo ipk
     - uses: actions/upload-artifact@v3
       with:
         name: GMenu2X (musl)
@@ -76,8 +84,14 @@ jobs:
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
     - uses: actions/upload-artifact@v3
       with:
-        name: GMenu2X Bundle (musl)
+        name: GMenu2X ZIP-Bundle (musl)
         path: |
           ${{ inputs.submodule || '.' }}/dist/miyoo/
           !${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+    - uses: actions/upload-artifact@v3
+      with:
+        name: GMenu2X IPK-Package (musl)
+        path: |
+          ${{ inputs.submodule || '.' }}/dist/gmenu2x-miyoo.ipk
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
