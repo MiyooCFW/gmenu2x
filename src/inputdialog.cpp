@@ -43,43 +43,76 @@ gmenu2x(gmenu2x) {
 	input = startvalue;
 	selCol = 0;
 	selRow = 0;
-	keyboard.resize(7);
+	keyboard.resize(MAX_KB + 1);
 
-	keyboard[0].push_back("qwertyuiop-789");
-	keyboard[0].push_back("asdfghjkl\\/456");
-	keyboard[0].push_back("_zxcvbnm,.0123");
-
-	keyboard[1].push_back("QWERTYUIOP_-+=");
-	keyboard[1].push_back("@ASDFGHJKL'\"`");
-	keyboard[1].push_back("#ZXCVBNM:;/?");
-
-	keyboard[2].push_back("¡¿*+-/\\&<=>|");
-	keyboard[2].push_back("()[]{}@#$%^~");
-	keyboard[2].push_back("_\"'`.,:;!?");
+	kb11 = "qwertyuiop-789";
+	kb12 = "asdfghjkl\\/456";
+	kb13 = "zxcvbnm_,.0123";
+	kb21 = "QWERTYUIOP_-+=";
+	kb22 = "ASDFGHJKL@'\"`";
+	kb23 = "ZXCVBNM#:;/?";
+	kb31 = "¡¿*+-/\\&<=>|";
+	kb32 = "()[]{}@#$%^~";
+	kb33 = "_\"'`.,:;!?";
 
 	string lang = gmenu2x->tr.lang();
-	if (lang == "") {
-		keyboard[3].push_back("qwertyuiop-789");
-		keyboard[3].push_back("asdfghjkl\\/456");
-		keyboard[3].push_back("_zxcvbnm,.0123");
 
-		keyboard[4].push_back("QWERTYUIOP_-+=");
-		keyboard[4].push_back("@ASDFGHJKL'\"`");
-		keyboard[4].push_back("#ZXCVBNM:;/?");
+	kbc11 = gmenu2x->tr["_keyboard_t1_l1_"];
+	kbc12 = gmenu2x->tr["_keyboard_t1_l2_"];
+	kbc13 = gmenu2x->tr["_keyboard_t1_l3_"];
+	kbc21 = gmenu2x->tr["_keyboard_t2_l1_"];
+	kbc22 = gmenu2x->tr["_keyboard_t2_l2_"];
+	kbc23 = gmenu2x->tr["_keyboard_t2_l3_"];
+	kbc31 = gmenu2x->tr["_keyboard_t3_l1_"];
+	kbc32 = gmenu2x->tr["_keyboard_t3_l2_"];
+	kbc33 = gmenu2x->tr["_keyboard_t3_l3_"];
 
-		keyboard[5].push_back("¡¿*+-/\\&<=>|");
-		keyboard[5].push_back("()[]{}@#$%^~");
-		keyboard[5].push_back("_\"'`.,:;!?");
+	if (kbc11 == "_keyboard_t1_l1_") kbc11 = kb11;
+	if (kbc12 == "_keyboard_t1_l2_") kbc12 = kb12;
+	if (kbc13 == "_keyboard_t1_l3_") kbc13 = kb13;
+	if (kbc21 == "_keyboard_t2_l1_") kbc21 = kb21;
+	if (kbc22 == "_keyboard_t2_l2_") kbc22 = kb22;
+	if (kbc23 == "_keyboard_t2_l3_") kbc23 = kb23;
+	if (kbc31 == "_keyboard_t3_l1_") kbc31 = kb31;
+	if (kbc32 == "_keyboard_t3_l2_") kbc32 = kb32;
+	if (kbc33 == "_keyboard_t3_l3_") kbc33 = kb33;
 
-		keyboard[6].push_back("");
+	keyboard[0].push_back(kb11);
+	keyboard[0].push_back(kb12);
+	keyboard[0].push_back(kb13);
+
+	keyboard[1].push_back(kb21);
+	keyboard[1].push_back(kb22);
+	keyboard[1].push_back(kb23);
+
+	keyboard[2].push_back(kb31);
+	keyboard[2].push_back(kb32);
+	keyboard[2].push_back(kb33);
+
+	if (lang != "") {
+		keyboard[3].push_back(kbc11);
+		keyboard[3].push_back(kbc12);
+		keyboard[3].push_back(kbc13);
+
+		keyboard[4].push_back(kbc21);
+		keyboard[4].push_back(kbc22);
+		keyboard[4].push_back(kbc23);
+
+		keyboard[MAX_KB].push_back(kbc31);
+		keyboard[MAX_KB].push_back(kbc32);
+		keyboard[MAX_KB].push_back(kbc33);
 	} else {
-		keyboard[3].push_back(gmenu2x->tr["_keyboard_layout_r1"]);
+		keyboard[3].push_back(kb11);
+		keyboard[3].push_back(kb12);
+		keyboard[3].push_back(kb13);
 
-		keyboard[4].push_back(gmenu2x->tr["_keyboard_layout_r2"]);
+		keyboard[4].push_back(kb21);
+		keyboard[4].push_back(kb22);
+		keyboard[4].push_back(kb23);
 
-		keyboard[5].push_back(gmenu2x->tr["_keyboard_layout_r3"]);
-
-		keyboard[6].push_back(" ");
+		keyboard[MAX_KB].push_back(kb31);
+		keyboard[MAX_KB].push_back(kb32);
+		keyboard[MAX_KB].push_back(kb33);
 	}
 	setKeyboard(0);
 }
@@ -190,7 +223,7 @@ void InputDialog::confirm() {
 }
 
 void InputDialog::changeKeys() {
-	if (curKeyboard == 6) setKeyboard(0);
+	if (curKeyboard == MAX_KB) setKeyboard(0);
 	else setKeyboard(curKeyboard + 1);
 }
 
