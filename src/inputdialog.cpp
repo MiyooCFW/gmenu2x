@@ -89,31 +89,18 @@ gmenu2x(gmenu2x) {
 	keyboard[2].push_back(kb32);
 	keyboard[2].push_back(kb33);
 
-	if (lang != "") {
-		keyboard[3].push_back(kbc11);
-		keyboard[3].push_back(kbc12);
-		keyboard[3].push_back(kbc13);
+	keyboard[3].push_back(kbc11);
+	keyboard[3].push_back(kbc12);
+	keyboard[3].push_back(kbc13);
 
-		keyboard[4].push_back(kbc21);
-		keyboard[4].push_back(kbc22);
-		keyboard[4].push_back(kbc23);
+	keyboard[4].push_back(kbc21);
+	keyboard[4].push_back(kbc22);
+	keyboard[4].push_back(kbc23);
 
-		keyboard[MAX_KB].push_back(kbc31);
-		keyboard[MAX_KB].push_back(kbc32);
-		keyboard[MAX_KB].push_back(kbc33);
-	} else {
-		keyboard[3].push_back(kb11);
-		keyboard[3].push_back(kb12);
-		keyboard[3].push_back(kb13);
+	keyboard[MAX_KB].push_back(kbc31);
+	keyboard[MAX_KB].push_back(kbc32);
+	keyboard[MAX_KB].push_back(kbc33);
 
-		keyboard[4].push_back(kb21);
-		keyboard[4].push_back(kb22);
-		keyboard[4].push_back(kb23);
-
-		keyboard[MAX_KB].push_back(kb31);
-		keyboard[MAX_KB].push_back(kb32);
-		keyboard[MAX_KB].push_back(kb33);
-	}
 	setKeyboard(0);
 }
 
