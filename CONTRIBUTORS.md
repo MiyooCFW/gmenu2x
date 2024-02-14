@@ -22,7 +22,6 @@ Kevin Winfield-Pantoja, aka [@pokeparadox](pokeparadox@gmail.com)
 ### THEMES:
 - s4ilence for FontiGrid, Nsdark skin
 - bhardwaj for GameShow, NeonWave skin
-- Segich for NewComicBook skin
 - mtorromeo for original skin
 - BryMD for updated FontiGrid icons
 

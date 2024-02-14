@@ -99,8 +99,7 @@ bool SettingsDialog::exec() {
 						int res = mb.exec();
 						switch (res) {
 							case CONFIRM: {
-								gmenu2x->writeConfig();
-								gmenu2x->writeSkinConfig();
+								save = true;
 								break;
 							}
 							case CANCEL: {
