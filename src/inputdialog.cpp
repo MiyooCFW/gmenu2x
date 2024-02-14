@@ -212,17 +212,25 @@ void InputDialog::confirm() {
 }
 
 void InputDialog::changeKeys() {
-	if (curKeyboard >= MAX_KB / 2) setKeyboard(0);
-	else setKeyboard(curKeyboard + 1);
+	if (!customKb) {
+		if (curKeyboard >= MAX_KB / 2) setKeyboard(MAX_KB / 2 - 2);
+		else setKeyboard(curKeyboard + 1);
+	} else {
+		if (curKeyboard == MAX_KB) setKeyboard(MAX_KB - 2);
+		else setKeyboard(curKeyboard + 1);
+	}
 }
 
 void InputDialog::changeKeysCustom() {
+	if (customKb) customKb = false;
+	else customKb = true;
+	
 	if (curKeyboard == 0) setKeyboard(0 + 3);
 	else if (curKeyboard == 1) setKeyboard(1 + 3);
 	else if (curKeyboard == 2) setKeyboard(2 + 3);
 	else if (curKeyboard == 3) setKeyboard(3 - 3);
 	else if (curKeyboard == 4) setKeyboard(4 - 3);
-	else if (curKeyboard == MAX_KB) setKeyboard(5 - 3);
+	else if (curKeyboard == MAX_KB) setKeyboard(MAX_KB - 3);
 }
 
 int InputDialog::drawVirtualKeyboard() {

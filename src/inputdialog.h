@@ -59,6 +59,8 @@ private:
 		ID_ACTION_KB_CHANGE
 	};
 
+	bool customKb = false;
+
 	int selRow, selCol;
 	string title, text, icon;
 	string kb11, kb12, kb13, kb21, kb22, kb23, kb31, kb32, kb33;
