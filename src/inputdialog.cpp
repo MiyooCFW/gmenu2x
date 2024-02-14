@@ -140,12 +140,13 @@ bool InputDialog::exec() {
 
 	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
 
-	gmenu2x->drawButton(bg, "r", gmenu2x->tr["Space"],
-	gmenu2x->drawButton(bg, "l", gmenu2x->tr["Backspace"],
+	gmenu2x->drawButton(bg, "r", gmenu2x->tr["⎵"],
+	gmenu2x->drawButton(bg, "l", gmenu2x->tr["←"],
 	gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
+	gmenu2x->drawButton(bg, "x", gmenu2x->tr["Alt"],
 	gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
 	gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
-	)))));
+	))))));
 
 	while (true) {
 		SDL_RemoveTimer(wakeUpTimer);
@@ -184,6 +185,7 @@ bool InputDialog::exec() {
 		else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)			selCol++;
 		else if (gmenu2x->input[CONFIRM])		confirm();
 		else if (gmenu2x->input[MANUAL])		changeKeys();
+		else if (gmenu2x->input[MODIFIER])		changeKeysCustom();
 		else if (gmenu2x->input[SECTION_PREV])	backspace();
 		else if (gmenu2x->input[SECTION_NEXT])	space();
 	}
@@ -210,8 +212,17 @@ void InputDialog::confirm() {
 }
 
 void InputDialog::changeKeys() {
-	if (curKeyboard == MAX_KB) setKeyboard(0);
+	if (curKeyboard >= MAX_KB / 2) setKeyboard(0);
 	else setKeyboard(curKeyboard + 1);
+}
+
+void InputDialog::changeKeysCustom() {
+	if (curKeyboard == 0) setKeyboard(0 + 3);
+	else if (curKeyboard == 1) setKeyboard(1 + 3);
+	else if (curKeyboard == 2) setKeyboard(2 + 3);
+	else if (curKeyboard == 3) setKeyboard(3 - 3);
+	else if (curKeyboard == 4) setKeyboard(4 - 3);
+	else if (curKeyboard == MAX_KB) setKeyboard(5 - 3);
 }
 
 int InputDialog::drawVirtualKeyboard() {

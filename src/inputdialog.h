@@ -75,6 +75,7 @@ private:
 	void space();
 	void confirm();
 	void changeKeys();
+	void changeKeysCustom();
 
 	int drawVirtualKeyboard();
 	void setKeyboard(int);
