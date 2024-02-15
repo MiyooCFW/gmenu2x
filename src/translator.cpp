@@ -56,7 +56,32 @@ void Translator::setLang(const string &lang) {
 			if (line.back() == '=') continue;
 
 			string::size_type position = line.find("=");
-			translations[trim(line.substr(0, position))] = trim(line.substr(position + 1));
+
+			string::size_type position_newl_all = line.find("\\n");
+			string trans;
+			
+			string::size_type pos = 0;
+			uint32_t count = 0;
+			while ((pos = line.find("\\n", pos)) != std::string::npos) {
+				++count;
+				pos += 2;
+			}
+
+			if (position_newl_all != std::string::npos) {
+				string::size_type position_newl[365];
+				for (uint32_t i = 0; i <= count; i++) {
+					// check if this is first chunk
+					if (i == 0) position_newl[i] = line.find("\\n");
+					else position_newl[i] = line.find("\\n", position_newl[i-1] + 2);
+					// genearate translation string from all chunks
+					if (i == 0 && position_newl[i] != std::string::npos) trans += trim(line.substr(position + 1, position_newl[i] - position - 1)) + "\n";
+					else if (position_newl[i] != std::string::npos) trans += trim(line.substr(position_newl[i-1] + 2, position_newl[i] - position_newl[i-1] - 2)) + "\n";
+					else trans += trim(line.substr(position_newl[i-1] + 2));
+				}
+				translations[trim(line.substr(0, position))] = trans;
+			} else {
+				translations[trim(line.substr(0, position))] = trim(line.substr(position + 1));
+			}
 		}
 		infile.close();
 		_lang = lang;
