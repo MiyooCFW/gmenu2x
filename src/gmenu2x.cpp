@@ -293,7 +293,8 @@ void GMenu2X::main(bool autoStart) {
 
 	srand(time(0));  // Seed the rand with current time to get different number sequences
 	int randomInt = rand() % 10; // Generate a random val={0..x} to print "Hint" msg occasionally
-	//Hint messages
+	// Hint messages
+	//while (true){
 	if (confInt["showHints"] == 1) {
 		if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
 			switch (randomInt) {
@@ -376,7 +377,7 @@ void GMenu2X::main(bool autoStart) {
 		mb.setBgAlpha(0);
 		mb.exec();
 	}
-
+	//SDL_Delay(1000);reinit();}
 	input.update(false);
 	if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "" || confInt["dialogAutoStart"]) {
 		if (input[MANUAL]) { // Reset GMenu2X settings
