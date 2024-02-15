@@ -89,31 +89,18 @@ gmenu2x(gmenu2x) {
 	keyboard[2].push_back(kb32);
 	keyboard[2].push_back(kb33);
 
-	if (lang != "") {
-		keyboard[3].push_back(kbc11);
-		keyboard[3].push_back(kbc12);
-		keyboard[3].push_back(kbc13);
+	keyboard[3].push_back(kbc11);
+	keyboard[3].push_back(kbc12);
+	keyboard[3].push_back(kbc13);
 
-		keyboard[4].push_back(kbc21);
-		keyboard[4].push_back(kbc22);
-		keyboard[4].push_back(kbc23);
+	keyboard[4].push_back(kbc21);
+	keyboard[4].push_back(kbc22);
+	keyboard[4].push_back(kbc23);
 
-		keyboard[MAX_KB].push_back(kbc31);
-		keyboard[MAX_KB].push_back(kbc32);
-		keyboard[MAX_KB].push_back(kbc33);
-	} else {
-		keyboard[3].push_back(kb11);
-		keyboard[3].push_back(kb12);
-		keyboard[3].push_back(kb13);
+	keyboard[MAX_KB].push_back(kbc31);
+	keyboard[MAX_KB].push_back(kbc32);
+	keyboard[MAX_KB].push_back(kbc33);
 
-		keyboard[4].push_back(kb21);
-		keyboard[4].push_back(kb22);
-		keyboard[4].push_back(kb23);
-
-		keyboard[MAX_KB].push_back(kb31);
-		keyboard[MAX_KB].push_back(kb32);
-		keyboard[MAX_KB].push_back(kb33);
-	}
 	setKeyboard(0);
 }
 
@@ -153,12 +140,13 @@ bool InputDialog::exec() {
 
 	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
 
-	gmenu2x->drawButton(bg, "r", gmenu2x->tr["Space"],
-	gmenu2x->drawButton(bg, "l", gmenu2x->tr["Backspace"],
+	gmenu2x->drawButton(bg, "r", gmenu2x->tr["⎵"],
+	gmenu2x->drawButton(bg, "l", gmenu2x->tr["←"],
 	gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
+	gmenu2x->drawButton(bg, "x", gmenu2x->tr["Alt"],
 	gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
 	gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
-	)))));
+	))))));
 
 	while (true) {
 		SDL_RemoveTimer(wakeUpTimer);
@@ -197,6 +185,7 @@ bool InputDialog::exec() {
 		else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)			selCol++;
 		else if (gmenu2x->input[CONFIRM])		confirm();
 		else if (gmenu2x->input[MANUAL])		changeKeys();
+		else if (gmenu2x->input[MODIFIER])		changeKeysCustom();
 		else if (gmenu2x->input[SECTION_PREV])	backspace();
 		else if (gmenu2x->input[SECTION_NEXT])	space();
 	}
@@ -223,8 +212,25 @@ void InputDialog::confirm() {
 }
 
 void InputDialog::changeKeys() {
-	if (curKeyboard == MAX_KB) setKeyboard(0);
-	else setKeyboard(curKeyboard + 1);
+	if (!customKb) {
+		if (curKeyboard >= MAX_KB / 2) setKeyboard(MAX_KB / 2 - 2);
+		else setKeyboard(curKeyboard + 1);
+	} else {
+		if (curKeyboard == MAX_KB) setKeyboard(MAX_KB - 2);
+		else setKeyboard(curKeyboard + 1);
+	}
+}
+
+void InputDialog::changeKeysCustom() {
+	if (customKb) customKb = false;
+	else customKb = true;
+	
+	if (curKeyboard == 0) setKeyboard(0 + 3);
+	else if (curKeyboard == 1) setKeyboard(1 + 3);
+	else if (curKeyboard == 2) setKeyboard(2 + 3);
+	else if (curKeyboard == 3) setKeyboard(3 - 3);
+	else if (curKeyboard == 4) setKeyboard(4 - 3);
+	else if (curKeyboard == MAX_KB) setKeyboard(MAX_KB - 3);
 }
 
 int InputDialog::drawVirtualKeyboard() {
