@@ -194,7 +194,35 @@ bool InputDialog::exec() {
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
 		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) return false;
-		else if (gmenu2x->input[SETTINGS])		return true;
+		else if (gmenu2x->input[SETTINGS]) {		
+			string inputss;
+			string::size_type position_newl_all = input.find("\n");
+
+			string::size_type pos = 0;
+			uint32_t count = 0;
+			while ((pos = input.find("\n", pos)) != std::string::npos) {
+				++count;
+				pos += 2;
+			}
+
+			if (position_newl_all != std::string::npos) {
+				string::size_type position_newl[365];
+				for (uint32_t i = 0; i <= count; i++) {
+					// check if this is first chunk
+					if (i == 0) position_newl[i] = input.find("\n");
+					else position_newl[i] = input.find("\n", position_newl[i-1] + 2);
+					// genearate translation string from all chunks
+					if (i == 0 && position_newl[i] != std::string::npos) inputss += trim(input.substr(0, position_newl[i])) + "\\n";
+					else if (position_newl[i] != std::string::npos) inputss += trim(input.substr(position_newl[i-1] + 1, position_newl[i] - position_newl[i-1] - 1)) + "\\n";
+					else inputss += trim(input.substr(position_newl[i-1]));
+				}
+				input = inputss;
+			// } else {
+			// 	input = trim(line.substr(position + 1));
+			}
+		
+			return true;
+		}
 		else if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP)			selRow--;
 		else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN)			selRow++;
 		else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)			selCol--;
