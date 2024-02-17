@@ -39,9 +39,9 @@ Translator::Translator(const string &lang) {
 
 Translator::~Translator() {}
 
-bool Translator::exists(const string &term) {
-	return translations.find(term) != translations.end();
-}
+// bool Translator::exists(const string &term) {
+// 	return translations.find(term) != translations.end();
+// }
 
 void Translator::setLang(const string &lang) {
 	translations.clear();
@@ -91,8 +91,15 @@ void Translator::setLang(const string &lang) {
 string Translator::translate(const string &term,const char *replacestr,...) {
 	string result = term;
 
+	string termFind = term;
+	string::size_type pos = 0;
+	while ((pos = termFind.find('\n', pos)) != std::string::npos) {
+		termFind.replace(pos, 1, " ");
+		pos += 1;
+	}
+
 	if (!_lang.empty()) {
-		unordered_map<string, string>::iterator i = translations.find(term);
+		unordered_map<string, string>::iterator i = translations.find(termFind);
 		if (i != translations.end()) {
 			result = i->second;
 #if defined(CHECK_TRANSLATION)
