@@ -55,8 +55,6 @@ gmenu2x(gmenu2x) {
 	kb32 = "()[]{}@#$%^~";
 	kb33 = "_\"'`.,:;!?";
 
-	string lang = gmenu2x->tr.lang();
-
 	kbc11 = gmenu2x->tr["_keyboard_t1_l1_"];
 	kbc12 = gmenu2x->tr["_keyboard_t1_l2_"];
 	kbc13 = gmenu2x->tr["_keyboard_t1_l3_"];
@@ -140,13 +138,21 @@ bool InputDialog::exec() {
 
 	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
 
-	gmenu2x->drawButton(bg, "r", gmenu2x->tr["⎵"],
-	gmenu2x->drawButton(bg, "l", gmenu2x->tr["←"],
-	gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
-	gmenu2x->drawButton(bg, "x", gmenu2x->tr["Alt"],
-	gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
-	gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
-	))))));
+	if (gmenu2x->tr.lang() != "")
+		gmenu2x->drawButton(bg, "r", gmenu2x->tr["⎵"],
+		gmenu2x->drawButton(bg, "l", gmenu2x->tr["←"],
+		gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
+		gmenu2x->drawButton(bg, "x", gmenu2x->tr["Alt"],
+		gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
+		gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
+		))))));
+	else
+		gmenu2x->drawButton(bg, "r", gmenu2x->tr["Space"],
+		gmenu2x->drawButton(bg, "l", gmenu2x->tr["Backspace"],
+		gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
+		gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
+		gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
+		)))));
 
 	while (true) {
 		SDL_RemoveTimer(wakeUpTimer);
