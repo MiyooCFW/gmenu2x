@@ -250,12 +250,12 @@ Wallpaper=Tapeta
 Yes=Tak
 Zip content=Zawartość zip'a
 _about_=_about_pl
-_keyboard_t1_l1_=qwęrtyuióp-789
-_keyboard_t1_l2_=ąśdfghjkł\/456
-_keyboard_t1_l3_=żźćvbńm_,.0123
-_keyboard_t2_l1_=QWĘRTYUIÓP_-+÷
-_keyboard_t2_l2_=ĄŚDFGHJKŁ@'"`
-_keyboard_t2_l3_=ŻŹĆVBŃM#:;/?
+_keyboard_t1_l1_=qwęrtyuióp[]=789
+_keyboard_t1_l2_=ąśdfghjkł;'\`456
+_keyboard_t1_l3_=żźćvbńm,./-=0123
+_keyboard_t2_l1_=QWĘRTYUIÓP{}&*()
+_keyboard_t2_l2_=ĄŚDFGHJKŁ:"|~$%^
+_keyboard_t2_l3_=ŻŹĆVBŃM<>?_+÷!@#
 _keyboard_t3_l1_=
 _keyboard_t3_l2_=
 _keyboard_t3_l3_=
