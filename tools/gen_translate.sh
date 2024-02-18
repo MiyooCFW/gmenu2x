@@ -69,6 +69,7 @@ done
 grep -o -rn . -e '>tr\["[^]]*"\]\|(tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | \
 sed 's/.*\[\(.*\)\].*/\1/' | \
 sed 's/\"\(.*\)\"/\1=/' | \
+sed ':a;N;$!ba;s/\\n/ /g' | \
 tr -d '\\' | \
 sort -f | \
 uniq > translate.txt
@@ -84,5 +85,5 @@ rm ./tools/undefines
 git restore src/*
 
 # Generate dictionary
-(grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|(tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | tr -d '\\' | sort | uniq > dictionary.txt
+(grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|(tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | sed ':a;N;$!ba;s/\\n/ /g' | tr -d '\\' | sort | uniq > dictionary.txt
 
