@@ -340,5 +340,3 @@ _keyboard_t3_l2_=
 _keyboard_t3_l3_=
 apps and GMenu2X. Are you sure?=
 the settings. Continue?=
-←=
-⎵=
