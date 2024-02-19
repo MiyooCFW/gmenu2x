@@ -45,17 +45,15 @@ gmenu2x(gmenu2x) {
 	selRow = 0;
 	keyboard.resize(MAX_KB + 1);
 
-	kb11 = "qwertyuiop-789";
-	kb12 = "asdfghjkl\\/456";
-	kb13 = "zxcvbnm_,.0123";
-	kb21 = "QWERTYUIOP_-+=";
-	kb22 = "ASDFGHJKL@'\"`";
-	kb23 = "ZXCVBNM#:;/?";
-	kb31 = "¡¿*+-/\\&<=>|";
-	kb32 = "()[]{}@#$%^~";
-	kb33 = "_\"'`.,:;!?";
-
-	string lang = gmenu2x->tr.lang();
+	kb11 = "qwertyuiop[]=789";
+	kb12 = "asdfghjkl;'\\`456";
+	kb13 = "zxcvbnm,./-=0123";
+	kb21 = "QWERTYUIOP{}&*()";
+	kb22 = "ASDFGHJKL:\"|~$%^";
+	kb23 = "ZXCVBNM<>?_+\n!@#";
+	kb31 = kb11;
+	kb32 = kb12;
+	kb33 = kb13;
 
 	kbc11 = gmenu2x->tr["_keyboard_t1_l1_"];
 	kbc12 = gmenu2x->tr["_keyboard_t1_l2_"];
@@ -140,13 +138,21 @@ bool InputDialog::exec() {
 
 	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
 
-	gmenu2x->drawButton(bg, "r", gmenu2x->tr["⎵"],
-	gmenu2x->drawButton(bg, "l", gmenu2x->tr["←"],
-	gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
-	gmenu2x->drawButton(bg, "x", gmenu2x->tr["Alt"],
-	gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
-	gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
-	))))));
+	if (gmenu2x->tr.lang() != "")
+		gmenu2x->drawButton(bg, "r", gmenu2x->tr["⎵"],
+		gmenu2x->drawButton(bg, "l", gmenu2x->tr["←"],
+		gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
+		gmenu2x->drawButton(bg, "x", gmenu2x->tr["Alt"],
+		gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
+		gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
+		))))));
+	else
+		gmenu2x->drawButton(bg, "r", gmenu2x->tr["Space"],
+		gmenu2x->drawButton(bg, "l", gmenu2x->tr["Backspace"],
+		gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
+		gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
+		gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
+		)))));
 
 	while (true) {
 		SDL_RemoveTimer(wakeUpTimer);
@@ -212,11 +218,16 @@ void InputDialog::confirm() {
 }
 
 void InputDialog::changeKeys() {
+	int maxKb = MAX_KB;
+	
+	if (kb31 == kb11 && kb32 == kb12 && kb33 == kb13) maxKb = 4;
+
 	if (!customKb) {
-		if (curKeyboard >= MAX_KB / 2) setKeyboard(MAX_KB / 2 - 2);
+		if (curKeyboard >= maxKb / 2 - 1 && maxKb == 4 || curKeyboard >= maxKb / 2 && maxKb == MAX_KB) setKeyboard(maxKb / 2 - 2);
 		else setKeyboard(curKeyboard + 1);
 	} else {
-		if (curKeyboard == MAX_KB) setKeyboard(MAX_KB - 2);
+		if (kbc31 != kb11 || kbc32 != kb12 || kbc33 != kb13) maxKb = MAX_KB;
+		if (curKeyboard == maxKb) setKeyboard(MAX_KB - 2);
 		else setKeyboard(curKeyboard + 1);
 	}
 }
@@ -230,6 +241,7 @@ void InputDialog::changeKeysCustom() {
 	else if (curKeyboard == 2) setKeyboard(2 + 3);
 	else if (curKeyboard == 3) setKeyboard(3 - 3);
 	else if (curKeyboard == 4) setKeyboard(4 - 3);
+	else if (curKeyboard == MAX_KB && kbc31 != kb11 || kbc32 != kb12 || kbc33 != kb13) setKeyboard(0);
 	else if (curKeyboard == MAX_KB) setKeyboard(MAX_KB - 3);
 }
 
