@@ -10,6 +10,7 @@ Sterowanie
 * B: Cofnij / Anuluj akcję;
 * X: Idzie w górę o jeden katalog w przeglądarce plików;
 * X-trzymaj: Wyświetl szybkie okno dialogowe Daty i Czasu;
+* X + Y: Przełącz z/na czcionkę Domyślną (Default);
 * Y: Wyświetl instrukcję/readme;
 * Y-trzymaj: Zresetuj GMenu2X;
 * L1(TB), R1(TA): Przełącz pomiędzy sekcjami w lewo/prawo albo w Górę/Dół o stronę na liście;

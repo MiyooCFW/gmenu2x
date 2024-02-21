@@ -474,7 +474,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	while (input[MODIFIER]) { // MODIFIER HOLD
 		wasActive = MODIFIER;
-
+		
 		input.update();
 
 		if (SDL_GetTicks() - button_hold > 1000) {
@@ -484,8 +484,18 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 #endif
 			wasActive = 0;
 			settings_date();
-			powerManager->doSuspend(0);
+		} else if (input[MANUAL] && skinFont == "skins/Default/font.ttf") {
+				wasActive = 0;
+				initFont(false);
+				sc.setSkin(confStr["skin"]);
+		} else if (input[MANUAL]) {
+				wasActive = 0;
+				initFont(true);
+				sc.setSkin(confStr["skin"]);			
+		} else {
+			continue;
 		}
+		break;
 	}
 
 	while (input[MANUAL]) { // MANUAL HOLD
@@ -621,8 +631,9 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 	return wallpaper;
 }
 
-void GMenu2X::initFont() {
-	string skinFont = confStr["skinFont"] == "Default" ? "skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
+void GMenu2X::initFont(bool deffont) {
+	if (deffont) skinFont = "skins/Default/font.ttf";
+	else skinFont = confStr["skinFont"] == "Default" ? "skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
 
 	delete font;
 	font = new FontHelper(skinFont, skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
@@ -1236,7 +1247,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	evalIntConf(&skinConfInt["linkCols"], 4, 1, 8);
 	evalIntConf(&skinConfInt["linkRows"], 4, 1, 8);
 
-	initFont();
+	initFont(false);
 }
 
 void GMenu2X::skinMenu() {

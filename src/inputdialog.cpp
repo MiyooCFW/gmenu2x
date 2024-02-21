@@ -228,8 +228,8 @@ bool InputDialog::exec() {
 		else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)			selCol--;
 		else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)			selCol++;
 		else if (gmenu2x->input[CONFIRM])		confirm();
-		else if (gmenu2x->input[MANUAL])		changeKeys();
-		else if (gmenu2x->input[MODIFIER])		changeKeysCustom();
+		else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER])		changeKeys();
+		else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL])		changeKeysCustom();
 		else if (gmenu2x->input[SECTION_PREV])	backspace();
 		else if (gmenu2x->input[SECTION_NEXT])	space();
 	}
