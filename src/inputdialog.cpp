@@ -138,15 +138,30 @@ bool InputDialog::exec() {
 
 	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
 
-	string altChar = gmenu2x->tr["Alt"];
 	string altBtn = "x";
+	string altChar = gmenu2x->tr["Alt"];
+	string spaceChar = gmenu2x->tr["Space"];
+	string backspaceChar = gmenu2x->tr["Backspace"];
+	string shiftChar = gmenu2x->tr["Shift"];
+	string saveChar = gmenu2x->tr["Save"];
+	string exitChar = gmenu2x->tr["Exit"];
+
 	if (gmenu2x->tr.lang() == "") {altChar = ""; altBtn = "";}
-	gmenu2x->drawButton(bg, "r", gmenu2x->tr["Space"],
-	gmenu2x->drawButton(bg, "l", gmenu2x->tr["Backspace"],
-	gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
+	if (gmenu2x->drawButton(bg, "r", spaceChar) +
+	gmenu2x->drawButton(bg, "l", backspaceChar) +
+	gmenu2x->drawButton(bg, "y", shiftChar) +
+	gmenu2x->drawButton(bg, altBtn, altChar) +
+	gmenu2x->drawButton(bg, "start", saveChar) +
+	gmenu2x->drawButton(bg, "b", exitChar) > gmenu2x->w) {spaceChar = "⎵" ; backspaceChar = "←";}
+
+	bg->box(gmenu2x->bottomBarRect, (RGBAColor){0,0,0,255});
+
+	gmenu2x->drawButton(bg, "r", spaceChar,
+	gmenu2x->drawButton(bg, "l", backspaceChar,
+	gmenu2x->drawButton(bg, "y", shiftChar,
 	gmenu2x->drawButton(bg, altBtn, altChar,
-	gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
-	gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
+	gmenu2x->drawButton(bg, "start", saveChar,
+	gmenu2x->drawButton(bg, "b", exitChar
 	))))));
 
 	while (true) {
