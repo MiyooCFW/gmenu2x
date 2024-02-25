@@ -30,7 +30,7 @@ HOMEPATH="/mnt"
 RELEASEDIR=package
 ASSETSDIR=assets
 OPKG_ASSETSDIR=opkg_assets
-LINK=$TARGET.lnk #Modify if exec binary is different - place in CWD
+LINK=$TARGET.lnk #Modify if exec binary is different - place in CWD (warning: it may be removed with CLEAN=1)
 ALIASES=aliases.txt #file with new names for selector e.g. old_title=new_title - place in CWD
 MANUAL=$TARGET.man.txt #file with usage description of target app - place in CWD
 
@@ -68,11 +68,11 @@ if (test $PACKAGE -ne 0 || test $ZIP -ne 0 || test $IPK -ne 0); then
 	cp -r $ASSETSDIR/* $RELEASEDIR/$DESTDIR/$TARGET
 	if !(test -e $LINK); then
 		touch $LINK
-		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
+		echo "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
 		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET}\/${TARGET}/" $LINK
 		test -n "$SELDIR" && echo "selectordir=${SELDIR}" >> $LINK
 		if test -e $ALIASES; then
-			echo "selectoraliases=${ALIASES}" >> $LINK
+			echo "selectoraliases=\/mnt\/${DESTDIR}\/${TARGET}\/${ALIASES}" >> $LINK
 		fi
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
@@ -96,9 +96,9 @@ if (test $PACKAGE -ne 0 || test $ZIP -ne 0 || test $IPK -ne 0); then
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
 		if !(test -d $OPKG_ASSETSDIR/CONTROL); then
 			mkdir -p $OPKG_ASSETSDIR/CONTROL
-			echo -e "#!/bin/sh\nsync; echo 'Installing new ${TARGET}..'; rm /var/lib/opkg/info/${TARGET}.list; exit 0" > $OPKG_ASSETSDIR/CONTROL/preinst
-			echo -e "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" > $OPKG_ASSETSDIR/CONTROL/postinst
-			echo -e $CONTROL > $OPKG_ASSETSDIR/CONTROL/control
+			echo "#!/bin/sh\nsync; echo 'Installing new ${TARGET}..'; rm /var/lib/opkg/info/${TARGET}.list; exit 0" > $OPKG_ASSETSDIR/CONTROL/preinst
+			echo "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" > $OPKG_ASSETSDIR/CONTROL/postinst
+			echo $CONTROL > $OPKG_ASSETSDIR/CONTROL/control
 		fi
 		chmod +x $OPKG_ASSETSDIR/CONTROL/postinst $OPKG_ASSETSDIR/CONTROL/preinst
 		cp -r $OPKG_ASSETSDIR/CONTROL $RELEASEDIR
@@ -115,7 +115,9 @@ fi
 if test $CLEAN -ne 0; then
 	# rm -f $TARGET *.o
 	rm -rf $RELEASEDIR
+	rm -rf $OPKG_ASSETSDIR
 	rm -f *.ipk
 	rm -f *.zip
+	rm -f $LINK
 fi
 #---------------------------------------------#
