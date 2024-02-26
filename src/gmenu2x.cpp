@@ -935,6 +935,7 @@ void GMenu2X::readConfig() {
 	string conf = exe_path() + "/gmenu2x.conf";
 	// Defaults *** Sync with default values in writeConfig
 	confInt["saveSelection"] = 1;
+	//confStr["HideSections"] = "";
 	confInt["dialogAutoStart"] = 1;
 	confInt["showHints"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
@@ -957,6 +958,9 @@ void GMenu2X::readConfig() {
 	confInt["cpuMin"] = CPU_MIN;
 	confInt["cpuLink"] = CPU_LINK;
 	confInt["cpuStep"] = CPU_STEP;
+
+	confInt["hideSectionApplications"] = 0;
+	confInt["hideSectionGames"] = 0;
 
 	// input.update(false);
 
@@ -996,6 +1000,9 @@ void GMenu2X::readConfig() {
 		confInt["section"] = 0;
 		confInt["link"] = 0;
 	}
+
+	hideSectionApplications = confInt["hideSectionApplications"] != 0;
+	hideSectionGames = confInt["hideSectionGames"] != 0;
 }
 
 void GMenu2X::writeConfig() {
