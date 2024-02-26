@@ -1,3 +1,5 @@
 MergedBebKaUNI font:
-
-BebasKai has been modified with `fontforge` app by merging up BebasNeue-Bold font & supplementing output with Unifont glyphs
+(1.003)
+BebasKai has been modified with `fontforge` app by merging up BebasNeue-Bold font & supplementing output with Unifont glyphs.
+(1.003 v2)
+Updated "Erase to the Left" an UNI glyph U+232b, "Bottom Square Bracket" an UNI glyph U+23B5, "Metrical Tetraseme" an UNI glyph U+23D8, "Arrow Left: an UNI glyph U+2190 - boldened to represent better "Backspace" and "Space" buttons (by MayanKoyote & Apaczer).
