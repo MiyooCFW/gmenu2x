@@ -25,6 +25,8 @@
 #define KEY_HEIGHT 20
 #define KB_TOP 90
 
+#define MAX_KB 5
+
 #include <string>
 #include "gmenu2x.h"
 
@@ -57,8 +59,12 @@ private:
 		ID_ACTION_KB_CHANGE
 	};
 
+	bool customKb = false;
+
 	int selRow, selCol;
 	string title, text, icon;
+	string kb11, kb12, kb13, kb21, kb22, kb23, kb31, kb32, kb33;
+	string kbc11, kbc12, kbc13, kbc21, kbc22, kbc23, kbc31, kbc32, kbc33;
 	int16_t curKeyboard;
 	vector<stringlist> keyboard;
 	stringlist *kb;
@@ -71,6 +77,7 @@ private:
 	void space();
 	void confirm();
 	void changeKeys();
+	void changeKeysCustom();
 
 	int drawVirtualKeyboard();
 	void setKeyboard(int);

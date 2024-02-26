@@ -55,7 +55,10 @@ The current in use messages from U.S. English language can be read from: [transl
 
 You can run `tools/gen_translate.sh` to generate above list providing argument in form of txt file with list of #define for your platform. Otherwise you can rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the time of using GMenu2X.
 
-The "\_about\_" string (in translation file) assigns corresponding text file for displaying _About_ message, e.g. "\_about\_=\_about\_en" means _about_en.txt is being used for English translation.
+### Special strings in translation file
+The "\_about\_" assigns corresponding text file for displaying _About_ message, e.g. "\_about\_=\_about\_en" means _about_en.txt is being used for English translation.
+
+The "\_keyboard_<table_number>_<line_number>\_" string will modify alternative overlay keyboard on Input Dialog (accesed with MODIFY button).
 
 ### Dictionary
 To view the full list of string messages available to translate in source see: [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt)
