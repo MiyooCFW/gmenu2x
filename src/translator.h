@@ -38,7 +38,7 @@ public:
 
 	string lang();
 	void setLang(const string &lang);
-	bool exists(const string &term);
+	// bool exists(const string &term);
 	string translate(const string &term,const char *replacestr=NULL,...);
 	string operator[](const string &term);
 };

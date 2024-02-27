@@ -80,7 +80,15 @@ void Dialog::drawDialog(Surface *s, bool top, bool bottom) {
 
 	this->bg->blit(s, 0, 0);
 
-	if (top) drawTopBar(s, title, description, icon);
+	if (top) {
+		// Replace '\n' with " "
+		string::size_type pos = 0;
+		while ((pos = title.find('\n', pos)) != std::string::npos) {
+			title.replace(pos, 1, " ");
+			pos += 1;
+		}
+		drawTopBar(s, title, description, icon);
+	}
 	if (bottom) drawBottomBar(s, buttons);
 	s->box(gmenu2x->linksRect, gmenu2x->skinConfColors[COLOR_LIST_BG]);
 }

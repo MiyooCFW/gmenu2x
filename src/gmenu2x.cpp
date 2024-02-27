@@ -293,12 +293,13 @@ void GMenu2X::main(bool autoStart) {
 
 	srand(time(0));  // Seed the rand with current time to get different number sequences
 	int randomInt = rand() % 10; // Generate a random val={0..x} to print "Hint" msg occasionally
-	//Hint messages
+	// Hint messages
+	//while (true){
 	if (confInt["showHints"] == 1) {
 		if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
 			switch (randomInt) {
 				case 0: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto reset gmenu2x.cfg"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();
@@ -326,7 +327,7 @@ void GMenu2X::main(bool autoStart) {
 				break;
 				}
 				case 4: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!? See settings"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!?\nSee settings"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();		
@@ -350,7 +351,7 @@ void GMenu2X::main(bool autoStart) {
 		} else if (!confInt["dialogAutoStart"]) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to disable AutoStart"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto disable AutoStart"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();
@@ -376,7 +377,7 @@ void GMenu2X::main(bool autoStart) {
 		mb.setBgAlpha(0);
 		mb.exec();
 	}
-
+	//SDL_Delay(1000);reinit();}
 	input.update(false);
 	if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "" || confInt["dialogAutoStart"]) {
 		if (input[MANUAL]) { // Reset GMenu2X settings
@@ -825,7 +826,7 @@ void GMenu2X::resetSettings() {
 	  }
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		MessageBox mb(this, tr["Changes will be applied to ALL"]+"\n"+tr["apps and GMenu2X. Are you sure?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["Changes will be applied\nto ALL apps and GMenu2X."] + "\n" + tr["Are you sure?"], "skin:icons/exit.png");
 		mb.setButton(CANCEL, tr["Cancel"]);
 		mb.setButton(MANUAL,  tr["Yes"]);
 		if (mb.exec() != MANUAL) return;
