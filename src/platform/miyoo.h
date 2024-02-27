@@ -314,8 +314,8 @@ public:
 			} else {
 				uint32_t total = sizeof(oc_table) / sizeof(oc_table[0]);
 
-				for (int x = 0; x < total; x++) {
-					if ((oc_table[x] >> 18) >= mhz) {
+				for (int x = total - 1; x >= 0; x--) {
+					if ((oc_table[x] >> 18) <= mhz) {
 						mem[0] = (1 << 31) | (oc_table[x] & 0x0003ffff);
 						uint32_t v = mem[0];
 						while (std::bitset<32>(v).test(28) == 0) {
