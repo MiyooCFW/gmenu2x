@@ -59,7 +59,32 @@ Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 
 		string::size_type position = line.find("=");
 		string name = trim(line.substr(0, position));
-		string value = trim(line.substr(position + 1));
+		string value, valuess;
+
+		string::size_type position_newl_all = line.find("\\n");
+
+		string::size_type pos = 0;
+		uint32_t count = 0;
+		while ((pos = line.find("\\n", pos)) != std::string::npos) {
+			++count;
+			pos += 2;
+		}
+
+		if (position_newl_all != std::string::npos) {
+			string::size_type position_newl[365];
+			for (uint32_t i = 0; i <= count; i++) {
+				// check if this is first chunk
+				if (i == 0) position_newl[i] = line.find("\\n");
+				else position_newl[i] = line.find("\\n", position_newl[i-1] + 2);
+				// genearate translation string from all chunks
+				if (i == 0 && position_newl[i] != std::string::npos) valuess += trim(line.substr(position + 1, position_newl[i] - position - 1)) + "\n";
+				else if (position_newl[i] != std::string::npos) valuess += trim(line.substr(position_newl[i-1] + 2, position_newl[i] - position_newl[i-1] - 2)) + "\n";
+				else valuess += trim(line.substr(position_newl[i-1] + 2));
+			}
+			value = valuess;
+		} else {
+			value = trim(line.substr(position + 1));
+		}
 
 		if (name == "exec") setExec(value);
 		else if (name == "title") setTitle(value);
