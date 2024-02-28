@@ -29,7 +29,7 @@ OBJDIR = /tmp/gmenu2x/$(PLATFORM)
 DISTDIR = dist/$(PLATFORM)
 TARGET = $(DISTDIR)/gmenu2x
 HOMEPATH = /mnt
-DEFSKIN = FontiGrid
+DEFSKIN = Default
 
 SOURCES := $(wildcard src/*.cpp)
 OBJS := $(patsubst src/%.cpp, $(OBJDIR)/%.o, $(SOURCES))

@@ -113,6 +113,7 @@ Fonts under OFL license has been expanded with GNU_Unifont.ttf using `font_merge
 * B: Back / Cancel action;
 * X: Goes up one directory in file browser;
 * X-hold: Bring up Date&Time quick dialog;
+* X + Y: Switch from/to Default font;
 * Y: Bring up the manual/readme;
 * Y-hold: Restart the GMenu2X;
 * L1(TB), R1(TA): Switch between sections left/right or PageUp/PageDown on lists;
