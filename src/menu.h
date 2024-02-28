@@ -50,6 +50,7 @@ private:
 	uint32_t section_changed, icon_changed;
 
 	Surface *iconSD, *iconManual, *iconCPU, *iconMenu, *iconL, *iconR, *iconBGoff, *iconBGon;
+	Surface *sectionBackdrop, *sectionBackdropGeneric;
 	Surface *iconBrightness[6], *iconBattery[7], *iconVolume[3];
 
 	int8_t brightnessIcon = 5;

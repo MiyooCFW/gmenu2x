@@ -165,7 +165,7 @@ uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
 	return interval;
 }
 
-class GMenuNX : public GMenu2X {
+class GMenu2X_platform : public GMenu2X {
 private:
 	void hwDeinit() {
 		if (memdev > 0) {

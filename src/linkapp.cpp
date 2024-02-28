@@ -59,7 +59,32 @@ Link(gmenu2x, MakeDelegate(this, &LinkApp::run)), file(file) {
 
 		string::size_type position = line.find("=");
 		string name = trim(line.substr(0, position));
-		string value = trim(line.substr(position + 1));
+		string value, valuess;
+
+		string::size_type position_newl_all = line.find("\\n");
+
+		string::size_type pos = 0;
+		uint32_t count = 0;
+		while ((pos = line.find("\\n", pos)) != std::string::npos) {
+			++count;
+			pos += 2;
+		}
+
+		if (position_newl_all != std::string::npos) {
+			string::size_type position_newl[365];
+			for (uint32_t i = 0; i <= count; i++) {
+				// check if this is first chunk
+				if (i == 0) position_newl[i] = line.find("\\n");
+				else position_newl[i] = line.find("\\n", position_newl[i-1] + 2);
+				// genearate translation string from all chunks
+				if (i == 0 && position_newl[i] != std::string::npos) valuess += trim(line.substr(position + 1, position_newl[i] - position - 1)) + "\n";
+				else if (position_newl[i] != std::string::npos) valuess += trim(line.substr(position_newl[i-1] + 2, position_newl[i] - position_newl[i-1] - 2)) + "\n";
+				else valuess += trim(line.substr(position_newl[i-1] + 2));
+			}
+			value = valuess;
+		} else {
+			value = trim(line.substr(position + 1));
+		}
 
 		if (name == "exec") setExec(value);
 		else if (name == "title") setTitle(value);
@@ -137,31 +162,37 @@ const string LinkApp::searchBackdrop() {
 	pos = linktitle.rfind(".");
 	if (pos != string::npos) linktitle = linktitle.substr(0, pos);
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + sublinktitle + ".png");
-	if (!backdropPath.empty()) return backdropPath;
+	if (gmenu2x->skinConfInt["searchBackdrops"] != SBAK_EXEC) {
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + sublinktitle + ".png");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + sublinktitle + ".jpg");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + sublinktitle + ".jpg");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".png");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".png");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".jpg");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + linktitle + ".jpg");
+		if (!backdropPath.empty()) return backdropPath;
+	}
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + exectitle + ".png");
-	if (!backdropPath.empty()) return backdropPath;
+	if (gmenu2x->skinConfInt["searchBackdrops"] != SBAK_LINK) {
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + exectitle + ".png");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + exectitle + ".jpg");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + exectitle + ".jpg");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + dirtitle + ".png");
-	if (!backdropPath.empty()) return backdropPath;
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + dirtitle + ".png");
+		if (!backdropPath.empty()) return backdropPath;
 
-	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + dirtitle + ".jpg");
-	if (!backdropPath.empty()) return backdropPath;
-
+		backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/" + dirtitle + ".jpg");
+		if (!backdropPath.empty()) return backdropPath;
+	}
 	backdropPath = dir_name(exec) + "/backdrop.png";
+	if (file_exists(backdropPath)) return backdropPath;
+	
+	backdropPath = gmenu2x->sc.getSkinFilePath("backdrops/generic.png");
 	if (file_exists(backdropPath)) return backdropPath;
 
 	return "";
@@ -462,7 +493,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	if (gmenu2x->confInt["saveAutoStart"]) {
 		string prevCmd = command.c_str();
 		string tmppath = exe_path() + "/gmenu2x.conf";
-		string writeDateCmd = "; sed -i \"1s/.*/datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"/\" ";
+		string writeDateCmd = "; sed -i \"/datetime=/c\\datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"\" ";
 #if defined(TARGET_LINUX)
 		string exitCmd = "; exit" ;
 #else

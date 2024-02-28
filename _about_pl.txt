@@ -1,0 +1,33 @@
+GMenu2X jest projektowany pod kątem MiyooCFW i publikowany na licencji GNU GPL v2. 
+To rozgałęznie jest oparte na kodzie źródłowym GMenuNX autorstwa pingflood'a.
+Kod źródłowy obecnego pliku binarnego: https://github.com/MiyooCFW/gmenu2x
+
+Sterowanie
+----
+(w okrągłych nawiasach specyficzne dla Bittboy)
+
+* A: Akceptuj / Uruchom zaznaczony skrót / Potwierdź akcję;
+* B: Cofnij / Anuluj akcję;
+* X: Idzie w górę o jeden katalog w przeglądarce plików;
+* X-trzymaj: Wyświetl szybkie okno dialogowe Daty i Czasu;
+* X + Y: Przełącz z/na czcionkę Domyślną (Default);
+* Y: Wyświetl instrukcję/readme;
+* Y-trzymaj: Zresetuj GMenu2X;
+* L1(TB), R1(TA): Przełącz pomiędzy sekcjami w lewo/prawo albo w Górę/Dół o stronę na liście;
+* L2, R2: Szybkie Pomniejszenie/Powiększenie zaznaczonej wartości;
+* START: Ustawienia GMenu2X;
+* START-trzymaj:  Przełącz tryb Uśpienia;
+* SELECT: Wyświetl menu kontekstowe;
+* SELECT-trzymaj: Dezaktywuj sygnał wyjściowy TV;
+* SELECT + L1(TB): Sterowanie Głośnością;
+* SELECT + R1(TA): Zmień jasność ekranu;
+* SELECT + START: Zrób zrzut ekranu;
+* RESET: Wyświetl okno dialogowe Zamykania systemu;
+
+W ustawieniach:
+
+* A, LEWO, PRAWO: Akceptuj, zaznacz albo przełącz ustawienie;
+* B: Cofnij albo Anuluj edycję lub powróć;
+* START: Zapisz zmiany i powróć;
+* SELECT: Wyczuść albo ustaw domyślną wartość.
+

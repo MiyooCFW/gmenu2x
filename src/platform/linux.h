@@ -61,7 +61,7 @@ uint8_t getVolumeMode(uint8_t vol) {
 	return VOLUME_MODE_NORMAL;
 }
 
-class GMenuNX : public GMenu2X {
+class GMenu2X_platform : public GMenu2X {
 private:
 	void hwInit() {
 		CPU_MENU = 528;

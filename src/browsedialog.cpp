@@ -163,27 +163,33 @@ bool BrowseDialog::exec() {
 
 		SDL_RemoveTimer(alphanum_timer); alphanum_timer = NULL;
 
-		if (gmenu2x->input[UP]) {
+		if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP) {
 			selected--;
-		} else if (gmenu2x->input[DOWN]) {
+			preview = getPreview(selected);
+		} else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) {
 			selected++;
-		} else if (gmenu2x->input[LEFT]) {
+			preview = getPreview(selected);
+		} else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) {
 			selected -= numRows;
 			if (selected < 0) selected = 0;
-		} else if (gmenu2x->input[RIGHT]) {
+			preview = getPreview(selected);
+		} else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) {
 			selected += numRows;
 			if (selected >= this->size()) selected = this->size() - 1;
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[PAGEDOWN]) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			int cur = toupper(getFileName(selected).at(0));
 			while ((selected < this->size() - 1) && ++selected && cur == toupper(getFileName(selected).at(0))) {
 			}
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[PAGEUP]) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			int cur = toupper(getFileName(selected).at(0));
 			while (selected > 0 && selected-- && cur == toupper(getFileName(selected).at(0))) {
 			}
-		} else if (showDirectories && allowDirUp && (gmenu2x->input[MODIFIER] || (gmenu2x->input[CONFIRM] && getFile(selected) == ".."))) { /*Directory Up */
+			preview = getPreview(selected);
+		} else if (showDirectories && allowDirUp && (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL] || (gmenu2x->input[CONFIRM] && getFile(selected) == ".."))) { /*Directory Up */
 			selected = 0;
 				preview = "";
 			if (browse_history.size() > 0) {
@@ -205,14 +211,12 @@ bool BrowseDialog::exec() {
 			if (!((gmenu2x->confStr["previewMode"] != "Backdrop") && !(preview.empty() || preview == "#")))
 				return false; // close only if preview is empty.
 			preview = "";
-		} else if (gmenu2x->input[MANUAL]) {
+		} else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER]) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			selected = (rand() % fileCount()) + dirCount();
+			preview = getPreview(selected);
 		} else if (gmenu2x->input[MENU]) {
 			contextMenu();
-			preview = getPreview(selected);
-		}
-	if (gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[PAGEUP] || gmenu2x->input[PAGEDOWN] || gmenu2x->input[MANUAL]) {
 			preview = getPreview(selected);
 		}
 	}

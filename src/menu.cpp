@@ -537,9 +537,15 @@ void Menu::drawList() {
 			icon->softStretch(32, linkHeight - 4, SScaleFit);
 		}
 
-		icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+		if (gmenu2x->skinConfInt["showLinkIcon"])
+			icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
+#if !defined(CHECK_TRANSLATION)
 		gmenu2x->s->write(gmenu2x->titlefont, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
 		gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getDescription()], ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
+#else
+		gmenu2x->s->write(gmenu2x->titlefont, sectionLinks()->at(i)->getTitle(), ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
+		gmenu2x->s->write(gmenu2x->font, sectionLinks()->at(i)->getDescription(), ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
+#endif
 	}
 
 	if (sectionLinks()->size() > linkRows) {
@@ -574,20 +580,20 @@ void Menu::drawGrid() {
 			} else if (iconBGoff != NULL && icon->width() <= iconBGoff->width() && icon->height() <= iconBGoff->height()) {
 				iconBGoff->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 			}
+			if (gmenu2x->skinConfInt["showLinkIcon"])
+				icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 
-			icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
-
-			if (gmenu2x->skinConfInt["linkLabel"]) {
+			if (gmenu2x->skinConfInt["linkLabel"] || i == (uint32_t)selLinkIndex() && gmenu2x->confInt["skinBackdrops"] && (gmenu2x->currBackdrop == gmenu2x->sc.getSkinFilePath("backdrops/generic.png", false) /*|| gmenu2x->currBackdrop == gmenu2x->confStr["wallpaper"]*/)) {
 				SDL_Rect labelRect;
 				labelRect.x = ix + 2 + linkWidth/2;
 				labelRect.y = iy + (linkHeight + min(linkHeight, icon->height()))/2;
 				labelRect.w = linkWidth - iconPadding;
 				labelRect.h = linkHeight - iconPadding;
-				#if !defined(CHECK_TRANSLATION)
+#if !defined(CHECK_TRANSLATION)
 				gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], labelRect, HAlignCenter | VAlignMiddle);
-				#else
+#else
 				gmenu2x->s->write(gmenu2x->font, sectionLinks()->at(i)->getTitle(), labelRect, HAlignCenter | VAlignMiddle);
-				#endif
+#endif
 			}
 		}
 	}
@@ -657,7 +663,11 @@ void Menu::drawStatusBar() {
 		x = iconPadding;
 		iconManual->blit(gmenu2x->s, x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle);
 		x += iconWidth + iconPadding;
-		gmenu2x->s->write(gmenu2x->font, iconDescription.c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+#if !defined(CHECK_TRANSLATION)
+		gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[iconDescription].c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+#else
+		gmenu2x->s->write(gmenu2x->font, gmenu2x->iconDescription.c_str(), x, gmenu2x->bottomBarRect.y + gmenu2x->bottomBarRect.h / 2, VAlignMiddle, gmenu2x->skinConfColors[COLOR_FONT_ALT], gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
+#endif
 	} else {
 		SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;
 
@@ -826,6 +836,21 @@ void Menu::exec() {
 		}
 		gmenu2x->setBackground(gmenu2x->s, gmenu2x->currBackdrop);
 
+		if (gmenu2x->skinConfInt["sectionBackdrops"]) {
+			// string sectionBackdrop = gmenu2x->sc.getSkinFilePath("backdrops/" + selSection() + ".png", false);
+			// string sectionBackdropGeneric = gmenu2x->sc.getSkinFilePath("backdrops/generic-section.png", false);
+			sectionBackdrop = gmenu2x->sc["skins/" + gmenu2x->confStr["skin"] + "/backdrops/" + selSection() + ".png"];
+			sectionBackdropGeneric = gmenu2x->sc["skins/"+ gmenu2x->confStr["skin"] + "/backdrops/generic-section.png"];
+			if (sectionBackdrop != NULL) {
+				sectionBackdrop->blit(gmenu2x->s, 0, 0, 0, 50);
+				// gmenu2x->currBackdrop = sectionBackdrop;
+			} else if (sectionBackdropGeneric != NULL) {
+				sectionBackdropGeneric->blit(gmenu2x->s, 0, 0, 0, 50);
+				// gmenu2x->currBackdrop = sectionBackdropGeneric;
+			}
+		}
+		// gmenu2x->setBackground(gmenu2x->s, gmenu2x->currBackdrop);
+
 		// SECTIONS
 		if (gmenu2x->skinConfInt["sectionBar"]) {
 			drawSectionBar();
@@ -912,19 +937,19 @@ void Menu::exec() {
 			allyRead = false;
 		}
 		// LINK NAVIGATION
-		else if (gmenu2x->input[LEFT]  && linkCols == 1 && linkRows > 1) pageUp();
-		else if (gmenu2x->input[RIGHT] && linkCols == 1 && linkRows > 1) pageDown();
-		else if (gmenu2x->input[LEFT])	linkLeft();
-		else if (gmenu2x->input[RIGHT])	linkRight();
-		else if (gmenu2x->input[UP])	linkUp();
-		else if (gmenu2x->input[DOWN])	linkDown();
+		else if ((gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) && linkCols == 1 && linkRows > 1) pageUp();
+		else if ((gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) && linkCols == 1 && linkRows > 1) pageDown();
+		else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)	linkLeft();
+		else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)	linkRight();
+		else if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP)	linkUp();
+		else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN)	linkDown();
 
 		// SECTION
 		else if (gmenu2x->input[SECTION_PREV]) decSectionIndex();
 		else if (gmenu2x->input[SECTION_NEXT]) incSectionIndex();
 
 		// SELLINKAPP SELECTED
-		else if (gmenu2x->input[MANUAL] && selLinkApp() != NULL && !selLinkApp()->getManualPath().empty()) {
+		else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER] && selLinkApp() != NULL && !selLinkApp()->getManualPath().empty()) {
 			gmenu2x->showManual();
 			allyRead = false;
 		}
@@ -967,7 +992,8 @@ void Menu::exec() {
 
 		if (
 			!iconDescription.empty() &&
-			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT])
+			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT]
+			|| gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT || gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN)
 		) {
 			icon_changed = SDL_GetTicks();
 			SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;

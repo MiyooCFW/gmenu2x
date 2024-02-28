@@ -75,10 +75,10 @@ gmenu2x(gmenu2x) {
 			if (gmenu2x->inputCommonActions(inputAction)) continue;
 
 			if (gmenu2x->input[MENU] || gmenu2x->input[CANCEL]) return;
-			else if (gmenu2x->input[UP]) selected--;
-			else if (gmenu2x->input[DOWN]) selected++;
-			else if (gmenu2x->input[LEFT] || gmenu2x->input[PAGEUP]) selected = 0;
-			else if (gmenu2x->input[RIGHT] || gmenu2x->input[PAGEDOWN]) selected = (int)options.size() - 1;
+			else if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP) selected--;
+			else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) selected++;
+			else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input[PAGEUP]) selected = 0;
+			else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT || gmenu2x->input[PAGEDOWN]) selected = (int)options.size() - 1;
 			else if (gmenu2x->input[SETTINGS] || gmenu2x->input[CONFIRM]) {
 				options[selected].action();
 				return;
@@ -137,6 +137,10 @@ void MessageBox::setButton(int action, const string &btn) {
 }
 
 void MessageBox::setAutoHide(uint32_t autohide) {
+	if (autohide == 0)  {
+		loophide = true;
+		autohide = 1;
+	}
 	this->autohide = autohide;
 }
 
@@ -225,8 +229,12 @@ int MessageBox::exec() {
 	} while (fadeAlpha < bgalpha);
 
 	if (this->autohide) {
-		SDL_Delay(this->autohide);
 		// gmenu2x->powerManager->resetSuspendTimer(); // prevent immediate suspend
+		if (loophide) {
+			while (!(gmenu2x->input[CONFIRM] || gmenu2x->input[CANCEL] || gmenu2x->input[SETTINGS] || gmenu2x->input[MENU]))
+				gmenu2x->input.update();
+		}
+		SDL_Delay(this->autohide);
 		return -1;
 	}
 

@@ -62,12 +62,12 @@ MenuSettingMultiInt::MenuSettingMultiInt(GMenu2X *gmenu2x, const string &title, 
 
 void MenuSettingMultiInt::draw(int y) {
 	MenuSetting::draw(y);
-	gmenu2x->s->write( gmenu2x->font, strvalue, 155, y+gmenu2x->font->getHalfHeight(), VAlignMiddle );
+	gmenu2x->s->write( gmenu2x->font, strvalue, 180, y+gmenu2x->font->getHalfHeight(), VAlignMiddle );
 }
 
 uint32_t MenuSettingMultiInt::manageInput() {
-	if ( gmenu2x->input[LEFT ] ) dec();
-	if ( gmenu2x->input[RIGHT] ) inc();
+	if ( gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT ) dec();
+	if ( gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT ) inc();
 	if ( gmenu2x->input[DEC] ) dec2x();
 	if ( gmenu2x->input[INC] ) inc2x();
 	if ( gmenu2x->input[MENU] ) setDefault();

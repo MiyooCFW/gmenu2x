@@ -129,6 +129,7 @@ string VOICE_TTS = "en"; //default for espeak
 #define TTS_ENGINE ":"
 #endif
 
+
 #include "menu.h"
 
 // Note: Keep this in sync with the enum!
@@ -168,7 +169,7 @@ static void quit_all(int err) {
 }
 
 int main(int argc, char * argv[]) {
-	INFO("Starting GMenuNX...");
+	INFO("Starting GMenu2X...");
 
 	signal(SIGINT,  &quit_all);
 	signal(SIGSEGV, &quit_all);
@@ -191,7 +192,7 @@ int main(int argc, char * argv[]) {
 
 	usleep(1000);
 
-	GMenu2X::instance = new GMenuNX();
+	GMenu2X::instance = new GMenu2X_platform();
 	GMenu2X::instance->main(autoStart);
 
 	return 0;
@@ -328,7 +329,8 @@ void GMenu2X::main(bool autoStart) {
 
 	srand(time(0));  // Seed the rand with current time to get different number sequences
 	int randomInt = rand() % 10; // Generate a random val={0..x} to print "Hint" msg occasionally
-	//Hint messages
+	// Hint messages
+	//while (true){
 	if (confInt["showHints"] == 1) {
 		if (confInt["enableTTS"] == 1 && (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "")) {
 			switch (randomInt) {
@@ -353,7 +355,7 @@ void GMenu2X::main(bool autoStart) {
 		} else if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
 			switch (randomInt) {
 				case 0: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto reset gmenu2x.cfg"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();
@@ -381,7 +383,7 @@ void GMenu2X::main(bool autoStart) {
 				break;
 				}
 				case 4: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!? See settings"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!?\nSee settings"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();		
@@ -405,7 +407,7 @@ void GMenu2X::main(bool autoStart) {
 		} else if (!confInt["dialogAutoStart"]) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly to reset gmenu2x.cfg"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto disable AutoStart"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();
@@ -431,12 +433,19 @@ void GMenu2X::main(bool autoStart) {
 		mb.setBgAlpha(0);
 		mb.exec();
 	}
-
+	//SDL_Delay(1000);reinit();}
 	input.update(false);
-	if (input[MANUAL]){ //Reset GMenu2X settings
-		string tmppath = exe_path() + "/gmenu2x.conf";
-		unlink(tmppath.c_str());
-		reinit();
+	if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "" || confInt["dialogAutoStart"]) {
+		if (input[MANUAL]) { // Reset GMenu2X settings
+			string tmppath = exe_path() + "/gmenu2x.conf";
+			unlink(tmppath.c_str());
+			reinit();
+		}
+	} else {
+		if (input[MANUAL]) { // Reset AutoStart settings
+			confStr["lastDirectory"] = "";
+			reinit_save();
+		}
 	}
 
 	string readMenu = tr["Welcome to GMenu"];
@@ -465,8 +474,8 @@ void GMenu2X::main(bool autoStart) {
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
 		string prevCmd = confStr["lastCommand"].c_str();
+		string writeDateCmd = "; sed -i \"/datetime=/c\\datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"\" ";
 		string tmppath = exe_path() + "/gmenu2x.conf";
-		string writeDateCmd = "; sed -i \"1s/.*/datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"/\" ";
 #if defined(TARGET_LINUX)
 		string exitCmd = "; exit" ;
 #else
@@ -524,7 +533,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	while (input[MODIFIER]) { // MODIFIER HOLD
 		wasActive = MODIFIER;
-
+		
 		input.update();
 
 		if (SDL_GetTicks() - button_hold > 1000) {
@@ -534,8 +543,18 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 #endif
 			wasActive = 0;
 			settings_date();
-			powerManager->doSuspend(0);
+		} else if (input[MANUAL] && skinFont == "skins/Default/font.ttf") {
+				wasActive = 0;
+				initFont(false);
+				sc.setSkin(confStr["skin"]);
+		} else if (input[MANUAL]) {
+				wasActive = 0;
+				initFont(true);
+				sc.setSkin(confStr["skin"]);			
+		} else {
+			continue;
 		}
+		break;
 	}
 
 	while (input[MANUAL]) { // MANUAL HOLD
@@ -671,8 +690,9 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 	return wallpaper;
 }
 
-void GMenu2X::initFont() {
-	string skinFont = confStr["skinFont"] == "Default" ? "skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
+void GMenu2X::initFont(bool deffont) {
+	if (deffont) skinFont = "skins/Default/font.ttf";
+	else skinFont = confStr["skinFont"] == "Default" ? "skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
 
 	delete font;
 	font = new FontHelper(skinFont, skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
@@ -721,7 +741,7 @@ void GMenu2X::initMenu() {
 				menu->addActionLink(i, tr["Log Viewer"], MakeDelegate(this, &GMenu2X::viewLog), tr["Displays last launched program's output"], "ebook.png");
 			}
 
-			menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenuNX"], "about.png");
+			menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenu2X"], "about.png");
 			menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
 			menu->addActionLink(i, tr["CPU Settings"], MakeDelegate(this, &GMenu2X::cpuSettings), tr["Config CPU clock"], "cpu.png");
 		}
@@ -777,7 +797,7 @@ void GMenu2X::settings() {
 	SettingsDialog sd(this, ts, tr["Settings"], "skin:icons/configure.png");
 	sd.allowCancel = true;
 
-	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenuNX"], &lang, &fl_tr.getFiles()));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Language"], tr["Set the language used by GMenu2X"], &lang, &fl_tr.getFiles()));
 
 	string prevDateTime = confStr["datetime"] = get_date_time();
 	sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date & time"], &confStr["datetime"]));
@@ -823,6 +843,7 @@ void GMenu2X::settings() {
 	}
 
 	setBacklight(confInt["backlight"], false);
+	setVolume(confInt["globalVolume"], false);
 
 #if defined(TARGET_GP2X)
 	if (prevgamma != confInt["gamma"]) {
@@ -860,7 +881,7 @@ void GMenu2X::resetSettings() {
 
 	SettingsDialog sd(this, ts, tr["Reset settings"], "skin:icons/configure.png");
 	sd.allowCancel_link_nomb = true;
-	sd.addSetting(new MenuSettingBool(this, tr["GMenuNX"], tr["Reset GMenuNX settings"], &reset_gmenu));
+	sd.addSetting(new MenuSettingBool(this, tr["GMenu2X"], tr["Reset GMenu2X settings"], &reset_gmenu));
 	sd.addSetting(new MenuSettingBool(this, tr["Default skin"], tr["Reset Default skin settings back to default"], &reset_skin));
 	sd.addSetting(new MenuSettingBool(this, tr["Icons"], tr["Reset link's icon back to default"], &reset_icon));
 	sd.addSetting(new MenuSettingBool(this, tr["Manuals"], tr["Unset link's manual"], &reset_manual));
@@ -876,7 +897,7 @@ void GMenu2X::resetSettings() {
 	  }
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		MessageBox mb(this, tr["Changes will be applied to ALL"]+"\n"+tr["apps and GMenuNX. Are you sure?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["Changes will be applied\nto ALL apps and GMenu2X."] + "\n" + tr["Are you sure?"], "skin:icons/exit.png");
 		mb.setButton(CANCEL, tr["Cancel"]);
 		mb.setButton(MANUAL,  tr["Yes"]);
 		if (mb.exec() != MANUAL) return;
@@ -926,7 +947,7 @@ sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the defa
 sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], 864, 720, 1248, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], 192, 48, 720, 48));
 sd.addSetting(new MenuSettingInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], 720, 480, 1248, 48));
-sd.addSetting(new MenuSettingInt(this, tr["Step for clock values"], tr["Set Step default CPU frequency"], &confInt["cpuStep"], 48, 48, 240, 48));
+sd.addSetting(new MenuSettingInt(this, tr["Step for clock values"], tr["Set default step for CPU frequency"], &confInt["cpuStep"], 48, 48, 240, 48));
 #endif
 if (sd.exec() && sd.edited() && sd.save) {
 		setCPU(confInt["cpuMenu"]);
@@ -1109,8 +1130,11 @@ void GMenu2X::writeConfig() {
 				curr->first == "linkCols" ||
 				curr->first == "linkRows" ||
 				curr->first == "sectionBar" ||
+				curr->first == "searchBackdrops" ||
+				curr->first == "sectionBackdrops" ||
 				curr->first == "sectionLabel" ||
 				curr->first == "linkLabel" ||
+				curr->first == "showLinkIcon" ||
 
 				// defaults
 				(curr->first == "skinBackdrops" && curr->second == 1) ||
@@ -1167,7 +1191,10 @@ void GMenu2X::writeSkinConfig() {
 			(curr->first == "linkRows" && curr->second == 4) ||
 			(curr->first == "sectionBar" && curr->second == SB_CLASSIC) ||
 			(curr->first == "sectionLabel" && curr->second == 1) ||
+			(curr->first == "searchBackdrops" && curr->second == SBAK_OFF) ||
+			(curr->first == "sectionBackdrops" && curr->second == 0) ||
 			(curr->first == "linkLabel" && curr->second == 1) ||
+			(curr->first == "showLinkIcon" && curr->second == 1) ||
 			(curr->first == "showDialogIcon" && curr->second == 1) ||
 
 			curr->first.empty()
@@ -1200,7 +1227,10 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	// Defaults *** Sync with default values in writeConfig
 	skinConfInt["sectionBar"] = SB_CLASSIC;
 	skinConfInt["sectionLabel"] = 1;
+	skinConfInt["searchBackdrops"] = SBAK_OFF;
+	skinConfInt["sectionBackdrops"] = 0;
 	skinConfInt["linkLabel"] = 1;
+	skinConfInt["showLinkIcon"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
 
 	// clear collection and change the skin path
@@ -1277,13 +1307,13 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	evalIntConf(&skinConfInt["sectionBarSize"], 40, 1, this->w);
 	evalIntConf(&skinConfInt["bottomBarHeight"], 16, 1, this->h);
 	evalIntConf(&skinConfInt["previewWidth"], 128, 1, this->w);
-	evalIntConf(&skinConfInt["fontSize"], 12, 6, 60);
+	evalIntConf(&skinConfInt["fontSize"], 14, 6, 60);
 	evalIntConf(&skinConfInt["fontSizeTitle"], 20, 1, 60);
 	evalIntConf(&skinConfInt["sectionBar"], SB_CLASSIC, 0, 5);
 	evalIntConf(&skinConfInt["linkCols"], 4, 1, 8);
 	evalIntConf(&skinConfInt["linkRows"], 4, 1, 8);
 
-	initFont();
+	initFont(false);
 }
 
 void GMenu2X::skinMenu() {
@@ -1328,6 +1358,13 @@ void GMenu2X::skinMenu() {
 	int bdPrev = confInt["skinBackdrops"];
 	string skinBackdrops = bdStr[confInt["skinBackdrops"]];
 
+	vector<string> sbdStr;
+	sbdStr.push_back("OFF");
+	sbdStr.push_back("Link name only");
+	sbdStr.push_back("Exec name/path only");
+	int sbdPrev = skinConfInt["searchBackdrops"];
+	string searchBackdrops = sbdStr[skinConfInt["searchBackdrops"]];
+
 	vector<string> skinFont;
 	skinFont.push_back("Custom");
 	skinFont.push_back("Default");
@@ -1349,6 +1386,7 @@ void GMenu2X::skinMenu() {
 
 			setSkin(confStr["skin"], false);
 			sectionBar = sbStr[skinConfInt["sectionBar"]];
+			searchBackdrops = sbdStr[skinConfInt["searchBackdrops"]];
 
 			confStr["tmp_wallpaper"] = (confStr["tmp_wallpaper"].empty() || skinConfStr["wallpaper"].empty()) ? base_name(confStr["wallpaper"]) : skinConfStr["wallpaper"];
 			wallpapers.clear();
@@ -1380,20 +1418,23 @@ void GMenu2X::skinMenu() {
 		SettingsDialog sd(this, ts, tr["Skin"], "skin:icons/skin.png");
 		sd.selected = selected;
 		sd.allowCancel_nomb = true;
-		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenuNX"], &confStr["skin"], &fl_sk.getDirectories(), MakeDelegate(this, &GMenu2X::onChangeSkin)));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories(), MakeDelegate(this, &GMenu2X::onChangeSkin)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], &confStr["tmp_wallpaper"], &wallpapers, MakeDelegate(this, &GMenu2X::onChangeSkin), MakeDelegate(this, &GMenu2X::changeWallpaper)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Background"], tr["How to scale wallpaper, backdrops and game art"], &confStr["bgscale"], &bgScale));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Preview mode"], tr["How to show image preview and game art"], &confStr["previewMode"], &previewMode));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin colors"], tr["Customize skin colors"], &tmp, &wpLabel, MakeDelegate(this, &GMenu2X::onChangeSkin), MakeDelegate(this, &GMenu2X::skinColors)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin backdrops"], tr["Automatic load backdrops from skin pack"], &skinBackdrops, &bdStr));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Search backdrops"], tr["Narrow backdrops searching"], &searchBackdrops, &sbdStr));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Font face"], tr["Override the skin font face"], &confStr["skinFont"], &skinFont, MakeDelegate(this, &GMenu2X::onChangeSkin)));
 		sd.addSetting(new MenuSettingInt(this, tr["Font size"], tr["Size of text font"], &skinConfInt["fontSize"], 12, 6, 60));
 		sd.addSetting(new MenuSettingInt(this, tr["Title font size"], tr["Size of title's text font"], &skinConfInt["fontSizeTitle"], 20, 1, 60));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Section bar layout"], tr["Set the layout and position of the Section Bar"], &sectionBar, &sbStr));
 		sd.addSetting(new MenuSettingInt(this, tr["Section bar size"], tr["Size of section and top bar"], &skinConfInt["sectionBarSize"], 40, 1, this->w));
+		sd.addSetting(new MenuSettingBool(this, tr["Section backdrops"], tr["Load section backdrop from skin pack"], &skinConfInt["sectionBackdrops"]));
 		sd.addSetting(new MenuSettingInt(this, tr["Bottom bar height"], tr["Height of bottom bar"], &skinConfInt["bottomBarHeight"], 16, 1, this->h));
 		sd.addSetting(new MenuSettingInt(this, tr["Menu columns"], tr["Number of columns of links in main menu"], &skinConfInt["linkCols"], 4, 1, 8));
 		sd.addSetting(new MenuSettingInt(this, tr["Menu rows"], tr["Number of rows of links in main menu"], &skinConfInt["linkRows"], 4, 1, 8));
+		sd.addSetting(new MenuSettingBool(this, tr["Show link icon"], tr["Show link icon in main menu"], &skinConfInt["showLinkIcon"]));
 		sd.addSetting(new MenuSettingBool(this, tr["Link label"], tr["Show link labels in main menu"], &skinConfInt["linkLabel"]));
 		sd.addSetting(new MenuSettingBool(this, tr["Section label"], tr["Show the active section label in main menu"], &skinConfInt["sectionLabel"]));
 		sd.exec();
@@ -1414,6 +1455,10 @@ void GMenu2X::skinMenu() {
 	else if (sectionBar == "Left") skinConfInt["sectionBar"] = SB_LEFT;
 	else skinConfInt["sectionBar"] = SB_CLASSIC;
 
+	if (searchBackdrops == "OFF") skinConfInt["searchBackdrops"] = SBAK_OFF;
+	else if (searchBackdrops == "Link name only") skinConfInt["searchBackdrops"] = SBAK_LINK;
+	else if (searchBackdrops == "Exec name/path only") skinConfInt["searchBackdrops"] = SBAK_EXEC;
+
 	confStr["tmp_wallpaper"] = "";
 	confStr["wallpaper"] = wpPath;
 	writeSkinConfig();
@@ -1421,6 +1466,7 @@ void GMenu2X::skinMenu() {
 
 	if (
 		bdPrev != confInt["skinBackdrops"] ||
+		sbdPrev != skinConfInt["searchBackdrops"] ||
 		initSkin != confStr["skin"] ||
 		bgScalePrev != confStr["bgscale"] ||
 		linkColsPrev != skinConfInt["linkCols"] ||
@@ -1480,7 +1526,7 @@ void GMenu2X::about() {
 	TextDialog td(this, "GMenu2X", tr["Build"] + ": " + __DATE__ + " " + __TIME__, "skin:icons/about.png");
 #endif
 	// td.appendText(temp);
-	td.appendFile("about.txt");
+	td.appendFile(tr["_about_"] + ".txt");
 	td.exec();
 }
 
@@ -1695,7 +1741,7 @@ bool GMenu2X::saveScreenshot(string path) {
 
 void GMenu2X::reinit(bool showDialog) {
 	if (showDialog) {
-		MessageBox mb(this, tr["GMenuNX will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["GMenu2X will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
 		mb.setButton(CONFIRM, tr["Restart"]);
 		mb.setButton(CANCEL,  tr["Cancel"]);
 		if (mb.exec() == CANCEL) return;
@@ -2165,9 +2211,9 @@ int GMenu2X::setVolume(int val, bool popup) {
 
 			if (input[SETTINGS] || input[CONFIRM] || input[CANCEL]) {
 				break;
-			} else if (input[LEFT] || input[DEC] || input[VOLDOWN] || input[SECTION_PREV]) {
+			} else if (input[LEFT] || input.hatEvent(DLEFT) == DLEFT || input[DEC] || input[VOLDOWN] || input[SECTION_PREV]) {
 				val = max(0, val - volumeStep);
-			} else if (input[RIGHT] || input[INC] || input[VOLUP] || input[SECTION_NEXT]) {
+			} else if (input[RIGHT] || input.hatEvent(DRIGHT) == DRIGHT || input[INC] || input[VOLUP] || input[SECTION_NEXT]) {
 				val = min(90, val + volumeStep);
 			}
 
@@ -2214,9 +2260,9 @@ int GMenu2X::setBacklight(int val, bool popup) {
 
 			if (input[SETTINGS] || input[CONFIRM] || input[CANCEL]) {
 				break;
-			} else if (input[LEFT] || input[DEC] || input[SECTION_PREV]) {
+			} else if (input[LEFT] || input.hatEvent(DLEFT) == DLEFT || input[DEC] || input[SECTION_PREV]) {
 				val = setBacklight(max(10, val - backlightStep), false);
-			} else if (input[RIGHT] || input[INC] || input[SECTION_NEXT]) {
+			} else if (input[RIGHT] || input.hatEvent(DRIGHT) == DRIGHT || input[INC] || input[SECTION_NEXT]) {
 				val = setBacklight(min(100, val + backlightStep), false);
 			} else if (input[BACKLIGHT]) {
 				SDL_Delay(50);

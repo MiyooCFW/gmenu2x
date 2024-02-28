@@ -2,14 +2,21 @@
 
 This GMenu2X is a fork of [GMenuNX](https://github.com/pingflood/GMenuNX/) and is developed for the MiyooCFW, released under the GNU GPL license v2.
 
-View changelog in [changelog](https://github.com/MiyooCFW/gmenu2x/blob/master/ChangeLog.md) file.
+View changelog in [changelog](https://github.com/MiyooCFW/gmenu2x/blob/master/ChangeLog.md) file & [release](https://github.com/MiyooCFW/gmenu2x/releases) page.
 
 ## Installation
 
-Replace the ``gmenu2x`` binary with the latest one from action builds.
-
-(Re)Boot your device and enjoy new GMenu2X
-
+#### A) Binary
+1. Replace the ``gmenu2x`` binary with the latest one.
+2. Additionaly for working directory with linux spefific file type partition (e.g.: EXT, BTRFS):
+ ``chmod +x gmenu2x``
+3. (Re)Boot your device and enjoy new GMenu2X
+#### B) ZIP-bundle
+1. Extract the `gmenu2x-*.zip` content to `$HOME/gmenu2x` directory on your device
+2. Perform steps 2 & 3 from "Binary" installation process
+#### C) IPK-package
+1. Launch `gmenu2x-*.ipk` from within GMenu2X's Explorer.
+2. Restart GMenu2X frontend or reboot device.
 
 ## Building
 
@@ -24,16 +31,16 @@ make -f Makefile.miyoo
 ```
 make -f Makefile.miyoo dist
 ```
-you can find both outputs in `/dist/miyoo/` directory.
+you can find both outputs in `./dist/miyoo/` directory.
 ### PC (Linux):
 This is primarily useful for development/testing. 
 First, install the dependencies. This should work for Debian/Ubuntu systems, use the appropriate package manager for other systems:
 ```sh
-sudo apt-get install -y build-essential libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libboost-all-dev libfreetype6-dev libbz2-dev libmpg123-dev
+sudo apt-get install -y build-essential libsdl1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libboost-all-dev libfreetype6-dev libbz2-dev libmpg123-dev
 ```
 Compile with:
 ```sh
-make -f Makefile.linux dist
+make dist
 ```
 Then run it from the `dist/linux/` directory:
 ```sh
@@ -44,38 +51,83 @@ cd dist/linux
 ## Translations
 
 The list of available translations with examples are stored in `gmenu2x/translations/` dir of your GMenu2X distribution package.  
-The current in use messages from US English language can be read from: [translate.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/translate.txt). This does not include appLinks' Title&Description which can be added freely by user.
+The current in use messages from U.S. English language can be read from: [translate.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/translate.txt). This does not include appLinks' Title&Description which can be added freely by user.
 
-To generate above list, you have to rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the runtime of GMenu2X.
+You can run `tools/gen_translate.sh` to generate above list providing argument in form of txt file with list of #define for your platform. Otherwise you can rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the time of using GMenu2X.
 
-*The "\_TTS voice\_" string assigns voice type used by TTS engine e.g. "\_TTS voice\_"=en" for English (check for available voices on your device `/usr/share/espeak-data/voices`)*
+### Special strings in translation file
+The "\_about\_" assigns corresponding text file for displaying _About_ message, e.g. "\_about\_=\_about\_en" means _about_en.txt is being used for English translation.
+
+The "\_keyboard_<table_number>_<line_number>\_" string will modify alternative overlay keyboard on Input Dialog (accesed with MODIFY button).
+
+The "\_TTS voice\_" string assigns voice type used by TTS engine e.g. "\_TTS voice\_"=en" for English (check for available voices on your device `/usr/share/espeak-data/voices`)
 
 ### Dictionary
 To view the full list of string messages available to translate in source see: [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt)
 
 To generate this list of available strings' aliases you can run from src:  
 ```
-(grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | tr -d '\\' |sort | uniq
+(grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; grep -o -rn . -e '>tr\["[^]]*"\]\|(tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | sed 's/.*\[\(.*\)\].*/\1/' | sed 's/\"\(.*\)\"/\1=/' | sed ':a;N;$!ba;s/\\n/ /g' | tr -d '\\' | sort | uniq
 ```
 
+## Skins & fonts
+
+Please refer to directory containing appropriate skin for detailed information about authors and licensing of specific theme and its fonts. See below schema for general info:
+```
+assets/skins
+├── Default
+│   ├── GNU_Unifont.ttf
+│   ├── LICENSE_font-GPLv2.txt
+│   └── LICENSE_skin.txt
+├── FontiGrid
+│   ├── BebasKai.ttf
+│   ├── BebasNeue-Bold.ttf
+│   ├── font-modify.info
+│   ├── LICENSE_font-OFLv1.1.txt
+│   └── LICENSE_skin-GPLv2.txt
+├── GameShow
+│   ├── font-modify.info
+│   ├── KdamThmorPro-Regular.ttf
+│   ├── LICENSE_font-OFLv1.1.txt
+│   └── LICENSE_skin-CC_BY_3.0_US.txt
+├── NeonWave
+│   ├── Audiowide-Regular.ttf
+│   ├── font-modify.info
+│   ├── LICENSE_font-OFLv1.1.txt
+│   └── LICENSE_skin-CC_BY_3.0_US.txt
+└── Nsdark
+    ├── BebasKai.ttf
+    ├── BebasNeue-Bold.ttf
+    ├── font-modify.info
+    ├── LICENSE_font-OFLv1.1.txt
+    └── LICENSE_skin-GPLv2.txt
+```
+above list generated with cmd:
+`tree assets/skins -L 2 -I 'icons|imgs|logos*|sections|wallpap*|backdrops|free_backdrop|font.ttf|skin.conf|ACKNOW*' -U` 
+
+Fonts under OFL license has been expanded with GNU_Unifont.ttf using `font_merge.sh` tool to include most of the UNICODE glyphs and all CJK characters, thus transforming to Pan-Unicode font type. 
+
 ## Controls
+
+(Bittboy's specific mapping in round brackets)
 
 * A: Accept / Launch selected link / Confirm action;
 * B: Back / Cancel action;
 * X: Goes up one directory in file browser;
-* X (hold): Bring up Date&Time quick dialog;
+* X-hold: Bring up Date&Time quick dialog;
+* X + Y: Switch from/to Default font;
 * Y: Bring up the manual/readme;
-* L1, R1: Switch between sections / PageUp/PageDown on lists;
+* Y-hold: Restart the GMenu2X;
+* L1(TB), R1(TA): Switch between sections left/right or PageUp/PageDown on lists;
 * L2, R2: Fast Decrement/Increment of selected value;
 * START: GMenu2X settings;
-* START (hold):  Toggle Suspend mode;
+* START-hold:  Toggle Suspend mode;
 * SELECT: Bring up the contextual menu;
-* SELECT (hold): Disconnect TV-out;
-* SELECT + L: Volume control;
-* SELECT + R, BRIGHTNESS: Change screen brightness;
+* SELECT-hold: Disable TV-output;
+* SELECT + L1(TB): Volume control;
+* SELECT + R1(TA): Change screen brightness;
 * SELECT + START: Take a screenshot;
-* POWER: Bring up Poweroff dialog;
-* TV-Out: If the device supports, (dis)connect the TV-out jack to toggle TV-out signal.
+* RESET: Bring up Poweroff dialog;
 
 In settings:
 
@@ -103,69 +155,13 @@ You can pass useful variables (which can be treated as arguments for cmd) before
 - **[selFileFull]** - this is a shortcut value that means [selFile][selExt]  
 - **[selFullPath]** - this is a shortcut value that means [selPath][selFile][selExt]  
 
-## [How to have previews in Selector Browser](http://boards.dingoonity.org/ingenic-jz4760-devices/gmenunext-let's-make-gmenu-great-again!/msg177392/#msg177392)
+## How to have previews in Selector Browser
 
 * Select the link you want to edit and press "menu";
 * Edit the link;
 * Configure the link to match your directory structure. Important fields:
 	* Selector Directory: The directory of your roms
 	* Selector Browser: Enable selector before launching the app
-	* Selector Filter: Filter extensions to be shown in the selector. Separe multiple extensions with commas.
+	* Selector Filter: Filter extensions to be shown in the selector. Separate multiple extensions with commas.
 	* Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
-* The name of the file of rom and preview have to be exactly the same. Suported image types are .png or .jpg;
-
-## Contacts
-
-GMenu2X Copyright (c) 2006-2010 [Massimiliano Torromeo](mailto:massimiliano.torromeo@gmail.com);  
-GMenuNX 2018-2019 by [@pingflood](https://github.com/pingflood);  
-GMenu2X 2022 (modded GMenuNX) by [@Apaczer](https://github.com/Apaczer);
-
-## Credits
-
-### Contributors
-NoidZ for his gp2x' buttons graphics;  
-Pickle for the initial Wiz and Caanoo ports;  
-Steward-Fu for the initial RetroGame ports;  
-TonyJih for the new RetroFW features;  
-Fontes for the RetroFW graphics;  
-
-### Beta testers
-Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X);  
-Yann Vaillant (WIZ);  
-msx, jbanes, jutley and scooterpsu (RetroFW);  
-salvacam, SolidOne (MiyooCFW).  
-
-### Translators
-Chinese (CN): 蔡蔡哥, simpleasy, KungfuPanda, RUANRUI1995;  
-Chinese (TW): wentao, TonyJih;  
-Danish: claus;  
-Dutch: superfly;  
-English: Massimiliano;  
-Finnish: Jontte Atte;  
-French: Yodaz;  
-German: fusion_power, johnnysnet, Waldteufel;  
-Italian: Massimiliano;  
-Korean: haven-jeon;  
-Norwegian: cowai;  
-Polish: Macmmm81;  
-Portuguese (Brazil): pingflood, azurejoga;  
-Portuguese (Portugal): NightShadow;  
-Russian: XaMMaX90;  
-Slovak: Jozef;  
-Spanish: pedator;  
-Swedish: Esslan Micket;  
-
-### Donors
-EvilDragon (www.gp2x.de), 
-Tecnologie Creative (www.tecnologiecreative.it), 
-TelcoLou, 
-gaterooze, 
-deepmenace, 
-superfly, 
-halo9, 
-sbock, 
-b._.o._.b, 
-Jacopastorius, 
-lorystorm90.
-
-and all the anonymous colaborators...
+* The name of the file of rom and preview have to be exactly the same. Supported image types are .png or .jpg;

@@ -1,0 +1,6 @@
+apps=
+cores=
+emus=
+favorites=
+games=
+settings=

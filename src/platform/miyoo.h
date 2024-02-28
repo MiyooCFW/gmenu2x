@@ -192,7 +192,7 @@ uint8_t getVolumeMode(uint8_t vol) {
 	return VOLUME_MODE_NORMAL;
 }
 
-class GMenuNX : public GMenu2X {
+class GMenu2X_platform : public GMenu2X {
 private:
 	void hwDeinit() {
 	}
@@ -209,7 +209,7 @@ private:
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
-		system("mount -o remount,async /mnt");
+		//system("mount -o remount,async /mnt");
 		getKbdLayoutHW();
 		getTefixHW();
 		w = 320;
@@ -255,8 +255,9 @@ public:
 			ioctl(snd, MIYOO_SND_SET_VOLUME, vol);
 			close(snd);
 		}
-
 		sprintf(buf, "echo %i > " MIYOO_VOL_FILE, vol);
+		system(buf);		
+		
 		volumeMode = getVolumeMode(val);
 
 		return val;
@@ -314,8 +315,8 @@ public:
 			} else {
 				uint32_t total = sizeof(oc_table) / sizeof(oc_table[0]);
 
-				for (int x = 0; x < total; x++) {
-					if ((oc_table[x] >> 18) >= mhz) {
+				for (int x = total - 1; x >= 0; x--) {
+					if ((oc_table[x] >> 18) <= mhz) {
 						mem[0] = (1 << 31) | (oc_table[x] & 0x0003ffff);
 						uint32_t v = mem[0];
 						while (std::bitset<32>(v).test(28) == 0) {
@@ -335,7 +336,7 @@ public:
 	}
 
 	string hwPreLinkLaunch() {
-		system("mount -o remount,sync /mnt");
+		//system("mount -o remount,sync /mnt");
 		return "";
 	}
 };

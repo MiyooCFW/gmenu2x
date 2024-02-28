@@ -111,14 +111,14 @@ bool WallpaperDialog::exec() {
 			inputAction = gmenu2x->input.update();
 			if (gmenu2x->inputCommonActions(inputAction)) continue;
 
-			if (gmenu2x->input[UP]) {
+			if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP) {
 				selected--;
-			} else if (gmenu2x->input[DOWN]) {
+			} else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) {
 				selected++;
-			} else if (gmenu2x->input[PAGEUP] || gmenu2x->input[LEFT]) {
+			} else if (gmenu2x->input[PAGEUP] || gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) {
 				selected -= numRows;
 				if (selected < 0) selected = 0;
-			} else if (gmenu2x->input[PAGEDOWN] || gmenu2x->input[RIGHT]) {
+			} else if (gmenu2x->input[PAGEDOWN] || gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) {
 				selected += numRows;
 				if (selected >= wallpapers.size()) selected = wallpapers.size() - 1;
 			} else if (gmenu2x->input[MENU] || gmenu2x->input[CANCEL]) {

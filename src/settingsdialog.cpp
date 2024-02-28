@@ -49,9 +49,8 @@ bool SettingsDialog::exec() {
 
 		gmenu2x->setInputSpeed();
 		voices[selected]->adjustInput();
-		
-		this->description = voices[selected]->getDescription();
 
+		this->description = voices[selected]->getDescription();
 		drawDialog(gmenu2x->s);
 
 		//Selection
@@ -70,21 +69,20 @@ bool SettingsDialog::exec() {
 		gmenu2x->drawScrollBar(numRows, voices.size(), firstElement, gmenu2x->listRect);
 
 		gmenu2x->s->flip();
-
 		do {
 			inputAction = gmenu2x->input.update();
 			if (gmenu2x->inputCommonActions(inputAction)) continue;
 
 			action = SD_NO_ACTION;
 			if (!(action = voices[selected]->manageInput())) {
-				if (gmenu2x->input[UP])						action = SD_ACTION_UP;
-				else if (gmenu2x->input[DOWN]) 					action = SD_ACTION_DOWN;
-				else if (gmenu2x->input[PAGEUP]) 				action = SD_ACTION_PAGEUP;
-				else if (gmenu2x->input[PAGEDOWN]) 				action = SD_ACTION_PAGEDOWN;
-				else if (gmenu2x->input[SETTINGS]) 				action = SD_ACTION_SAVE;
-				else if (gmenu2x->input[CANCEL] && (allowCancel))		action = SD_ACTION_CLOSE;
-				else if (gmenu2x->input[CANCEL] && (allowCancel_nomb))		action = SD_ACTION_CLOSE_NOMB;
-				else if (gmenu2x->input[CANCEL] && (allowCancel_link))		action = SD_ACTION_CLOSE_LINK;
+				if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP)	action = SD_ACTION_UP;
+				else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN)	action = SD_ACTION_DOWN;
+				else if (gmenu2x->input[PAGEUP])	action = SD_ACTION_PAGEUP;
+				else if (gmenu2x->input[PAGEDOWN])	action = SD_ACTION_PAGEDOWN;
+				else if (gmenu2x->input[SETTINGS])	action = SD_ACTION_SAVE;
+				else if (gmenu2x->input[CANCEL] && (allowCancel))	action = SD_ACTION_CLOSE;
+				else if (gmenu2x->input[CANCEL] && (allowCancel_nomb))	action = SD_ACTION_CLOSE_NOMB;
+				else if (gmenu2x->input[CANCEL] && (allowCancel_link))	action = SD_ACTION_CLOSE_LINK;
 				else if (gmenu2x->input[CANCEL] && (allowCancel_link_nomb))	action = SD_ACTION_CLOSE_LINK_NOMB;
 			}
 
@@ -102,8 +100,7 @@ bool SettingsDialog::exec() {
 						int res = mb.exec();
 						switch (res) {
 							case CONFIRM: {
-								gmenu2x->writeConfig();
-								gmenu2x->writeSkinConfig();
+								save = true;
 								break;
 							}
 							case CANCEL: {
@@ -116,15 +113,15 @@ bool SettingsDialog::exec() {
 				case SD_ACTION_CLOSE_NOMB:
 					loop = false;
 					if (allowCancel_nomb) {
-						if (gmenu2x->input[CONFIRM]) {
-							gmenu2x->writeConfig();
-							gmenu2x->writeSkinConfig();
-							break;
+							if (gmenu2x->input[CONFIRM]) {
+								gmenu2x->writeConfig();
+								gmenu2x->writeSkinConfig();
+								break;
 						}
-						else if (gmenu2x->input[CANCEL]) {
-							gmenu2x->reinit();
-							break;
-						}
+							else if (gmenu2x->input[CANCEL]) {
+								gmenu2x->reinit();
+								break;
+							}
 					}
 				case SD_ACTION_CLOSE_LINK:
 					loop = false;

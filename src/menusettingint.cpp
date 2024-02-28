@@ -53,16 +53,16 @@ void MenuSettingInt::draw(int y) {
 		strvalue = "OFF";
 		w = gmenu2x->font->getHeight() / 2.5;
 		RGBAColor color = (RGBAColor){255, 0, 0, 255};
-		gmenu2x->s->box(155, y + 1, w, gmenu2x->font->getHeight() - 2, color);
-		gmenu2x->s->rectangle(155, y + 1, w, gmenu2x->font->getHeight() - 2, 0, 0, 0, 255);
+		gmenu2x->s->box(180, y + 1, w, gmenu2x->font->getHeight() - 2, color);
+		gmenu2x->s->rectangle(180, y + 1, w, gmenu2x->font->getHeight() - 2, 0, 0, 0, 255);
 		w += 2;
 	}
-	gmenu2x->s->write(gmenu2x->font, strvalue, 155 + w, y+gmenu2x->font->getHeight() / 2, VAlignMiddle);
+	gmenu2x->s->write(gmenu2x->font, strvalue, 180 + w, y+gmenu2x->font->getHeight() / 2, VAlignMiddle);
 }
 
 uint32_t MenuSettingInt::manageInput() {
-	if (gmenu2x->input[LEFT])		dec();
-	else if (gmenu2x->input[RIGHT])		inc();
+	if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)		dec();
+	else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)	inc();
 	else if (gmenu2x->input[DEC])		setValue(value() - 10 * delta, 1);
 	else if (gmenu2x->input[INC])		setValue(value() + 10 * delta, 1);
 	else if (gmenu2x->input[MENU])		setDefault();

@@ -66,6 +66,12 @@ enum sb {
 	SB_CLASSIC,
 };
 
+enum sbak {
+	SBAK_OFF,
+	SBAK_LINK,
+	SBAK_EXEC,
+};
+
 enum bd {
 	BD_OFF,
 	BD_MENU,
@@ -125,12 +131,14 @@ private:
 	void explorer();
 	void readConfig();
 	bool readTmp();
-	void initFont();
+	void initFont(bool deffont);
 	void umountSdDialog();
 	void opkInstall(string path);
 	void opkScanner();
 	string ipkName(string cmd);
 	void ipkInstall(string path);
+	
+	string skinFont = "";
 
 	virtual void udcDialog(int udcStatus = -1) { };
 	virtual void tvOutDialog(int16_t mode = -1) { };
@@ -184,6 +192,7 @@ public:
 
 	bool autoStart;
 	bool actionPerformed = false;
+	bool deffont = true;
 
 	void cls(Surface *s = NULL, bool flip = true);
 

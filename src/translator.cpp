@@ -39,9 +39,9 @@ Translator::Translator(const string &lang) {
 
 Translator::~Translator() {}
 
-bool Translator::exists(const string &term) {
-	return translations.find(term) != translations.end();
-}
+// bool Translator::exists(const string &term) {
+// 	return translations.find(term) != translations.end();
+// }
 
 void Translator::setLang(const string &lang) {
 	translations.clear();
@@ -56,7 +56,32 @@ void Translator::setLang(const string &lang) {
 			if (line.back() == '=') continue;
 
 			string::size_type position = line.find("=");
-			translations[trim(line.substr(0, position))] = trim(line.substr(position + 1));
+
+			string::size_type position_newl_all = line.find("\\n");
+			string trans;
+			
+			string::size_type pos = 0;
+			uint32_t count = 0;
+			while ((pos = line.find("\\n", pos)) != std::string::npos) {
+				++count;
+				pos += 2;
+			}
+
+			if (position_newl_all != std::string::npos) {
+				string::size_type position_newl[365];
+				for (uint32_t i = 0; i <= count; i++) {
+					// check if this is first chunk
+					if (i == 0) position_newl[i] = line.find("\\n");
+					else position_newl[i] = line.find("\\n", position_newl[i-1] + 2);
+					// genearate translation string from all chunks
+					if (i == 0 && position_newl[i] != std::string::npos) trans += trim(line.substr(position + 1, position_newl[i] - position - 1)) + "\n";
+					else if (position_newl[i] != std::string::npos) trans += trim(line.substr(position_newl[i-1] + 2, position_newl[i] - position_newl[i-1] - 2)) + "\n";
+					else trans += trim(line.substr(position_newl[i-1] + 2));
+				}
+				translations[trim(line.substr(0, position))] = trans;
+			} else {
+				translations[trim(line.substr(0, position))] = trim(line.substr(position + 1));
+			}
 		}
 		infile.close();
 		_lang = lang;
@@ -66,11 +91,18 @@ void Translator::setLang(const string &lang) {
 string Translator::translate(const string &term,const char *replacestr,...) {
 	string result = term;
 
+	string termFind = term;
+	string::size_type pos = 0;
+	while ((pos = termFind.find('\n', pos)) != std::string::npos) {
+		termFind.replace(pos, 1, " ");
+		pos += 1;
+	}
+
 	if (!_lang.empty()) {
-		unordered_map<string, string>::iterator i = translations.find(term);
+		unordered_map<string, string>::iterator i = translations.find(termFind);
 		if (i != translations.end()) {
 			result = i->second;
-		#if defined(CHECK_TRANSLATION)
+#if defined(CHECK_TRANSLATION)
 		} else {
 			WARNING("Untranslated string: '%s'", term.c_str());
 			ofstream langLog("untranslated.txt", ios::app);
@@ -102,7 +134,7 @@ string Translator::translate(const string &term,const char *replacestr,...) {
 			} else {
 				WARNING("Unable to open the file.");
 			}
-		#endif
+#endif
 		}
 	}
 

@@ -43,35 +43,61 @@ gmenu2x(gmenu2x) {
 	input = startvalue;
 	selCol = 0;
 	selRow = 0;
-	keyboard.resize(7);
+	keyboard.resize(MAX_KB + 1);
 
-	keyboard[0].push_back("qwertyuiop-789");
-	keyboard[0].push_back("asdfghjkl\\/456");
-	keyboard[0].push_back("_zxcvbnm,.0123");
+	kb11 = "qwertyuiop[]=789";
+	kb12 = "asdfghjkl;'\\`456";
+	kb13 = "zxcvbnm,./-=0123";
+	kb21 = "QWERTYUIOP{}&*()";
+	kb22 = "ASDFGHJKL:\"|~$%^";
+	kb23 = "ZXCVBNM<>?_+\n!@#";
+	kb31 = kb11;
+	kb32 = kb12;
+	kb33 = kb13;
 
-	keyboard[1].push_back("QWERTYUIOP_-+=");
-	keyboard[1].push_back("@ASDFGHJKL'\"`");
-	keyboard[1].push_back("#ZXCVBNM:;/?");
+	kbc11 = gmenu2x->tr["_keyboard_t1_l1_"];
+	kbc12 = gmenu2x->tr["_keyboard_t1_l2_"];
+	kbc13 = gmenu2x->tr["_keyboard_t1_l3_"];
+	kbc21 = gmenu2x->tr["_keyboard_t2_l1_"];
+	kbc22 = gmenu2x->tr["_keyboard_t2_l2_"];
+	kbc23 = gmenu2x->tr["_keyboard_t2_l3_"];
+	kbc31 = gmenu2x->tr["_keyboard_t3_l1_"];
+	kbc32 = gmenu2x->tr["_keyboard_t3_l2_"];
+	kbc33 = gmenu2x->tr["_keyboard_t3_l3_"];
 
-	keyboard[2].push_back("¡¿*+-/\\&<=>|");
-	keyboard[2].push_back("()[]{}@#$%^~");
-	keyboard[2].push_back("_\"'`.,:;!?");
+	if (kbc11 == "_keyboard_t1_l1_") kbc11 = kb11;
+	if (kbc12 == "_keyboard_t1_l2_") kbc12 = kb12;
+	if (kbc13 == "_keyboard_t1_l3_") kbc13 = kb13;
+	if (kbc21 == "_keyboard_t2_l1_") kbc21 = kb21;
+	if (kbc22 == "_keyboard_t2_l2_") kbc22 = kb22;
+	if (kbc23 == "_keyboard_t2_l3_") kbc23 = kb23;
+	if (kbc31 == "_keyboard_t3_l1_") kbc31 = kb31;
+	if (kbc32 == "_keyboard_t3_l2_") kbc32 = kb32;
+	if (kbc33 == "_keyboard_t3_l3_") kbc33 = kb33;
 
-	keyboard[3].push_back("àáâãäåèéêëęěìíîï");
-	keyboard[3].push_back("ąćčòóôôõöùúûüůýÿ");
-	keyboard[3].push_back("ďĺľłñńňŕřśšťźżž");
+	keyboard[0].push_back(kb11);
+	keyboard[0].push_back(kb12);
+	keyboard[0].push_back(kb13);
 
-	keyboard[4].push_back("ÀÁÂÃÄÅÈÉÊËĘĚÌÍÎÏ");
-	keyboard[4].push_back("ĄĆČÒÓÔÔÕÖÙÚÛÜŮÝŸ");
-	keyboard[4].push_back("ĎĹĽŁÑŃŇŔŘŚŠŤŹŻŽ");
+	keyboard[1].push_back(kb21);
+	keyboard[1].push_back(kb22);
+	keyboard[1].push_back(kb23);
 
-	keyboard[5].push_back("æçабвгдеёжзий");
-	keyboard[5].push_back("клмнопрстуфхцч");
-	keyboard[5].push_back("шщъыьэюяøðßÐÞþ");
+	keyboard[2].push_back(kb31);
+	keyboard[2].push_back(kb32);
+	keyboard[2].push_back(kb33);
 
-	keyboard[6].push_back("ÆÇАБВГДЕЁЖЗИЙ");
-	keyboard[6].push_back("КЛМНОПРСТУФХЦЧ");
-	keyboard[6].push_back("ШЩЪЫЬЭЮЯØðßÐÞþ");
+	keyboard[3].push_back(kbc11);
+	keyboard[3].push_back(kbc12);
+	keyboard[3].push_back(kbc13);
+
+	keyboard[4].push_back(kbc21);
+	keyboard[4].push_back(kbc22);
+	keyboard[4].push_back(kbc23);
+
+	keyboard[MAX_KB].push_back(kbc31);
+	keyboard[MAX_KB].push_back(kbc32);
+	keyboard[MAX_KB].push_back(kbc33);
 
 	setKeyboard(0);
 }
@@ -115,12 +141,31 @@ bool InputDialog::exec() {
 
 	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
 
-	gmenu2x->drawButton(bg, "r", gmenu2x->tr["Space"],
-	gmenu2x->drawButton(bg, "l", gmenu2x->tr["Backspace"],
-	gmenu2x->drawButton(bg, "y", gmenu2x->tr["Shift"],
-	gmenu2x->drawButton(bg, "start", gmenu2x->tr["Save"],
-	gmenu2x->drawButton(bg, "b", gmenu2x->tr["Exit"]
-	)))));
+	string altBtn = "x";
+	string altChar = gmenu2x->tr["Alt"];
+	string spaceChar = gmenu2x->tr["Space"];
+	string backspaceChar = gmenu2x->tr["Backspace"];
+	string shiftChar = gmenu2x->tr["Shift"];
+	string saveChar = gmenu2x->tr["Save"];
+	string exitChar = gmenu2x->tr["Exit"];
+
+	if (gmenu2x->tr.lang() == "") {altChar = ""; altBtn = "";}
+	if (gmenu2x->drawButton(bg, "r", spaceChar) +
+	gmenu2x->drawButton(bg, "l", backspaceChar) +
+	gmenu2x->drawButton(bg, "y", shiftChar) +
+	gmenu2x->drawButton(bg, altBtn, altChar) +
+	gmenu2x->drawButton(bg, "start", saveChar) +
+	gmenu2x->drawButton(bg, "b", exitChar) > gmenu2x->w) {spaceChar = "⎵" ; backspaceChar = "←";}
+
+	bg->box(gmenu2x->bottomBarRect, (RGBAColor){0,0,0,255});
+
+	gmenu2x->drawButton(bg, "r", spaceChar,
+	gmenu2x->drawButton(bg, "l", backspaceChar,
+	gmenu2x->drawButton(bg, "y", shiftChar,
+	gmenu2x->drawButton(bg, altBtn, altChar,
+	gmenu2x->drawButton(bg, "start", saveChar,
+	gmenu2x->drawButton(bg, "b", exitChar
+	))))));
 
 	while (true) {
 		SDL_RemoveTimer(wakeUpTimer);
@@ -151,16 +196,43 @@ bool InputDialog::exec() {
 		bool inputAction = gmenu2x->input.update();
 		if (gmenu2x->inputCommonActions(inputAction)) continue;
 
-		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) {
-			return false;
+		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) return false;
+		else if (gmenu2x->input[SETTINGS]) {		
+			string inputss;
+			string::size_type position_newl_all = input.find("\n");
+
+			string::size_type pos = 0;
+			uint32_t count = 0;
+			while ((pos = input.find("\n", pos)) != std::string::npos) {
+				++count;
+				pos += 2;
+			}
+
+			if (position_newl_all != std::string::npos) {
+				string::size_type position_newl[365];
+				for (uint32_t i = 0; i <= count; i++) {
+					// check if this is first chunk
+					if (i == 0) position_newl[i] = input.find("\n");
+					else position_newl[i] = input.find("\n", position_newl[i-1] + 2);
+					// genearate translation string from all chunks
+					if (i == 0 && position_newl[i] != std::string::npos) inputss += trim(input.substr(0, position_newl[i])) + "\\n";
+					else if (position_newl[i] != std::string::npos) inputss += trim(input.substr(position_newl[i-1] + 1, position_newl[i] - position_newl[i-1] - 1)) + "\\n";
+					else inputss += trim(input.substr(position_newl[i-1]));
+				}
+				input = inputss;
+			// } else {
+			// 	input = trim(line.substr(position + 1));
+			}
+		
+			return true;
 		}
-		else if (gmenu2x->input[SETTINGS])		return true;
-		else if (gmenu2x->input[UP])			selRow--;
-		else if (gmenu2x->input[DOWN])			selRow++;
-		else if (gmenu2x->input[LEFT])			selCol--;
-		else if (gmenu2x->input[RIGHT])			selCol++;
+		else if (gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP)			selRow--;
+		else if (gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN)			selRow++;
+		else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)			selCol--;
+		else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)			selCol++;
 		else if (gmenu2x->input[CONFIRM])		confirm();
-		else if (gmenu2x->input[MANUAL])		changeKeys();
+		else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER])		changeKeys();
+		else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL])		changeKeysCustom();
 		else if (gmenu2x->input[SECTION_PREV])	backspace();
 		else if (gmenu2x->input[SECTION_NEXT])	space();
 	}
@@ -187,8 +259,31 @@ void InputDialog::confirm() {
 }
 
 void InputDialog::changeKeys() {
-	if (curKeyboard == 6) setKeyboard(0);
-	else setKeyboard(curKeyboard + 1);
+	int maxKb = MAX_KB;
+	
+	if (kb31 == kb11 && kb32 == kb12 && kb33 == kb13) maxKb = 4;
+
+	if (!customKb) {
+		if (curKeyboard >= maxKb / 2 - 1 && maxKb == 4 || curKeyboard >= maxKb / 2 && maxKb == MAX_KB) setKeyboard(maxKb / 2 - 2);
+		else setKeyboard(curKeyboard + 1);
+	} else {
+		if (kbc31 != kb11 || kbc32 != kb12 || kbc33 != kb13) maxKb = MAX_KB;
+		if (curKeyboard == maxKb) setKeyboard(MAX_KB - 2);
+		else setKeyboard(curKeyboard + 1);
+	}
+}
+
+void InputDialog::changeKeysCustom() {
+	if (customKb) customKb = false;
+	else customKb = true;
+	
+	if (curKeyboard == 0) setKeyboard(0 + 3);
+	else if (curKeyboard == 1) setKeyboard(1 + 3);
+	else if (curKeyboard == 2) setKeyboard(2 + 3);
+	else if (curKeyboard == 3) setKeyboard(3 - 3);
+	else if (curKeyboard == 4) setKeyboard(4 - 3);
+	else if (curKeyboard == MAX_KB && kbc31 != kb11 || kbc32 != kb12 || kbc33 != kb13) setKeyboard(0);
+	else if (curKeyboard == MAX_KB) setKeyboard(MAX_KB - 3);
 }
 
 int InputDialog::drawVirtualKeyboard() {
@@ -226,7 +321,10 @@ int InputDialog::drawVirtualKeyboard() {
 			// }
 
 			gmenu2x->s->rectangle(re, (RGBAColor){0xff,0xff,0xff,220});
-			gmenu2x->s->write(gmenu2x->font, charX, kbLeft + xc * KEY_WIDTH + KEY_WIDTH / 2, kbRect.y + 2 + l * KEY_HEIGHT + KEY_HEIGHT / 2 - 2, HAlignCenter | VAlignMiddle, (RGBAColor){0xff,0xff,0xff,0xff}, (RGBAColor){0,0,0,200});
+			if (charX != "\n")
+				gmenu2x->s->write(gmenu2x->font, charX, kbLeft + xc * KEY_WIDTH + KEY_WIDTH / 2, kbRect.y + 2 + l * KEY_HEIGHT + KEY_HEIGHT / 2 - 2, HAlignCenter | VAlignMiddle, (RGBAColor){0xff,0xff,0xff,0xff}, (RGBAColor){0,0,0,200});
+			else
+				gmenu2x->s->write(gmenu2x->font, "⏎", kbLeft + xc * KEY_WIDTH + KEY_WIDTH / 2, kbRect.y + 2 + l * KEY_HEIGHT + KEY_HEIGHT / 2 - 2, HAlignCenter | VAlignMiddle, (RGBAColor){0xff,0xff,0xff,0xff}, (RGBAColor){0,0,0,200});
 			xc++;
 		}
 	}
