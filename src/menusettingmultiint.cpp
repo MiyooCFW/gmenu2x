@@ -71,7 +71,7 @@ uint32_t MenuSettingMultiInt::manageInput() {
 	if ( gmenu2x->input[DEC] ) dec2x();
 	if ( gmenu2x->input[INC] ) inc2x();
 	if ( gmenu2x->input[MENU] ) setDefault();
-	if ( gmenu2x->input[MODIFIER] ) current();
+	if ( gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) current();
 	return 0; // SD_NO_ACTION
 }
 

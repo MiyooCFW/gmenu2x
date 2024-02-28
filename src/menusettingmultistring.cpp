@@ -53,7 +53,7 @@ uint32_t MenuSettingMultiString::manageInput() {
 		this->onSelect();
 		return this->onChange && this->onChange();
 	}
-	else if (gmenu2x->input[MODIFIER]) {
+	else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) {
 		currentSel();
 	}
 	else if (gmenu2x->input[MENU]) {

@@ -73,7 +73,7 @@ uint32_t MenuSettingRGBA::manageInput() {
 		if (gmenu2x->input[SETTINGS]) return 0;
 		if (gmenu2x->input[INC] || gmenu2x->input[UP] || gmenu2x->input.hatEvent(DUP) == DUP) inc();
 		else if (gmenu2x->input[DEC] || gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) dec();
-		else if (gmenu2x->input[MODIFIER]) current();
+		else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) current();
 		else if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) leftComponent();
 		else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) rightComponent();
 		else if (gmenu2x->input[CONFIRM] || gmenu2x->input[CANCEL]) {
@@ -84,7 +84,7 @@ uint32_t MenuSettingRGBA::manageInput() {
 			buttonBox.add(btn);
 		}
 		return -1;
-	} else if (gmenu2x->input[MODIFIER]) {
+	} else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) {
 		current();
 	} else if (gmenu2x->input[CONFIRM]) {
 		editing = true;

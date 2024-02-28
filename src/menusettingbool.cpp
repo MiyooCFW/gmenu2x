@@ -61,7 +61,7 @@ uint32_t MenuSettingBool::manageInput() {
 	if (gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM] ||
 		gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)
 		toggle();
-	else if (gmenu2x->input[MODIFIER]) current();
+	else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) current();
 	return 0; // SD_NO_ACTION
 }
 

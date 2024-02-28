@@ -925,7 +925,7 @@ void Menu::exec() {
 		else if (gmenu2x->input[CANCEL])	{
 			allyRead = false; 
 			continue;
-		} else if (gmenu2x->input[MODIFIER]) {
+		} else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) {
 			if (selLinkApp() != NULL || selLink() != NULL) gmenu2x->allyTTS(iconDescription.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 			allyRead = false; 
 			continue;
