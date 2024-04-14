@@ -1,5 +1,5 @@
+#!/bin/bash
 
-#!/bin/sh
 # ABOUT: 
 ## GMenu2X packager tool to generate working release for your binaries working with this frontend (aimed at Miyoo currently)
 
@@ -80,7 +80,7 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	cp -r $ASSETSDIR/* $RELEASEDIR/$DESTDIR/$TARGET
 	if !(test -e $LINK); then
 		touch $LINK
-		echo "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
+		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
 		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET}\/${TARGET}/" $LINK
 		test -n "$SELDIR" && echo "selectordir=${SELDIR}" >> $LINK
 		if test -e $ALIASES; then
@@ -108,9 +108,9 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
 		if !(test -d $OPKG_ASSETSDIR/CONTROL); then
 			mkdir -p $OPKG_ASSETSDIR/CONTROL
-			echo "#!/bin/sh\nsync; echo 'Installing new ${TARGET}..'; rm /var/lib/opkg/info/${TARGET}.list; exit 0" > $OPKG_ASSETSDIR/CONTROL/preinst
-			echo "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" > $OPKG_ASSETSDIR/CONTROL/postinst
-			echo $CONTROL > $OPKG_ASSETSDIR/CONTROL/control
+			echo -e "#!/bin/sh\nsync; echo 'Installing new ${TARGET}..'; rm /var/lib/opkg/info/${TARGET}.list; exit 0" > $OPKG_ASSETSDIR/CONTROL/preinst
+			echo -e "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" > $OPKG_ASSETSDIR/CONTROL/postinst
+			echo -e $CONTROL > $OPKG_ASSETSDIR/CONTROL/control
 		fi
 		chmod +x $OPKG_ASSETSDIR/CONTROL/postinst $OPKG_ASSETSDIR/CONTROL/preinst
 		cp -r $OPKG_ASSETSDIR/CONTROL $RELEASEDIR
@@ -123,7 +123,6 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		mv $TARGET.ipk $RELEASEDIR/
 	fi
 elif test $CLEAN -ne 0 >/dev/null 2>&1; then
-	# rm -f $TARGET *.o
 	rm -rf $RELEASEDIR
 	rm -rf $OPKG_ASSETSDIR
 	rm -f *.ipk
