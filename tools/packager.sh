@@ -1,3 +1,4 @@
+
 #!/bin/sh
 # ABOUT: 
 ## GMenu2X packager tool to generate working release for your binaries working with this frontend (aimed at Miyoo currently)
@@ -14,16 +15,27 @@
 ## Optionally put `Aliases.txt` & `<target_name>.man.txt` file in script current working directory
 
 
-#EXEC commands (change to 1 to commence):
-PACKAGE=0
-ZIP=1
-IPK=0
-CLEAN=0
+# EXEC commands (set to 1 anyone for desired outcome):
+if test -z $PACKAGE; then
+	PACKAGE=0
+elif test -z $ZIP; then
+	ZIP=0
+elif test -z $IPK; then
+	IPK=0
+elif test -z $CLEAN; then
+	CLEAN=0
+fi
 
 # ENV VAR.
-## Specific (mandatory to modify!)
-TARGET=binary_name #replace with correct value!
-VERSION=$(shell date +%Y-%m-%d\ %H:%M) #replace with correct release version if exist
+## Specific (mandatory to provide!)
+if test -z $TARGET; then
+	echo "No binary name provided, please set $TARGET in your env with correct execution program name"
+	sleep 2
+	exit
+fi
+if test -z $VERSION; then
+	VERSION=$(date +%Y-%m-%d\ %H:%M) #replace with correct release version if exist
+fi
 
 ## Generic common to all apps (better to not modify)
 HOMEPATH="/mnt"
@@ -55,7 +67,7 @@ Maintainer: ${MAINTAINER}\n\
 Architecture: ${ARCH}"
 #---------------------------------------------#
 # CODE execution
-if (test $PACKAGE -ne 0 || test $ZIP -ne 0 || test $IPK -ne 0); then
+if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
 	# Create ./package
 	rm -rf $RELEASEDIR
 	mkdir -p $RELEASEDIR
@@ -80,7 +92,7 @@ if (test $PACKAGE -ne 0 || test $ZIP -ne 0 || test $IPK -ne 0); then
 	cp $MANUAL $RELEASEDIR/$DESTDIR/$TARGET
 	
 	# Create ./package/<target_version>.zip
-	if test $ZIP -ne 0; then
+	if test $ZIP -ne 0 >/dev/null 2>&1; then
 		rm -rf $RELEASEDIR/*.ipk
 		cd $RELEASEDIR && zip -rq $TARGET$VERSION.zip ./* && mv *.zip ..
 		rm -rf $RELEASEDIR/*
@@ -88,7 +100,7 @@ if (test $PACKAGE -ne 0 || test $ZIP -ne 0 || test $IPK -ne 0); then
 	fi
 	
 	# Create ./package/<target>.ipk
-	if test $IPK -ne 0; then
+	if test $IPK -ne 0 >/dev/null 2>&1; then
 		rm -rf $RELEASEDIR/*.zip
 		mkdir -p .$HOMEPATH
 		mv $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR
@@ -107,17 +119,18 @@ if (test $PACKAGE -ne 0 || test $ZIP -ne 0 || test $IPK -ne 0); then
 		tar --owner=0 --group=0 -czvf $RELEASEDIR/data.tar.gz -C $RELEASEDIR/data/ . >/dev/null 2>&1
 		tar --owner=0 --group=0 -czvf $RELEASEDIR/control.tar.gz -C $RELEASEDIR/CONTROL/ . >/dev/null 2>&1
 		ar r $TARGET.ipk $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary
-		rm -rf $RELEASEDIR/*
+		rm -rf ${RELEASEDIR:?}/*
 		mv $TARGET.ipk $RELEASEDIR/
 	fi
-fi
-
-if test $CLEAN -ne 0; then
+elif test $CLEAN -ne 0 >/dev/null 2>&1; then
 	# rm -f $TARGET *.o
 	rm -rf $RELEASEDIR
 	rm -rf $OPKG_ASSETSDIR
 	rm -f *.ipk
 	rm -f *.zip
 	rm -f $LINK
+else
+	echo "No instructions provided, please set \$PACKAGE/\$ZIP/\$IPK or \$CLEAN in env to 1 for correct output"
+	sleep 1
 fi
 #---------------------------------------------#
