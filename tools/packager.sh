@@ -12,8 +12,16 @@
 ## - run `./gm2x_packager.sh`
 
 # NOTES: 
-## Optionally put `Aliases.txt` & `<target_name>.man.txt` file in script current working directory
+## Optionally put `Aliases.txt`, `<target_name>.man.txt` or <target_name>.lnk file in script current working directory
 
+if test -f pkg.cfg; then
+	source pkg.cfg
+	echo "config file found, setting following variables:"
+	grep -v '^#' pkg.cfg | head -n -1
+else
+	echo "no config file found, executing with predefined values from env or script"
+	sleep 1
+fi
 
 # EXEC commands (set to 1 anyone for desired outcome):
 if test -z $PACKAGE; then
@@ -46,7 +54,7 @@ LINK=$TARGET.lnk #Modify if exec binary is different - place in CWD (warning: it
 ALIASES=aliases.txt #file with new names for selector e.g. old_title=new_title - place in CWD
 MANUAL=$TARGET.man.txt #file with usage description of target app - place in CWD
 
-## Link entries (better modify)
+## Link entries (better modify if no <target_name>.lnk file provided)
 TITLE="${TARGET}"
 DESCRI="${TARGET} app description"
 SELDIR=""
