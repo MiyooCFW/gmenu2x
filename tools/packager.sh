@@ -14,10 +14,12 @@
 # NOTES: 
 ## Optionally put `Aliases.txt`, `<target_name>.man.txt` or <target_name>.lnk file in script current working directory
 
+# CONFIG FILE
+## Grabing predefined settings from configuration file
 if test -f pkg.cfg; then
 	source pkg.cfg
 	echo "config file found, setting following variables:"
-	grep -v '^#' pkg.cfg | head -n -1
+	grep -v '^#' pkg.cfg
 else
 	echo "no config file found, executing with predefined values from env or script"
 	sleep 1
@@ -40,9 +42,14 @@ if test -z $TARGET; then
 	echo "No binary name provided, please set $TARGET in your env with correct execution program name"
 	sleep 2
 	exit
+elif ! test -f "$TARGET"; then
+	echo "No binary found matching name \"${TARGET}\", exiting..."
+	sleep 2
+	exit
 fi
 if test -z $VERSION; then
 	VERSION=$(date +%Y-%m-%d\ %H:%M) #replace with correct release version if exist
+	echo "no release Version provided, setting it to curret time ${VERSION}"
 fi
 
 ## Generic common to all apps (better to not modify)
@@ -56,10 +63,24 @@ MANUAL=$TARGET.man.txt #file with usage description of target app - place in CWD
 
 ## Link entries (better modify if no <target_name>.lnk file provided)
 TITLE="${TARGET}"
-DESCRI="${TARGET} app description"
+DESCRI="${TARGET} app"
 SELDIR=""
-DESTDIR=apps
-SECTION=applications
+if test -z $DESTDIR; then
+	DESTDIR=apps
+	echo "no destination directory provided, setting path to /mnt/${DESTDIR}"
+fi
+if test -z $SECTION; then
+	SECTION="applications"
+	echo "no gmenu2x section provided, setting default \"${SECTION}\" in use"
+fi
+if test -f "${TARGET}.lnk"; then
+	# source ${TARGET}.lnk
+	echo "gmenu2x link file found, setting following link entries:"
+	grep -v '^#' ${TARGET}.lnk
+else
+	echo "no link file found, executing with predefined values:"
+	echo -e "title=$TITLE\ndescription=$DESCRI\nselectordir=$SELDIR"
+fi
 
 ## IPK control entries (if needed modify)
 PRIORITY=optional
