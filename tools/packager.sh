@@ -1,15 +1,41 @@
 #!/bin/bash
 
-# ABOUT: 
-## GMenu2X packager tool to generate working release for your binaries working with this frontend (aimed at Miyoo currently)
+# Help & About info
+help_func() {
+	echo -e "GMenu2X packager tool to generate working release for your binaries working with this frontend (aimed at MiyooCFW currently)\n\
+	 Put inside working directory:\n\
+	 \t- program's <target_name> binary\n\
+	 \t- ./assets dir with all necessary files which goes in same place where binary goes\n\
+	 \t- ./opkg_assets dir with custom IPK's control files (these are auto-generated if missing).\n\
+	 Edit settings in pkg.cfg file\n\
+	 Run program:\n\
+	 \t$: ./packager.sh\n\
+	 or install & run from usr space:\n\
+	 \t$: install -m 755 packager.sh /usr/bin/packager\n\
+	 \t$: packager"
+}
 
-# USAGE:  
-## Put inside working directory:  
-## - program's `<target_name>` binary
-## - `./assets` dir with all necessary files which goes in same place where binary goes
-## - `./opkg_assets` dir with custom IPK's control files (these are auto-generated if missing).
-## - edit ENVironment VARiables and EXECution commands in `pkg.cfg` file or in `packager.sh` script to perform desired outcome
-## - run `./packager.sh`
+# Options
+while :
+do
+	case $1 in
+		-h | --help | -\?)
+			help_func
+			exit 0
+			;;
+		--) 
+			shift
+			break
+			;;
+		-*)
+			echo "Unknown option: $1" >&2
+			shift
+			;;
+		*)
+			break
+			;;
+	esac
+done
 
 # NOTES: 
 ## Optionally put `Aliases.txt`, `<target_name>.man.txt` or <target_name>.lnk file in script current working directory
@@ -21,7 +47,7 @@ if test -f pkg.cfg; then
 	echo "config file found, setting following variables:"
 	grep -v -e '^#' -e '""' pkg.cfg
 else
-	echo "no config file found, executing with predefined values from env or script"
+	echo "no config pkg.cfg file found, executing with predefined values from env or script"
 	sleep 1
 fi
 
