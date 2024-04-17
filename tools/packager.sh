@@ -8,8 +8,8 @@
 ## - program's `<target_name>` binary
 ## - `./assets` dir with all necessary files which goes in same place where binary goes
 ## - `./opkg_assets` dir with custom IPK's control files (these are auto-generated if missing).
-## - edit ENVironment VARiables and EXECution commands in `gm2x_packager.sh` script to perform desired outcome
-## - run `./gm2x_packager.sh`
+## - edit ENVironment VARiables and EXECution commands in `pkg.cfg` file or in `packager.sh` script to perform desired outcome
+## - run `./packager.sh`
 
 # NOTES: 
 ## Optionally put `Aliases.txt`, `<target_name>.man.txt` or <target_name>.lnk file in script current working directory
@@ -19,25 +19,20 @@
 if test -f pkg.cfg; then
 	source pkg.cfg
 	echo "config file found, setting following variables:"
-	grep -v '^#' pkg.cfg
+	grep -v -e '^#' -e '""' pkg.cfg
 else
 	echo "no config file found, executing with predefined values from env or script"
 	sleep 1
 fi
 
-# EXEC commands (set to 1 anyone for desired outcome):
-if test -z $PACKAGE; then
-	PACKAGE=0
-elif test -z $ZIP; then
-	ZIP=0
-elif test -z $IPK; then
-	IPK=0
-elif test -z $CLEAN; then
-	CLEAN=0
-fi
+# EXEC commands
+PACKAGE=${PACKAGE:=0}
+ZIP=${ZIP:=0}
+IPK=${IPK:=0}
+CLEAN=${CLEAN:=0}
 
 # ENV VAR.
-## Specific (mandatory to provide!)
+## Specific
 if test -z $TARGET; then
 	echo "No binary name provided, please set $TARGET in your env with correct execution program name"
 	sleep 2
@@ -48,29 +43,29 @@ elif ! test -f "$TARGET"; then
 	exit
 fi
 if test -z $VERSION; then
-	VERSION=$(date +%Y-%m-%d\ %H:%M) #replace with correct release version if exist
+	VERSION=$(date +%Y-%m-%d\ %H:%M)
 	echo "no release Version provided, setting it to curret time ${VERSION}"
 fi
 
-## Generic common to all apps (better to not modify)
-HOMEPATH="/mnt"
-RELEASEDIR=package
-ASSETSDIR=assets
-OPKG_ASSETSDIR=opkg_assets
-LINK=$TARGET.lnk #Modify if exec binary is different - place in CWD (warning: it may be removed with CLEAN=1)
-ALIASES=aliases.txt #file with new names for selector e.g. old_title=new_title - place in CWD
-MANUAL=$TARGET.man.txt #file with usage description of target app - place in CWD
+## Generic
+HOMEPATH=${HOMEPATH:="/mnt"}
+RELEASEDIR=${RELEASEDIR:=package}
+ASSETSDIR=${ASSETSDIR:=assets}
+OPKG_ASSETSDIR=${OPKG_ASSETSDIR:=opkg_assets}
+LINK=${LINK:=$TARGET.lnk}
+ALIASES=${ALIASES:=aliases.txt}
+MANUAL=${MANUAL:=$TARGET.man.txt}
 
-## Link entries (better modify if no <target_name>.lnk file provided)
-TITLE="${TARGET}"
-DESCRI="${TARGET} app"
-SELDIR=""
+## Link entries
+TITLE=${TITLE:="$TARGET"}
+DESCRI=${DESCRI:="${TARGET} app"}
+SELDIR=${SELDIR:=""}
 if test -z $DESTDIR; then
 	DESTDIR=apps
-	echo "no destination directory provided, setting path to /mnt/${DESTDIR}"
+	echo "no destination directory provided, setting path to default /mnt/${DESTDIR}"
 fi
 if test -z $SECTION; then
-	SECTION="applications"
+	SECTION=applications
 	echo "no gmenu2x section provided, setting default \"${SECTION}\" in use"
 fi
 if test -f "${TARGET}.lnk"; then
@@ -82,11 +77,13 @@ else
 	echo -e "title=$TITLE\ndescription=$DESCRI\nselectordir=$SELDIR"
 fi
 
-## IPK control entries (if needed modify)
-PRIORITY=optional
-MAINTAINER=Unknown
-CONFFILES="" # TODO (to preserve & not reinstall user configs)
-ARCH=arm
+## IPK control entries
+PRIORITY=${PRIORITY:=optional}
+MAINTAINER=${MAINTAINER:=Unknown}
+CONFFILES=${CONFFILES:=""} # TODO (to preserve & not reinstall user configs)
+ARCH=${ARCH:=arm}
+
+### automate output of CONTROL file
 CONTROL="Package: ${TARGET}\n\
 Version: ${VERSION}\n\
 Description: ${DESCRI}\n\
@@ -96,6 +93,14 @@ Maintainer: ${MAINTAINER}\n\
 Architecture: ${ARCH}"
 #---------------------------------------------#
 # CODE execution
+
+echo -e "Using following configuration:\n\
+PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n\
+TARGET=${TARGET}\nVERSION=${VERSION}\n\
+HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n\
+TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n\
+PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}"
+
 if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
 	# Create ./package
 	rm -rf $RELEASEDIR
