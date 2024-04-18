@@ -69,6 +69,7 @@ private:
 	vector<stringlist> keyboard;
 	stringlist *kb;
 	int kbLength, kbWidth, kbHeight, kbLeft;
+	int bottomBarWidth = gmenu2x->w;
 	SDL_Rect kbRect;
 	IconButton *btnBackspaceX, *btnBackspaceL, *btnSpace, *btnConfirm, *btnChangeKeys;
 	string input;

@@ -146,13 +146,30 @@ bool InputDialog::exec() {
 	string saveChar = gmenu2x->tr["Save"];
 	string exitChar = gmenu2x->tr["Exit"];
 
-	if (gmenu2x->tr.lang() == "") {altChar = ""; altBtn = "";}
-	if (gmenu2x->drawButton(bg, "r", spaceChar) +
-	gmenu2x->drawButton(bg, "l", backspaceChar) +
-	gmenu2x->drawButton(bg, "y", shiftChar) +
-	gmenu2x->drawButton(bg, altBtn, altChar) +
-	gmenu2x->drawButton(bg, "start", saveChar) +
-	gmenu2x->drawButton(bg, "b", exitChar) > gmenu2x->w) {spaceChar = "⎵" ; backspaceChar = "←";}
+	if (gmenu2x->tr.lang() == "") {
+		altChar = ""; 
+		altBtn = "";
+	}
+	int prevBarWidth = 0;
+	while (bottomBarWidth >= gmenu2x->w) {
+		bottomBarWidth = gmenu2x->drawButton(bg, "r", spaceChar) +
+						gmenu2x->drawButton(bg, "l", backspaceChar) +
+						gmenu2x->drawButton(bg, "y", shiftChar) +
+						gmenu2x->drawButton(bg, altBtn, altChar) +
+						gmenu2x->drawButton(bg, "start", saveChar) +
+						gmenu2x->drawButton(bg, "b", exitChar) - 30;
+		if (bottomBarWidth >= prevBarWidth && prevBarWidth != 0) {
+			spaceChar = gmenu2x->tr["Space"]; 
+			backspaceChar = gmenu2x->tr["Backspace"];
+			break;
+		} else if (bottomBarWidth < prevBarWidth && bottomBarWidth >= gmenu2x->w || bottomBarWidth < gmenu2x->w) {
+			break;
+		} else {
+			spaceChar = "⎵" ; 
+			backspaceChar = "←";
+		}
+		prevBarWidth = bottomBarWidth;
+	}
 
 	bg->box(gmenu2x->bottomBarRect, (RGBAColor){0,0,0,255});
 
