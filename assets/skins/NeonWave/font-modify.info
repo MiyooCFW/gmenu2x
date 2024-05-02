@@ -1,2 +1,5 @@
 MergedAudiowUni:
-Audiowide-Regular has been modified with `fontforge` app by converting lowercase letters to uppercase + supplementing it with Unifont glyphs
+(1.004)
+Audiowide-Regular has been modified with `fontforge` app by converting lowercase letters to uppercase + supplementing it with Unifont glyphs.
+(1.004 v2)
+Glyphs U+0401, U+0410-U+042F, U+0430-U+044F, U+0451, U+232B (Russian alphabet and "Erase to the Left") have been altered (created from Latin alphabet letter materials).
