@@ -1,3 +1,15 @@
 MergedKdaTPrUNI font:
+(1.004)
+KdamThmorPro-Regular (1.003) has been modified with `fontforge` app by supplementing it with missing Unifont (15.0.06) glyphs.
 
-KdamThmorPro-Regular has been modified with `fontforge` app by supplementing it with missing Unifont glyphs
+(2.000)
+- clean rebuild font from the KdamThmorPro-Regular (1.003), with previous patch
+- Russian alhpabet & "Erase to the Left" have been altered (created from Latin alphabet letter materials):
+ "uni232B uni0445 uni0443 uni0423 uni043C uni043A uni044E uni044B uni0437 
+ uni044F uni0441 uni0436 uni043E uni044A uni044C uni043B uni043D uni0424 
+ uni043F uni0425 uni0433 uni0448 uni0435 uni0417 uni0432 uni0434 uni0430 
+ uni0442 uni041C uni0447 uni0420 uni0449 uni0410 uni0451 uni042F uni042A 
+ uni0411 uni0415 uni042B uni041A uni042C uni042E uni0438 uni041E uni0444 
+ uni0446 uni0431 uni0439 uni0421 uni0416 uni0401 uni0413 uni041B uni0412 
+ uni041D uni0422 uni041F uni044D uni0440 uni0428 uni0427 uni0414 uni0429 
+ uni0419 uni0418 uni0426 uni042D" (credits @MayanKoyote)
