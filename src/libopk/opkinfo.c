@@ -25,7 +25,7 @@ static bool display_info(char *package_path) {
 		size_t skey, sval;
 		printf("\n");
 		printf("Metadata file: %s\n\n", metadata_name);
-		while(opk_read_pair(opk, &key, &skey, &val, &sval) && key)
+		while (opk_read_pair(opk, &key, &skey, &val, &sval) && key)
 			printf("%.*s: %.*s\n", (int) skey, key, (int) sval, val);
 	}
 

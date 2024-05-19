@@ -243,7 +243,7 @@ string real_path(const string &path) {
 			}
 
 			outpath = vpath.at(0) + "/";
-			for(vector<string>::iterator it = vpath.begin() + 1; it < vpath.end() - 1; ++it) {
+			for (vector<string>::iterator it = vpath.begin() + 1; it < vpath.end() - 1; ++it) {
 				outpath += *it + "/";
 			}
 			outpath += vpath.back();

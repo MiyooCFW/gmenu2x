@@ -101,7 +101,7 @@ uint16_t getVolumeMode(uint8_t vol) {
 
 void printbin(const char *id, int n) {
 	printf("%s: 0x%08x ", id, n);
-	for(int i = 31; i >= 0; i--) {
+	for (int i = 31; i >= 0; i--) {
 		printf("%d", !!(n & 1 << i));
 		if (!(i % 8)) printf(" ");
 	}
