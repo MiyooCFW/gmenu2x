@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VER=0.1
+MIYOOCFW=2.0.0
 # Help & About info
 help_func() {
 	echo -e "GMenu2X packager tool to generate working release for your binaries working with this frontend (aimed at MiyooCFW currently)\n\
@@ -9,18 +11,22 @@ help_func() {
 	 \t- ./opkg_assets dir with custom IPK's control files (these are auto-generated if missing).\n\
 	 Edit settings in pkg.cfg file\n\
 	 Run program:\n\
-	 \t$: ./packager.sh\n\
+	 \t$: ./gm2xpkg.sh <config_file>\n\
 	 or install & run from usr space:\n\
-	 \t$: install -m 755 packager.sh /usr/bin/packager\n\
-	 \t$: packager"
+	 \t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg\n\
+	 \t$: gm2xpkg"
 }
 
-# Options
+# OPTIONS
 while :
 do
 	case $1 in
 		-h | --help | -\?)
 			help_func
+			exit 0
+			;;
+		--version)
+			echo -e "GM2X PACKAGER version ${VER} for MiyooCFW ${MIYOOCFW}"
 			exit 0
 			;;
 		--) 
@@ -46,6 +52,11 @@ if test -f pkg.cfg; then
 	source pkg.cfg
 	echo "config file found, setting following variables:"
 	grep -v -e '^#' -e '""' pkg.cfg
+	if test "${VER}" != "${PKGVER}" ; then
+		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your pkg.cfg config"
+		sleep 2
+		exit
+	fi
 else
 	echo "no config pkg.cfg file found, executing with predefined values from env or script"
 	sleep 1
