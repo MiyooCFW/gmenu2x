@@ -1,20 +1,25 @@
 #!/bin/bash
 
-VER=0.1
-MIYOOCFW=2.0.0
+VER=0.2
+MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
-	echo -e "GMenu2X packager tool to generate working release for your binaries working with this frontend (aimed at MiyooCFW currently)\n\
-	 Put inside working directory:\n\
-	 \t- program's <target_name> binary\n\
-	 \t- ./assets dir with all necessary files which goes in same place where binary goes\n\
-	 \t- ./opkg_assets dir with custom IPK's control files (these are auto-generated if missing).\n\
-	 Edit settings in pkg.cfg file\n\
-	 Run program:\n\
-	 \t$: ./gm2xpkg.sh <config_file>\n\
-	 or install & run from usr space:\n\
-	 \t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg\n\
-	 \t$: gm2xpkg"
+	echo -e "GMenu2X packager ${VER} tool to generate working release for your binaries\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)\n\
+	 Options:\n\
+	 \t -h   print this help screen\n\
+	 \t -V   print gm2xpkg version\n\
+	 Usage: 
+	 \t 1.Put inside a working directory:\n\
+	 \t\t- program's <target_name> binary\n\
+	 \t\t- ./assets dir with all necessary files which goes in same place where binary goes\n\
+	 \t\t- ./opkg_assets dir with custom IPK's control files (these are auto-generated if missing).\n\
+	 \t 2.Edit settings in pkg.cfg file\n\
+	 \t 3.Run program:\n\
+	 \t\t$: ./gm2xpkg.sh <config_file>\n\
+	 \t --or-- 
+	 \t 3.Install & run from usr space:\n\
+	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg\n\
+	 \t\t$: gm2xpkg"
 }
 
 # OPTIONS
@@ -25,7 +30,7 @@ do
 			help_func
 			exit 0
 			;;
-		--version)
+		-V | --ver | --version)
 			echo -e "GM2X PACKAGER version ${VER} for MiyooCFW ${MIYOOCFW}"
 			exit 0
 			;;
@@ -101,6 +106,10 @@ if test -z $DESTDIR; then
 	DESTDIR=apps
 	echo "no destination directory provided, setting path to default /mnt/${DESTDIR}"
 fi
+if test -z $TARGET_DIR; then
+	TARGET_DIR=${TARGET}
+	echo "no target directory provided, setting path to default /${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+fi
 if test -z $SECTION; then
 	SECTION=applications
 	echo "no gmenu2x section provided, setting default \"${SECTION}\" in use"
@@ -135,32 +144,38 @@ echo -e "Using following configuration:\n\
 PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n\
 TARGET=${TARGET}\nVERSION=${VERSION}\n\
 HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n\
-TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n\
+TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nTARGET_DIR=${TARGET_DIR}\nSECTION=${SECTION}\n\
 PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}"
+
+if ! test -d $ASSETSDIR; then
+	echo "No assets directory found matching name \"${ASSETSDIR}/\", exiting..."
+	sleep 2
+	exit
+fi
 
 if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
 	# Create ./package
 	rm -rf $RELEASEDIR
 	mkdir -p $RELEASEDIR
-	mkdir -p $ASSETSDIR
+	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
 	cp *$TARGET $RELEASEDIR/
-	mkdir -p $RELEASEDIR/$DESTDIR/$TARGET
+	mkdir -p $RELEASEDIR/$DESTDIR/$TARGET_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
-	mv $RELEASEDIR/*$TARGET $RELEASEDIR/$DESTDIR/$TARGET/
-	cp -r $ASSETSDIR/* $RELEASEDIR/$DESTDIR/$TARGET
+	mv $RELEASEDIR/*$TARGET $RELEASEDIR/$DESTDIR/$TARGET_DIR/
+	cp -r $ASSETSDIR/* $RELEASEDIR/$DESTDIR/$TARGET_DIR
 	if !(test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
-		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET}\/${TARGET}/" $LINK
+		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${TARGET}/" $LINK
 		test -n "$SELDIR" && echo "selectordir=${SELDIR}" >> $LINK
 		if test -e $ALIASES; then
-			echo "selectoraliases=\/mnt\/${DESTDIR}\/${TARGET}\/${ALIASES}" >> $LINK
+			echo "selectoraliases=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${ALIASES}" >> $LINK
 		fi
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
-	cp $ALIASES $RELEASEDIR/$DESTDIR/$TARGET
-	cp $MANUAL $RELEASEDIR/$DESTDIR/$TARGET
+	cp $ALIASES $RELEASEDIR/$DESTDIR/$TARGET_DIR
+	cp $MANUAL $RELEASEDIR/$DESTDIR/$TARGET_DIR/${TARGET}.man.txt
 	
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
