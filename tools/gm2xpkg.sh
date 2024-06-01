@@ -1,26 +1,40 @@
 #!/bin/bash
 
-VER=0.2
+VER=0.3
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
-	echo -e "GMenu2X packager ${VER} tool to generate working release for your binaries\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)\n\
-	 Options:\n\
-	 \t -h   print this help screen\n\
-	 \t -V   print gm2xpkg version\n\
-	 Usage: 
-	 \t 1.Put inside a working directory:\n\
-	 \t\t- program's <target_name> binary\n\
-	 \t\t- ./assets dir with all necessary files which goes in same place where binary goes\n\
-	 \t\t- ./opkg_assets dir with custom IPK's control files (these are auto-generated if missing).\n\
-	 \t 2.Edit settings in pkg.cfg file\n\
-	 \t 3.Run program:\n\
-	 \t\t$: ./gm2xpkg.sh <config_file>\n\
+	echo -e "Usage: gm2xpkg [OPTION] [FILE]"
+	echo -e "   or: gm2xpkg"
+	echo -e "GMenu2X packager v${VER} tool to generate working release for your binary in CWD with configuration FILE.\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)"
+	echo -e "With no FILE provided, use \"pkg.cfg\" in CWD.\n
+	 Options:
+	 \t -h, --help      print this help screen
+	 \t -V, --version   print gm2xpkg version
+	 \t -i, --ipk       generate IPK package
+	 \t -z, --zip       generate ZIP archive
+	 \t -p, --pkg       generate ./package
+	 Instructions:
+	 \t 1. Put inside CWD:
+	 \t\t- ./<target_name> binary
+	 \t\t- ./assets/ dir with all necessary files which goes in same place where binary goes
+	 \t\t- ./opkg_assets/ dir with custom IPK's control files (these are auto-generated if missing).
+	 \t 2. Edit settings in ./pkg.cfg file
+	 \t 3. Run program:
+	 \t\t$: ./gm2xpkg.sh
 	 \t --or-- 
-	 \t 3.Install & run from usr space:\n\
-	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg\n\
-	 \t\t$: gm2xpkg"
+	 \t 3. Install & run program from usr space in CWD:
+	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg
+	 \t\t$: gm2xpkg
+	 Notes:
+	 \t CWD  - Current Working Directory
+	 \t FILE - configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
 }
+
+# ARGS
+PKGCFG="${!#}"
+
+echo ${PKGCFG}
 
 # OPTIONS
 while :
@@ -32,9 +46,28 @@ do
 			;;
 		-V | --ver | --version)
 			echo -e "GM2X PACKAGER version ${VER} for MiyooCFW ${MIYOOCFW}"
-			exit 0
+			shift
 			;;
-		--) 
+		-i | --ipk)
+			IPK_OPT="1"
+			echo -e "generating IPK package"
+			shift
+			;;
+		-z | --zip)
+			ZIP_OPT="1"
+			echo -e "generating ZIP archive"
+			shift
+			;;
+		-p | --pkg)
+			PACKAGE_OPT="1"
+			echo -e "generating ./package"
+			shift
+			;;
+		-c | --clean)
+			CLEAN_OPT="1"
+			echo -e "cleaning all PACKAGES"
+			;;
+		--)
 			shift
 			break
 			;;
@@ -53,12 +86,12 @@ done
 
 # CONFIG FILE
 ## Grabing predefined settings from configuration file
-if test -f pkg.cfg; then
-	source pkg.cfg
-	echo "config file found, setting following variables:"
-	grep -v -e '^#' -e '""' pkg.cfg
+if test -f "${PKGCFG}"; then
+	source "${PKGCFG}"
+	echo "config file found in $(realpath ${PKGCFG}), setting following variables:"
+	grep -v -e '^#' -e '""' "${PKGCFG}"
 	if test "${VER}" != "${PKGVER}" ; then
-		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your pkg.cfg config"
+		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file"
 		sleep 2
 		exit
 	fi
@@ -66,6 +99,12 @@ else
 	echo "no config pkg.cfg file found, executing with predefined values from env or script"
 	sleep 1
 fi
+
+# OPTIONS
+PACKAGE=${PACKAGE:=${PACKAGE_OPT}}
+ZIP=${ZIP:=${ZIP_OPT}}
+IPK=${IPK:=${IPK_OPT}}
+CLEAN=${CLEAN:=${CLEAN_OPT}}
 
 # EXEC commands
 PACKAGE=${PACKAGE:=0}
@@ -76,7 +115,7 @@ CLEAN=${CLEAN:=0}
 # ENV VAR.
 ## Specific
 if test -z $TARGET; then
-	echo "No binary name provided, please set $TARGET in your env with correct execution program name"
+	echo "No binary name provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
 	exit
 elif ! test -f "$TARGET"; then
@@ -179,15 +218,15 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
-		rm -rf $RELEASEDIR/*.ipk
+		rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		cd $RELEASEDIR && zip -rq $TARGET$VERSION.zip ./* && mv *.zip ..
-		rm -rf $RELEASEDIR/*
-		mv $TARGET*.zip $RELEASEDIR/
+		rm -rf ${RELEASEDIR:?}/*
+		mv $TARGET$VERSION.zip $RELEASEDIR/
 	fi
 	
 	# Create ./package/<target>.ipk
 	if test $IPK -ne 0 >/dev/null 2>&1; then
-		rm -rf $RELEASEDIR/*.zip
+		rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		mkdir -p .$HOMEPATH
 		mv $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR
 		mkdir -p $RELEASEDIR/data
@@ -211,8 +250,8 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 elif test $CLEAN -ne 0 >/dev/null 2>&1; then
 	rm -rf $RELEASEDIR
 	rm -rf $OPKG_ASSETSDIR
-	rm -f *.ipk
-	rm -f *.zip
+	rm -f $TARGET.ipk
+	rm -f $TARGET*.zip
 	rm -f $LINK
 else
 	echo "No instructions provided, please set \$PACKAGE/\$ZIP/\$IPK or \$CLEAN in env to 1 for correct output"
