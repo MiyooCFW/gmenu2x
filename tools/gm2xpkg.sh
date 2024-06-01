@@ -32,12 +32,13 @@ help_func() {
 }
 
 # ARGS
-PKGCFG="${!#}"
-
-echo ${PKGCFG}
+## Sanity test if there was any argument passed:
+test $# -ne 0 &&\
+ PKGCFG="${!#}" || PKGCFG="pkg.cfg" # last argument used of [FILE] or use default ./pkg.cfg placement
 
 # OPTIONS
 ## TODO: use getopts
+
 while :
 do
 	case $1 in
@@ -218,7 +219,7 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	cp $ALIASES $RELEASEDIR/$DESTDIR/$TARGET_DIR
 	cp $MANUAL $RELEASEDIR/$DESTDIR/$TARGET_DIR/${TARGET}.man.txt
 	test -d $RELEASEDIR/gmenu2x && test -d $RELEASEDIR/$DESTDIR/$TARGET_DIR\
-	 && echo "Done packaging ./$RELEASEDIR/ data"\
+	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
 	 || echo "Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/" 
 	
 	# Create ./package/<target_version>.zip
