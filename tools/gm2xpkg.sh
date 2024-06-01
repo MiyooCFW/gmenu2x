@@ -37,6 +37,7 @@ PKGCFG="${!#}"
 echo ${PKGCFG}
 
 # OPTIONS
+## TODO: use getopts
 while :
 do
 	case $1 in
@@ -66,6 +67,7 @@ do
 		-c | --clean)
 			CLEAN_OPT="1"
 			echo -e "cleaning all PACKAGES"
+			shift
 			;;
 		--)
 			shift
@@ -215,20 +217,25 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
 	cp $ALIASES $RELEASEDIR/$DESTDIR/$TARGET_DIR
 	cp $MANUAL $RELEASEDIR/$DESTDIR/$TARGET_DIR/${TARGET}.man.txt
+	test -d $RELEASEDIR/gmenu2x && test -d $RELEASEDIR/$DESTDIR/$TARGET_DIR\
+	 && echo "Done packaging ./$RELEASEDIR/ data"\
+	 || echo "Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/" 
 	
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
-		rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
+		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		cd $RELEASEDIR && zip -rq $TARGET$VERSION.zip ./* && mv *.zip ..
-		rm -rf ${RELEASEDIR:?}/*
-		mv $TARGET$VERSION.zip $RELEASEDIR/
+		cd ..
+		test -f "${TARGET}${VERSION}.zip"\
+		 && echo "Done packaging ./${TARGET}${VERSION}.zip archive"\
+		 || echo "Upss smth went wrong and I couldn't locate ${TARGET}${VERSION}.zip"
 	fi
 	
 	# Create ./package/<target>.ipk
 	if test $IPK -ne 0 >/dev/null 2>&1; then
-		rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
+		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		mkdir -p .$HOMEPATH
-		mv $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR
+		cp -r $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR/
 		mkdir -p $RELEASEDIR/data
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
 		if !(test -d $OPKG_ASSETSDIR/CONTROL); then
@@ -243,13 +250,15 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		echo 2.0 > $RELEASEDIR/debian-binary
 		tar --owner=0 --group=0 -czvf $RELEASEDIR/data.tar.gz -C $RELEASEDIR/data/ . >/dev/null 2>&1
 		tar --owner=0 --group=0 -czvf $RELEASEDIR/control.tar.gz -C $RELEASEDIR/CONTROL/ . >/dev/null 2>&1
-		ar r $TARGET.ipk $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary
-		rm -rf ${RELEASEDIR:?}/*
-		mv $TARGET.ipk $RELEASEDIR/
+		ar r $TARGET.ipk $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary\
+		 && echo "Done creating ./${TARGET}.ipk package"\
+		 && rm $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary && rm -r $RELEASEDIR/CONTROL/ $RELEASEDIR/data/
+		# mv $TARGET.ipk $RELEASEDIR/
 	fi
+	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -rf ${RELEASEDIR:?}/*; fi
 elif test $CLEAN -ne 0 >/dev/null 2>&1; then
-	rm -rf $RELEASEDIR
-	rm -rf $OPKG_ASSETSDIR
+	rm -rf ${RELEASEDIR:?}
+	rm -rf ${OPKG_ASSETSDIR:?}
 	rm -f $TARGET.ipk
 	rm -f $TARGET*.zip
 	rm -f $LINK
