@@ -220,7 +220,7 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	cp $MANUAL $RELEASEDIR/$DESTDIR/$TARGET_DIR/${TARGET}.man.txt
 	test -d $RELEASEDIR/gmenu2x && test -d $RELEASEDIR/$DESTDIR/$TARGET_DIR\
 	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
-	 || echo "Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/" 
+	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/" 
 	
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
@@ -229,7 +229,7 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		cd ..
 		test -f "${TARGET}${VERSION}.zip"\
 		 && echo "Done packaging ./${TARGET}${VERSION}.zip archive"\
-		 || echo "Upss smth went wrong and I couldn't locate ${TARGET}${VERSION}.zip"
+		 || echo "WARNING: Upss smth went wrong and I couldn't locate ${TARGET}${VERSION}.zip"
 	fi
 	
 	# Create ./package/<target>.ipk
@@ -258,11 +258,11 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	fi
 	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -rf ${RELEASEDIR:?}/*; fi
 elif test $CLEAN -ne 0 >/dev/null 2>&1; then
-	rm -rf ${RELEASEDIR:?}
-	rm -rf ${OPKG_ASSETSDIR:?}
-	rm -f $TARGET.ipk
-	rm -f $TARGET*.zip
-	rm -f $LINK
+	rm -rf ${RELEASEDIR:?} && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR}"
+	rm -rf ${OPKG_ASSETSDIR:?} && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
+	rm -f $TARGET.ipk && echo "Done CLEANING ./${TARGET}.ipk" || echo "WARNING: Couldn't clean ./${TARGET}.ipk"
+	rm -f $TARGET*.zip && echo "Done CLEANING ./${TARGET}.zip" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
+	rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
 else
 	echo "No instructions provided, please set \$PACKAGE/\$ZIP/\$IPK or \$CLEAN in env to 1 for correct output"
 	sleep 1
