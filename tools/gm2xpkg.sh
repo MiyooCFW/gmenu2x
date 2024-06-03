@@ -85,7 +85,7 @@ do
 done
 
 # NOTES: 
-## Optionally put `Aliases.txt`, `<target_name>.man.txt` or <target_name>.lnk file in script current working directory
+## Optionally put `Aliases.txt`, `<target_name>.man.txt` or <target_name>.lnk file in script's current working directory
 
 # CONFIG FILE
 ## Grabing predefined settings from configuration file
@@ -146,11 +146,7 @@ DESCRI=${DESCRI:="${TARGET} app"}
 SELDIR=${SELDIR:=""}
 if test -z $DESTDIR; then
 	DESTDIR=apps
-	echo "no destination directory provided, setting path to default /mnt/${DESTDIR}"
-fi
-if test -z $TARGET_DIR; then
-	TARGET_DIR=${TARGET}
-	echo "no target directory provided, setting path to default /${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+	echo "no destination directory provided, setting path to default ${HOMEPATH}/${DESTDIR}"
 fi
 if test -z $SECTION; then
 	SECTION=applications
@@ -163,6 +159,16 @@ if test -f "${TARGET}.lnk"; then
 else
 	echo "no link file found, executing with predefined values:"
 	echo -e "title=$TITLE\ndescription=$DESCRI\nselectordir=$SELDIR"
+fi
+
+## Custom entries
+if test -z $TARGET_DIR; then
+	TARGET_DIR=${TARGET}
+	echo "no target directory provided, setting path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+fi
+if test ${#DOCS[@]} -eq 0 || test -z "${DOCS[*]}"; then
+	DOCS=("")
+	echo "INFO: Hmm... I suggest you add some documention via \$DOCS[] variable"
 fi
 
 ## IPK control entries
@@ -182,12 +188,14 @@ Architecture: ${ARCH}"
 #---------------------------------------------#
 # CODE execution
 
-echo -e "Using following configuration:\n\
-PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n\
-TARGET=${TARGET}\nVERSION=${VERSION}\n\
-HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n\
-TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nTARGET_DIR=${TARGET_DIR}\nSECTION=${SECTION}\n\
-PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}"
+echo -e "Using following configuration:
+PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n
+TARGET=${TARGET}\nVERSION=${VERSION}\n
+HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n
+TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nTARGET_DIR=${TARGET_DIR}\nSECTION=${SECTION}\n
+TARGET_DIR=${TITLE}\nDOCS=(${DOCS[*]})\n
+PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\n
+"
 
 if ! test -d $ASSETSDIR; then
 	echo "No assets directory found matching name \"${ASSETSDIR}/\", exiting..."
@@ -196,16 +204,17 @@ if ! test -d $ASSETSDIR; then
 fi
 
 if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
+	TARGET_PATH=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
 	rm -rf $RELEASEDIR
 	mkdir -p $RELEASEDIR
 	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
 	cp *$TARGET $RELEASEDIR/
-	mkdir -p $RELEASEDIR/$DESTDIR/$TARGET_DIR
+	mkdir -p $TARGET_PATH
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
-	mv $RELEASEDIR/*$TARGET $RELEASEDIR/$DESTDIR/$TARGET_DIR/
-	cp -r $ASSETSDIR/* $RELEASEDIR/$DESTDIR/$TARGET_DIR
+	mv $RELEASEDIR/*$TARGET $TARGET_PATH/
+	cp -r $ASSETSDIR/* $TARGET_PATH
 	if !(test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
@@ -216,9 +225,12 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		fi
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
-	cp $ALIASES $RELEASEDIR/$DESTDIR/$TARGET_DIR
-	cp $MANUAL $RELEASEDIR/$DESTDIR/$TARGET_DIR/${TARGET}.man.txt
-	test -d $RELEASEDIR/gmenu2x && test -d $RELEASEDIR/$DESTDIR/$TARGET_DIR\
+	cp $ALIASES $TARGET_PATH
+	cp $MANUAL $TARGET_PATH/${TARGET}.man.txt
+	! test -z "${DOCS[*]}"\
+	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}"/"${DOCS[$i]}.txt"; done\
+	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
+	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_PATH\
 	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
 	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/" 
 	
