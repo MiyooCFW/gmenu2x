@@ -33,6 +33,11 @@ void FontHelper::loadFont(const string &fontName, int fontSize) {
 		ERROR("TTF_OpenFont %s: %s", fontName.c_str(), TTF_GetError());
 		return;
 	}
+	fontFamilyName = TTF_FontFaceFamilyName(font);
+	if (fontFamilyName == "") {
+		WARNING("Unable to read TTF font family name.\n");
+	}
+	DEBUG("Font Name: %s", fontFamilyName.c_str());
 	TTF_SetFontHinting(this->font, TTF_HINTING_LIGHT);
 	TTF_SetFontHinting(this->fontOutline, TTF_HINTING_LIGHT);
 	TTF_SetFontOutline(this->fontOutline, outline);
@@ -191,14 +196,22 @@ void FontHelper::write(Surface *surface, const string &text, int x, int y, RGBAC
 
 	if (bgColor.a > 0) {
 		Surface bg;
-		bg.raw = TTF_RenderUTF8_Blended(fontOutline, text.c_str(), rgbatosdl(bgColor));
+		if (fontFamilyName.find("Unifont") == string::npos) {
+			bg.raw = TTF_RenderUTF8_Blended(fontOutline, text.c_str(), rgbatosdl(bgColor));
+		} else {
+			bg.raw = TTF_RenderUTF8_Solid(fontOutline, text.c_str(), rgbatosdl(bgColor));
+		}
 		bg.setAlpha(bgColor.a);
 		bg.blit(surface, x - outline, y - outline);
 	}
 
 	if (fgColor.a > 0) {
 		Surface fg;
-		fg.raw = TTF_RenderUTF8_Blended(font, text.c_str(), rgbatosdl(fgColor));
+		if (fontFamilyName.find("Unifont") == string::npos) {
+			fg.raw = TTF_RenderUTF8_Blended(font, text.c_str(), rgbatosdl(fgColor));
+		} else {
+			fg.raw = TTF_RenderUTF8_Solid(font, text.c_str(), rgbatosdl(fgColor));
+		}
 		fg.setAlpha(fgColor.a);
 		fg.blit(surface, x, y);
 	}
