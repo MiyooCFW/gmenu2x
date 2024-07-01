@@ -1,28 +1,44 @@
 #!/bin/bash
 
-VER=0.2
+VER=0.3
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
-	echo -e "GMenu2X packager ${VER} tool to generate working release for your binaries\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)\n\
-	 Options:\n\
-	 \t -h   print this help screen\n\
-	 \t -V   print gm2xpkg version\n\
-	 Usage: 
-	 \t 1.Put inside a working directory:\n\
-	 \t\t- program's <target_name> binary\n\
-	 \t\t- ./assets dir with all necessary files which goes in same place where binary goes\n\
-	 \t\t- ./opkg_assets dir with custom IPK's control files (these are auto-generated if missing).\n\
-	 \t 2.Edit settings in pkg.cfg file\n\
-	 \t 3.Run program:\n\
-	 \t\t$: ./gm2xpkg.sh <config_file>\n\
+	echo -e "Usage: gm2xpkg [OPTION] [FILE]"
+	echo -e "   or: gm2xpkg"
+	echo -e "GMenu2X packager v${VER} tool to generate working release for your binary in CWD with configuration FILE.\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)"
+	echo -e "With no FILE provided, use \"pkg.cfg\" in CWD.\n
+	 Options:
+	 \t -h, --help      print this help screen
+	 \t -V, --version   print gm2xpkg version
+	 \t -i, --ipk       generate IPK package
+	 \t -z, --zip       generate ZIP archive
+	 \t -p, --pkg       generate ./package
+	 Instructions:
+	 \t 1. Put inside CWD:
+	 \t\t- ./<target_name> binary
+	 \t\t- ./assets/ dir with all necessary files which goes in same place where binary goes
+	 \t\t- ./opkg_assets/ dir with custom IPK's control files (these are auto-generated if missing).
+	 \t 2. Edit settings in ./pkg.cfg file
+	 \t 3. Run program:
+	 \t\t$: ./gm2xpkg.sh
 	 \t --or-- 
-	 \t 3.Install & run from usr space:\n\
-	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg\n\
-	 \t\t$: gm2xpkg"
+	 \t 3. Install & run program from usr space in CWD:
+	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg
+	 \t\t$: gm2xpkg
+	 Notes:
+	 \t CWD  - Current Working Directory
+	 \t FILE - configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
 }
 
+# ARGS
+## Sanity test if there was any argument passed:
+test $# -ne 0 &&\
+ PKGCFG="${!#}" || PKGCFG="pkg.cfg" # last argument used of [FILE] or use default ./pkg.cfg placement
+
 # OPTIONS
+## TODO: use getopts
+
 while :
 do
 	case $1 in
@@ -32,9 +48,29 @@ do
 			;;
 		-V | --ver | --version)
 			echo -e "GM2X PACKAGER version ${VER} for MiyooCFW ${MIYOOCFW}"
-			exit 0
+			shift
 			;;
-		--) 
+		-i | --ipk)
+			IPK_OPT="1"
+			echo -e "generating IPK package"
+			shift
+			;;
+		-z | --zip)
+			ZIP_OPT="1"
+			echo -e "generating ZIP archive"
+			shift
+			;;
+		-p | --pkg)
+			PACKAGE_OPT="1"
+			echo -e "generating ./package"
+			shift
+			;;
+		-c | --clean)
+			CLEAN_OPT="1"
+			echo -e "cleaning all PACKAGES"
+			shift
+			;;
+		--)
 			shift
 			break
 			;;
@@ -49,16 +85,16 @@ do
 done
 
 # NOTES: 
-## Optionally put `Aliases.txt`, `<target_name>.man.txt` or <target_name>.lnk file in script current working directory
+## Optionally put `Aliases.txt`, `<target_name>.man.txt` or <target_name>.lnk file in script's current working directory
 
 # CONFIG FILE
 ## Grabing predefined settings from configuration file
-if test -f pkg.cfg; then
-	source pkg.cfg
-	echo "config file found, setting following variables:"
-	grep -v -e '^#' -e '""' pkg.cfg
+if test -f "${PKGCFG}"; then
+	source "${PKGCFG}"
+	echo "config file found in $(realpath ${PKGCFG}), setting following variables:"
+	grep -v -e '^#' -e '""' "${PKGCFG}"
 	if test "${VER}" != "${PKGVER}" ; then
-		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your pkg.cfg config"
+		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file"
 		sleep 2
 		exit
 	fi
@@ -66,6 +102,12 @@ else
 	echo "no config pkg.cfg file found, executing with predefined values from env or script"
 	sleep 1
 fi
+
+# OPTIONS
+PACKAGE=${PACKAGE:=${PACKAGE_OPT}}
+ZIP=${ZIP:=${ZIP_OPT}}
+IPK=${IPK:=${IPK_OPT}}
+CLEAN=${CLEAN:=${CLEAN_OPT}}
 
 # EXEC commands
 PACKAGE=${PACKAGE:=0}
@@ -76,7 +118,7 @@ CLEAN=${CLEAN:=0}
 # ENV VAR.
 ## Specific
 if test -z $TARGET; then
-	echo "No binary name provided, please set $TARGET in your env with correct execution program name"
+	echo "No binary name provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
 	exit
 elif ! test -f "$TARGET"; then
@@ -104,11 +146,7 @@ DESCRI=${DESCRI:="${TARGET} app"}
 SELDIR=${SELDIR:=""}
 if test -z $DESTDIR; then
 	DESTDIR=apps
-	echo "no destination directory provided, setting path to default /mnt/${DESTDIR}"
-fi
-if test -z $TARGET_DIR; then
-	TARGET_DIR=${TARGET}
-	echo "no target directory provided, setting path to default /${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+	echo "no destination directory provided, setting path to default ${HOMEPATH}/${DESTDIR}"
 fi
 if test -z $SECTION; then
 	SECTION=applications
@@ -121,6 +159,16 @@ if test -f "${TARGET}.lnk"; then
 else
 	echo "no link file found, executing with predefined values:"
 	echo -e "title=$TITLE\ndescription=$DESCRI\nselectordir=$SELDIR"
+fi
+
+## Custom entries
+if test -z $TARGET_DIR; then
+	TARGET_DIR=${TARGET}
+	echo "no target directory provided, setting path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+fi
+if test ${#DOCS[@]} -eq 0 || test -z "${DOCS[*]}"; then
+	DOCS=("")
+	echo "INFO: Hmm... I suggest you add some documention via \$DOCS[] variable"
 fi
 
 ## IPK control entries
@@ -140,12 +188,14 @@ Architecture: ${ARCH}"
 #---------------------------------------------#
 # CODE execution
 
-echo -e "Using following configuration:\n\
-PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n\
-TARGET=${TARGET}\nVERSION=${VERSION}\n\
-HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n\
-TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nTARGET_DIR=${TARGET_DIR}\nSECTION=${SECTION}\n\
-PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}"
+echo -e "Using following configuration:
+PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n
+TARGET=${TARGET}\nVERSION=${VERSION}\n
+HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n
+TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nTARGET_DIR=${TARGET_DIR}\nSECTION=${SECTION}\n
+TARGET_DIR=${TITLE}\nDOCS=(${DOCS[*]})\n
+PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\n
+"
 
 if ! test -d $ASSETSDIR; then
 	echo "No assets directory found matching name \"${ASSETSDIR}/\", exiting..."
@@ -154,16 +204,17 @@ if ! test -d $ASSETSDIR; then
 fi
 
 if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
+	TARGET_PATH=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
 	rm -rf $RELEASEDIR
 	mkdir -p $RELEASEDIR
 	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
 	cp *$TARGET $RELEASEDIR/
-	mkdir -p $RELEASEDIR/$DESTDIR/$TARGET_DIR
+	mkdir -p $TARGET_PATH
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
-	mv $RELEASEDIR/*$TARGET $RELEASEDIR/$DESTDIR/$TARGET_DIR/
-	cp -r $ASSETSDIR/* $RELEASEDIR/$DESTDIR/$TARGET_DIR
+	mv $RELEASEDIR/*$TARGET $TARGET_PATH/
+	cp -r $ASSETSDIR/* $TARGET_PATH
 	if !(test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
@@ -174,22 +225,30 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		fi
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
-	cp $ALIASES $RELEASEDIR/$DESTDIR/$TARGET_DIR
-	cp $MANUAL $RELEASEDIR/$DESTDIR/$TARGET_DIR/${TARGET}.man.txt
+	cp $ALIASES $TARGET_PATH
+	cp $MANUAL $TARGET_PATH/${TARGET}.man.txt
+	! test -z "${DOCS[*]}"\
+	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}"/"${DOCS[$i]}.txt"; done\
+	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
+	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_PATH\
+	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
+	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/" 
 	
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
-		rm -rf $RELEASEDIR/*.ipk
+		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		cd $RELEASEDIR && zip -rq $TARGET$VERSION.zip ./* && mv *.zip ..
-		rm -rf $RELEASEDIR/*
-		mv $TARGET*.zip $RELEASEDIR/
+		cd ..
+		test -f "${TARGET}${VERSION}.zip"\
+		 && echo "Done packaging ./${TARGET}${VERSION}.zip archive"\
+		 || echo "WARNING: Upss smth went wrong and I couldn't locate ${TARGET}${VERSION}.zip"
 	fi
 	
 	# Create ./package/<target>.ipk
 	if test $IPK -ne 0 >/dev/null 2>&1; then
-		rm -rf $RELEASEDIR/*.zip
+		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		mkdir -p .$HOMEPATH
-		mv $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR
+		cp -r $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR/
 		mkdir -p $RELEASEDIR/data
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
 		if !(test -d $OPKG_ASSETSDIR/CONTROL); then
@@ -204,16 +263,18 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		echo 2.0 > $RELEASEDIR/debian-binary
 		tar --owner=0 --group=0 -czvf $RELEASEDIR/data.tar.gz -C $RELEASEDIR/data/ . >/dev/null 2>&1
 		tar --owner=0 --group=0 -czvf $RELEASEDIR/control.tar.gz -C $RELEASEDIR/CONTROL/ . >/dev/null 2>&1
-		ar r $TARGET.ipk $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary
-		rm -rf ${RELEASEDIR:?}/*
-		mv $TARGET.ipk $RELEASEDIR/
+		ar r $TARGET.ipk $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary\
+		 && echo "Done creating ./${TARGET}.ipk package"\
+		 && rm $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary && rm -r $RELEASEDIR/CONTROL/ $RELEASEDIR/data/
+		# mv $TARGET.ipk $RELEASEDIR/
 	fi
+	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -rf ${RELEASEDIR:?}/*; fi
 elif test $CLEAN -ne 0 >/dev/null 2>&1; then
-	rm -rf $RELEASEDIR
-	rm -rf $OPKG_ASSETSDIR
-	rm -f *.ipk
-	rm -f *.zip
-	rm -f $LINK
+	rm -rf ${RELEASEDIR:?} && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR}"
+	rm -rf ${OPKG_ASSETSDIR:?} && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
+	rm -f $TARGET.ipk && echo "Done CLEANING ./${TARGET}.ipk" || echo "WARNING: Couldn't clean ./${TARGET}.ipk"
+	rm -f $TARGET*.zip && echo "Done CLEANING ./${TARGET}.zip" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
+	rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
 else
 	echo "No instructions provided, please set \$PACKAGE/\$ZIP/\$IPK or \$CLEAN in env to 1 for correct output"
 	sleep 1
