@@ -180,7 +180,24 @@ DEPENDS=${DEPENDS:=""}
 SOURCE=${SOURCE:=""}
 LICENSE=${LICENSE:="Unknown"}
 
-### automate output of CONTROL file
+#---------------------------------------------#
+# CODE execution
+
+LIBS_LD="$(file ${TARGET} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
+if test "${LIBS_LD}" == "dynamically"; then
+	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p')
+	DEPENDS="${LIBC} ${DEPENDS}"
+	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
+	test "${LIBC}" == "uClibc" || test "${LIBC}" == "musl"\
+	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && exit 1"
+elif test "${LIBS_LD}" == "statically"; then
+	DEPENDS=""
+	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with no need for externall dependencies"
+else
+	echo "Bad file type or build linking, exiting..."
+	exit 1
+fi
+
 CONTROL="Package: ${TARGET}\n\
 Version: ${VERSION}\n\
 Depends: ${DEPENDS}\n\
@@ -191,8 +208,6 @@ Section: ${SECTION}\n\
 Priority: ${PRIORITY}\n\
 Maintainer: ${MAINTAINER}\n\
 Architecture: ${ARCH}"
-#---------------------------------------------#
-# CODE execution
 
 echo -e "Using following configuration:
 PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n
