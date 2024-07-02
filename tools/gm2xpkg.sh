@@ -185,10 +185,10 @@ LICENSE=${LICENSE:="Unknown"}
 
 LIBS_LD="$(file ${TARGET} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
 if test "${LIBS_LD}" == "dynamically"; then
-	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p')
+	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
 	DEPENDS="${LIBC}, ${DEPENDS}"
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
-	test "${LIBC}" == "uClibc" || test "${LIBC}" == "musl"\
+	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
 	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && exit 1"
 elif test "${LIBS_LD}" == "statically"; then
 	DEPENDS=""
