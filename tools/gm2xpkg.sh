@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.3
+VER=0.4
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -48,7 +48,7 @@ do
 			;;
 		-V | --ver | --version)
 			echo -e "GM2X PACKAGER version ${VER} for MiyooCFW ${MIYOOCFW}"
-			shift
+			exit 0
 			;;
 		-i | --ipk)
 			IPK_OPT="1"
@@ -176,17 +176,38 @@ PRIORITY=${PRIORITY:=optional}
 MAINTAINER=${MAINTAINER:=Unknown}
 CONFFILES=${CONFFILES:=""} # TODO (to preserve & not reinstall user configs)
 ARCH=${ARCH:=arm}
+DEPENDS=${DEPENDS:=""}
+SOURCE=${SOURCE:=""}
+LICENSE=${LICENSE:="Unknown"}
 
-### automate output of CONTROL file
+#---------------------------------------------#
+# CODE execution
+
+LIBS_LD="$(file ${TARGET} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
+if test "${LIBS_LD}" == "dynamically"; then
+	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
+	DEPENDS="${LIBC}, ${DEPENDS}"
+	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
+	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
+	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && exit 1"
+elif test "${LIBS_LD}" == "statically"; then
+	DEPENDS=""
+	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with no need for externall dependencies"
+else
+	echo "Bad file type or build linking, exiting..."
+	exit 1
+fi
+
 CONTROL="Package: ${TARGET}\n\
 Version: ${VERSION}\n\
+Depends: ${DEPENDS}\n\
+Source: ${SOURCE}\n\
+License: ${LICENSE}\n\
 Description: ${DESCRI}\n\
 Section: ${SECTION}\n\
 Priority: ${PRIORITY}\n\
 Maintainer: ${MAINTAINER}\n\
 Architecture: ${ARCH}"
-#---------------------------------------------#
-# CODE execution
 
 echo -e "Using following configuration:
 PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n
@@ -194,7 +215,7 @@ TARGET=${TARGET}\nVERSION=${VERSION}\n
 HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n
 TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nTARGET_DIR=${TARGET_DIR}\nSECTION=${SECTION}\n
 TARGET_DIR=${TITLE}\nDOCS=(${DOCS[*]})\n
-PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\n
+PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}
 "
 
 if ! test -d $ASSETSDIR; then
