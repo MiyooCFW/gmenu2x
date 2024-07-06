@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.4
+VER=0.5
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -14,6 +14,7 @@ help_func() {
 	 \t -i, --ipk       generate IPK package
 	 \t -z, --zip       generate ZIP archive
 	 \t -p, --pkg       generate ./package
+	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
 	 Instructions:
 	 \t 1. Put inside CWD:
 	 \t\t- ./<target_name> binary
@@ -122,7 +123,7 @@ if test -z $TARGET; then
 	sleep 2
 	exit
 elif ! test -f "$TARGET"; then
-	echo "No binary found matching name \"${TARGET}\", exiting..."
+	echo "No binary/script found matching name \"${TARGET}\", exiting..."
 	sleep 2
 	exit
 fi
@@ -177,7 +178,7 @@ MAINTAINER=${MAINTAINER:=Unknown}
 CONFFILES=${CONFFILES:=""} # TODO (to preserve & not reinstall user configs)
 ARCH=${ARCH:=arm}
 DEPENDS=${DEPENDS:=""}
-SOURCE=${SOURCE:=""}
+SOURCE=${SOURCE:="Unknown"}
 LICENSE=${LICENSE:="Unknown"}
 
 #---------------------------------------------#
@@ -186,7 +187,7 @@ LICENSE=${LICENSE:="Unknown"}
 LIBS_LD="$(file ${TARGET} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
 if test "${LIBS_LD}" == "dynamically"; then
 	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
-	DEPENDS="${LIBC}, ${DEPENDS}"
+	! test -z ${DEPENDS} && DEPENDS="${LIBC}, ${DEPENDS}" || DEPENDS="${LIBC}"
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
 	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
 	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && exit 1"
@@ -194,8 +195,8 @@ elif test "${LIBS_LD}" == "statically"; then
 	DEPENDS=""
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with no need for externall dependencies"
 else
-	echo "Bad file type or build linking, exiting..."
-	exit 1
+	echo "WARNING: Probably not a binary file (or linking problem), if it's a script pls provide correct interpreter as dependency"
+	sleep 1
 fi
 
 CONTROL="Package: ${TARGET}\n\
@@ -295,9 +296,9 @@ elif test $CLEAN -ne 0 >/dev/null 2>&1; then
 	rm -rf ${OPKG_ASSETSDIR:?} && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
 	rm -f $TARGET.ipk && echo "Done CLEANING ./${TARGET}.ipk" || echo "WARNING: Couldn't clean ./${TARGET}.ipk"
 	rm -f $TARGET*.zip && echo "Done CLEANING ./${TARGET}.zip" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
-	rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
+	rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${LINK}"
 else
-	echo "No instructions provided, please set \$PACKAGE/\$ZIP/\$IPK or \$CLEAN in env to 1 for correct output"
+	echo "\nWARNING: No instructions provided, please use -i/-p/-z/-c option or set \$PACKAGE/\$ZIP/\$IPK/\$CLEAN in env to 1 for correct output\n\n"
 	sleep 1
 fi
 #---------------------------------------------#
