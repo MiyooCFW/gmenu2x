@@ -219,12 +219,6 @@ TARGET_DIR=${TITLE}\nDOCS=(${DOCS[*]})\n
 PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}
 "
 
-if ! test -d $ASSETSDIR; then
-	echo "No assets directory found matching name \"${ASSETSDIR}/\", exiting..."
-	sleep 2
-	exit
-fi
-
 if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
 	TARGET_PATH=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
@@ -236,7 +230,9 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	mkdir -p $TARGET_PATH
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
 	mv $RELEASEDIR/*$TARGET $TARGET_PATH/
-	cp -r $ASSETSDIR/* $TARGET_PATH
+	test -d $ASSETSDIR\
+	 && cp -r $ASSETSDIR/* $TARGET_PATH\
+	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
 	if !(test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
