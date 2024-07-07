@@ -15,6 +15,7 @@ help_func() {
 	 \t -z, --zip       generate ZIP archive
 	 \t -p, --pkg       generate ./package
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
+	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in CWD
 	 Instructions:
 	 \t 1. Put inside CWD:
 	 \t\t- ./<target_name> binary
@@ -32,10 +33,71 @@ help_func() {
 	 \t FILE - configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
 }
 
+pkg_config_func() {
+	if test "x${UPDATE_PKGCFG}" == "xyes"; then
+		source "${PKGCFG}"
+	fi
+	echo "# NOTES:
+## All variable values should enclosed within double quotes: \"<value>\"
+## CONFIGURATION FILE for \`gm2xpkg\` script version:
+PKGVER=\"${VER}\"
+
+# EXEC commands (set to \"1\" anyone for desired outcome), you can instead use [OPTIONS] of \`gm2xpkg\`:
+PACKAGE=\"${PACKAGE}\"
+ZIP=\"${ZIP}\"
+IPK=\"${IPK}\"
+CLEAN=\"${CLEAN}\"
+
+# ENV VAR.
+## Specific (mandatory to provide!)
+TARGET=\"${TARGET}\"  # replace with binary name
+VERSION=\"${VERSION}\"  # replace with correct release version if exist
+
+## Generic - common to all apps (better to not modify)
+HOMEPATH=\"${HOMEPATH}\"
+RELEASEDIR=\"${RELEASEDIR}\"
+ASSETSDIR=\"${ASSETSDIR}\"
+OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\"
+LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in CWD (warning: it may be removed with CLEAN=1)
+ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for selector e.g. old_title=new_title - place in CWD
+MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in CWD
+
+## Link entries (better modify if no <target_name>.lnk file provided)
+TITLE=\"${TITLE}\"
+DESCRI=\"${DESCRI}\"
+SELDIR=\"${SELDIR}\"
+DESTDIR=\"${DESTDIR}\" # default=apps
+SECTION=\"${SECTION}\" # default=applications
+
+## Custom entries (if needed then modify)
+TARGET_DIR=\"${TARGET_DIR}\" # the directory /\$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary if not provided the TARGET_DIR=\$TARGET
+DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${SPACE}\"${DOCS[$i]}\""; done))\
+ # array of extra text files e.g. =(\"LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend
+
+## IPK control entries (if needed then modify)
+PRIORITY=\"${PRIORITY}\"
+MAINTAINER=\"${MAINTAINER}\"
+CONFFILES=\"${CONFFILES}\"
+ARCH=\"${ARCH}\" # default=arm - do not modify for ARM chips
+# CONTROL= # automated output of *.ipk control config file
+DEPENDS=\"${DEPENDS}\" # list of dependency packages e.g. =\"sdl, libpng\" or =\"sdl (>= 2.9.2), sdl_mixer (= ed76d39cda0735d26c14a3e4f4da996e420f6478)\" provide only for shared libs build, otherwise ignored
+SOURCE=\"${SOURCE}\"
+LICENSE=\"${LICENSE}\"\
+" > "${PKGCFG}"
+}
+
 # ARGS
 ## Sanity test if there was any argument passed:
 test $# -ne 0 &&\
  PKGCFG="${!#}" || PKGCFG="pkg.cfg" # last argument used of [FILE] or use default ./pkg.cfg placement
+
+case "${PKGCFG}" in
+	-h|--help|-V|--ver|--version|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg)
+		PKGCFG="pkg.cfg"
+		;;
+	*)
+		;;
+esac
 
 # OPTIONS
 ## TODO: use getopts
@@ -71,6 +133,35 @@ do
 			echo -e "cleaning all PACKAGES"
 			shift
 			;;
+		-g | --gencfg)
+			echo "using ./${PKGCFG} name as config file"
+			if ! test -e "${PKGCFG}"; then
+				pkg_config_func
+				echo -e "generating standard \"${PKGCFG}\" config file"
+			else 
+				echo -e "Detected present ${PKGCFG} file. Do you wish to overwrite existing configuration?"
+				read -rp "[Y]es, [N]o, [U]pdate:" INPUT
+				case "${INPUT}" in
+					[Yy]*)
+						echo "YES, overwriting existing ${PKGCFG} file"
+						pkg_config_func
+						;;
+					[Nn]*)
+						echo "NO, exiting..."
+						;;
+					[Uu]*)
+						echo "Update, upgrading present ${PKGCFG} file with new config version - ${VER}"
+						UPDATE_PKGCFG=yes
+						pkg_config_func
+						;;
+					*)
+						echo "Invalid choice, please try again"
+						;;
+				esac
+			fi
+			sleep 1
+			exit 0
+			;;
 		--)
 			shift
 			break
@@ -100,7 +191,7 @@ if test -f "${PKGCFG}"; then
 		exit
 	fi
 else
-	echo "no config pkg.cfg file found, executing with predefined values from env or script"
+	echo "no config \"${PKGCFG}\" file found, executing with predefined values from env or script"
 	sleep 1
 fi
 
