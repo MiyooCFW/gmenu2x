@@ -141,6 +141,8 @@ bool InputDialog::exec() {
 
 	gmenu2x->s->box(gmenu2x->bottomBarRect, gmenu2x->skinConfColors[COLOR_BOTTOM_BAR_BG]);
 
+	string readValue = "";
+	string readTyped = gmenu2x->tr["Typed"] + " ";
 	string altBtn = "x";
 	string altChar = gmenu2x->tr["Alt"];
 	string spaceChar = gmenu2x->tr["Space"];
@@ -194,10 +196,19 @@ bool InputDialog::exec() {
 		gmenu2x->s->flip();
 
 		bool inputAction = gmenu2x->input.update();
-		if (gmenu2x->inputCommonActions(inputAction)) continue;
+
+		if (!allyRead) {
+			readValue = currKey();
+			gmenu2x->allyTTS(readValue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+			allyRead = true;
+		}
+
+		if (gmenu2x->inputCommonActions(inputAction)) {
+			continue;
+		}
 
 		if (gmenu2x->input[CANCEL] || gmenu2x->input[MENU]) return false;
-		else if (gmenu2x->input[SETTINGS]) {		
+		else if (gmenu2x->input[SETTINGS]) {
 			string inputss;
 			string::size_type position_newl_all = input.find("\n");
 
@@ -235,6 +246,22 @@ bool InputDialog::exec() {
 		else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL])		changeKeysCustom();
 		else if (gmenu2x->input[SECTION_PREV])	backspace();
 		else if (gmenu2x->input[SECTION_NEXT])	space();
+
+		if (
+			gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[MANUAL]
+			|| gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT || gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN
+		) {
+			allyRead = false;
+		} else if (gmenu2x->input[SECTION_NEXT]) {
+			readValue = readTyped + gmenu2x->tr["Space"];
+			gmenu2x->allyTTS(readValue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+		} else if (gmenu2x->input[SECTION_PREV]) {
+			readValue = readTyped + gmenu2x->tr["Backspace"];
+			gmenu2x->allyTTS(readValue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+		} else if (gmenu2x->input[CONFIRM]) {
+			readValue = readTyped + currKey();
+			gmenu2x->allyTTS(readValue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+		}
 	}
 }
 
@@ -247,15 +274,21 @@ void InputDialog::space() {
 	input += " ";
 }
 
-void InputDialog::confirm() {
+string InputDialog::currKey() {
 	bool utf8;
 	int xc=0;
 	for (uint32_t x = 0; x < kb->at(selRow).length(); x++) {
 		utf8 = gmenu2x->font->utf8Code(kb->at(selRow)[x]);
-		if (xc == selCol) input += kb->at(selRow).substr(x, utf8 ? 2 : 1);
+		if (xc == selCol) 
+			return kb->at(selRow).substr(x, utf8 ? 2 : 1);
 		if (utf8) x++;
 		xc++;
 	}
+	return "";
+}
+
+void InputDialog::confirm() {
+	input += currKey();
 }
 
 void InputDialog::changeKeys() {

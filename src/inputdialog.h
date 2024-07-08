@@ -73,6 +73,9 @@ private:
 	IconButton *btnBackspaceX, *btnBackspaceL, *btnSpace, *btnConfirm, *btnChangeKeys;
 	string input;
 
+	string currKey();
+	bool allyRead = false;
+
 	void backspace();
 	void space();
 	void confirm();
