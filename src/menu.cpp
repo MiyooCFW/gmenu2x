@@ -923,18 +923,14 @@ void Menu::exec() {
 			selLink()->run();
 		}
 		else if (gmenu2x->input[CANCEL])	{
-			allyRead = false; 
 			continue;
 		} else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) {
 			if (selLinkApp() != NULL || selLink() != NULL) gmenu2x->allyTTS(iconDescription.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
-			allyRead = false; 
 			continue;
 		} else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed)) {
 			gmenu2x->settings();
-			allyRead = false;
 		} else if (gmenu2x->input[MENU]) { 
 			gmenu2x->contextMenu();
-			allyRead = false;
 		}
 		// LINK NAVIGATION
 		else if ((gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) && linkCols == 1 && linkRows > 1) pageUp();
@@ -951,7 +947,6 @@ void Menu::exec() {
 		// SELLINKAPP SELECTED
 		else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER] && selLinkApp() != NULL && !selLinkApp()->getManualPath().empty()) {
 			gmenu2x->showManual();
-			allyRead = false;
 		}
 		// On Screen Help
 		// else if (gmenu2x->input[MANUAL]) {
@@ -985,9 +980,15 @@ void Menu::exec() {
 			iconDescription = selLink()->getDescription();
 		}
 
+		if (
+			gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[MANUAL]
+			|| gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT || gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN
+			|| gmenu2x->input[MANUAL] || gmenu2x->input[MODIFIER]
+		) allyRead = false;
+
 		if (!allyRead) {
-		gmenu2x->allyTTS(iconTitle.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
-		allyRead = true;
+			gmenu2x->allyTTS(iconTitle.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+			allyRead = true;
 		}
 
 		if (
