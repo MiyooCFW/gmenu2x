@@ -222,15 +222,15 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 
 	voice = VOICE_TTS.c_str();
 
-	freopen("/dev/null", "w", stdout); // nulify stdout
+	//freopen("/dev/null", "w", stdout); // nulify stdout
 
-	if (system("pgrep " TTS_ENGINE) == 0) system("killall " TTS_ENGINE);
+	system("killall " TTS_ENGINE);
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
 	system(tmp_chr);
 	if (wait) while (system("pgrep " TTS_ENGINE) == 0) sleep(0.1);
 	
-	fflush(stdout);
-	freopen("/dev/tty", "w", stdout); // activate stdout
+	//fflush(stdout);
+	//freopen("/dev/tty", "w", stdout); // activate stdout
 }
 
 void GMenu2X::quit() {
