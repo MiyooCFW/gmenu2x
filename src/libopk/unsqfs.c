@@ -273,11 +273,11 @@ struct squashfs_fragment_entry {
 #define TRACE(s, args...) \
 		do { \
 			printf("unsquashfs: "s, ## args); \
-		} while(0)
+		} while (0)
 #define ERROR(s, args...) \
 		do { \
 			fprintf(stderr, s, ## args); \
-		} while(0)
+		} while (0)
 #else
 #define TRACE(s, args...)
 #define ERROR(s, args...)
@@ -767,7 +767,7 @@ static bool squashfs_opendir(struct PkgData *pdata,
 		TRACE("squashfs_opendir: Read directory header, %d directory entries\n",
 				dir_count);
 
-		while(dir_count--) {
+		while (dir_count--) {
 			if (!read_metadata(&accessor, dire, sizeof(*dire))) {
 				return false;
 			}
@@ -779,7 +779,7 @@ static bool squashfs_opendir(struct PkgData *pdata,
 			TRACE("squashfs_opendir: directory entry %s, inode "
 				"%d:%d, type %d\n", dire->name,
 				dirh.start_block, dire->offset, dire->type);
-			if((dir->dir_count % DIR_ENT_SIZE) == 0) {
+			if ((dir->dir_count % DIR_ENT_SIZE) == 0) {
 				struct dir_ent *new_dir = realloc(dir->dirs,
 						(dir->dir_count + DIR_ENT_SIZE)
 						* sizeof(struct dir_ent));

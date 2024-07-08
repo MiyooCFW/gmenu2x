@@ -77,8 +77,8 @@ uint32_t MenuSettingMultiInt::manageInput() {
 
 int MenuSettingMultiInt::reverseLookup(int value) {
   int output;
-  for(int i = 0; i <= selection_max + 1; i++) {
-	if(choices[i] <= value){
+  for (int i = 0; i <= selection_max + 1; i++) {
+	if (choices[i] <= value) {
 	  output = i;
 	} else {
 	  break;
@@ -88,34 +88,34 @@ int MenuSettingMultiInt::reverseLookup(int value) {
 }
 
 void MenuSettingMultiInt::inc() {
-	if(selection < selection_max && choices[selection + 1] <= max) {
+	if (selection < selection_max && choices[selection + 1] <= max) {
 		selection = selection + 1;
 		setValue(choices[selection], 1);
 	}
 }
 
 void MenuSettingMultiInt::inc2x() {
-	if(selection < selection_max && ((choices[selection + 1] < max) || (choices[selection + 2] == max))) {
+	if (selection < selection_max && ((choices[selection + 1] < max) || (choices[selection + 2] == max))) {
 		selection = selection + 2;
 		setValue(choices[selection], 1);
-	} else if(selection < selection_max && choices[selection + 1] == max) {
+	} else if (selection < selection_max && choices[selection + 1] == max) {
 		selection = selection + 1;
 		setValue(choices[selection], 1);
 	}
 }
 
 void MenuSettingMultiInt::dec() {
-	if(selection > 0 && choices[selection - 1] >= min) {
+	if (selection > 0 && choices[selection - 1] >= min) {
 		selection = selection - 1;
 		setValue(choices[selection], 1);
 	}
 }
 
 void MenuSettingMultiInt::dec2x() {
-	if(selection > 0 && ((choices[selection - 1] > min) || (choices[selection - 2] == min))) {
+	if (selection > 0 && ((choices[selection - 1] > min) || (choices[selection - 2] == min))) {
 		selection = selection - 2;
 		setValue(choices[selection], 1);
-	} else 	if(selection > 0 && choices[selection - 1] == min) {
+	} else 	if (selection > 0 && choices[selection - 1] == min) {
 		selection = selection - 1;
 		setValue(choices[selection], 1);
 	}

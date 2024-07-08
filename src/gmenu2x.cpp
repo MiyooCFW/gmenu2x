@@ -177,7 +177,7 @@ int main(int argc, char * argv[]) {
 
 	bool autoStart = false;
 	for (int i = 0; i < argc; i++) {
-       		if(strcmp(argv[i],"--autostart")==0) {
+       		if (strcmp(argv[i],"--autostart")==0) {
 			INFO("Launching Autostart");
 			autoStart = true;
 		}
@@ -330,7 +330,7 @@ void GMenu2X::main(bool autoStart) {
 	srand(time(0));  // Seed the rand with current time to get different number sequences
 	int randomInt = rand() % 10; // Generate a random val={0..x} to print "Hint" msg occasionally
 	// Hint messages
-	//while (true){
+	//while (true) {
 	if (confInt["showHints"] == 1) {
 		if (confInt["enableTTS"] == 1 && (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "")) {
 			switch (randomInt) {
@@ -442,8 +442,11 @@ void GMenu2X::main(bool autoStart) {
 			reinit();
 		}
 	} else {
-		if (input[MANUAL]) { // Reset AutoStart settings
-			confStr["lastDirectory"] = "";
+		if (input[MANUAL]) { // Reset settings for viewAutoStart()
+				confInt["saveAutoStart"] = 0;
+				confInt["dialogAutoStart"] = 0;
+				confStr["lastDirectory"] = "";
+				confStr["lastCommand"] = "";
 			reinit_save();
 		}
 	}
@@ -464,7 +467,7 @@ void GMenu2X::main(bool autoStart) {
 		viewAutoStart();
 	}
 
-	if(confStr["lastCommand"] != "" && confStr["lastDirectory"] != "")  {
+	if (confStr["lastCommand"] != "" && confStr["lastDirectory"] != "")  {
 		INFO("Starting autostart()");
 		INFO("conf %s %s",confStr["lastDirectory"].c_str(),confStr["lastCommand"].c_str());
 		INFO("autostart %s %s",confStr["lastDirectory"],confStr["lastCommand"]);
@@ -1570,8 +1573,9 @@ void GMenu2X::viewAutoStart() {
 	switch (res) {
 			case CANCEL:
 				confInt["saveAutoStart"] = 0;
-				confStr["lastDirectory"] = "";
 				confInt["dialogAutoStart"] = 0;
+				confStr["lastDirectory"] = "";
+				confStr["lastCommand"] = "";
 				reinit_save();
 			case MODIFIER:
 				confInt["dialogAutoStart"] = 0;

@@ -49,6 +49,8 @@ public:
 	FontHelper *setColor(RGBAColor color);
 	FontHelper *setOutlineColor(RGBAColor color);
 	TTF_Font *font, *fontOutline;
+
+	string fontFamilyName;
 };
 
 #endif /* FONTHELPER_H */

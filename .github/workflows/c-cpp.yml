@@ -19,7 +19,7 @@ jobs:
       image: miyoocfw/toolchain-shared-uclibc:master
     steps:
     - run: echo "submodule ${{ inputs.submodule }} on ${{ github.event }}"
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - if: inputs.submodule
       run: git submodule update --init --depth 1 -- ${{ inputs.submodule }}
     - name: generate commit sha 
@@ -33,21 +33,21 @@ jobs:
         cd ${{ inputs.submodule || '.' }}       
         make -f Makefile.miyoo dist COMMIT_HASH="${{ steps.commit.outputs.commit }}"
         make -f Makefile.miyoo ipk
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: GMenu2X (uClibc)
         path: |
           ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x
           ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: GMenu2X ZIP-Bundle (uClibc)
         path: |
           ${{ inputs.submodule || '.' }}/dist/miyoo/
           !${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: GMenu2X IPK-Package (uClibc)
         path: |
@@ -61,7 +61,7 @@ jobs:
       image: miyoocfw/toolchain-shared-musl:master
     steps:
     - run: echo "submodule ${{ inputs.submodule }} on ${{ github.event }}"
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - if: inputs.submodule
       run: git submodule update --init --depth 1 -- ${{ inputs.submodule }}
     - name: generate commit sha 
@@ -75,21 +75,21 @@ jobs:
         cd ${{ inputs.submodule || '.' }}       
         make -f Makefile.miyoo dist COMMIT_HASH="${{ steps.commit.outputs.commit }}"
         make -f Makefile.miyoo ipk
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: GMenu2X (musl)
         path: |
           ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x
           ${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: GMenu2X ZIP-Bundle (musl)
         path: |
           ${{ inputs.submodule || '.' }}/dist/miyoo/
           !${{ inputs.submodule || '.' }}/dist/miyoo/gmenu2x-debug
         if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: GMenu2X IPK-Package (musl)
         path: |

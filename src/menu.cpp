@@ -945,9 +945,7 @@ void Menu::exec() {
 		else if (gmenu2x->input[SECTION_NEXT]) incSectionIndex();
 
 		// SELLINKAPP SELECTED
-		else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER] && selLinkApp() != NULL && !selLinkApp()->getManualPath().empty()) {
-			gmenu2x->showManual();
-		}
+		else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER] && selLinkApp() != NULL && !selLinkApp()->getManualPath().empty()) gmenu2x->showManual();
 		// On Screen Help
 		// else if (gmenu2x->input[MANUAL]) {
 		// 	s->box(10,50,300,162, gmenu2x->skinConfColors[COLOR_MESSAGE_BOX_BG]);
