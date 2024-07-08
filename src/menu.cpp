@@ -986,8 +986,9 @@ void Menu::exec() {
 			|| gmenu2x->input[MANUAL] || gmenu2x->input[MODIFIER]
 		) allyRead = false;
 
+		readSection = gmenu2x->tr["Section"] + " " + gmenu2x->tr[selSectionName()] + " " + gmenu2x->tr["at"] + " " + iconTitle;
 		if (!allyRead) {
-			gmenu2x->allyTTS(iconTitle.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+			gmenu2x->allyTTS(readSection.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 			allyRead = true;
 		}
 
@@ -1002,7 +1003,7 @@ void Menu::exec() {
 		}
 		if (
 			!iconTitle.empty() &&
-			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT])
+			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN])
 		) {
 			gmenu2x->allyTTS(iconTitle.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 		}
@@ -1011,6 +1012,7 @@ void Menu::exec() {
 			section_changed = SDL_GetTicks();
 			SDL_RemoveTimer(sectionChangedTimer); sectionChangedTimer = NULL;
 			sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input.wakeUp, (void*)false);
+			gmenu2x->allyTTS(readSection.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 		}
 	}
 }

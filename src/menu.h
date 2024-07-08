@@ -57,6 +57,8 @@ private:
 	string iconDescription = "";
 	string iconTitle = "";
 
+	string readSection = "";
+
 	SDL_TimerID sectionChangedTimer, iconChangedTimer;
 
 	void freeLinks();
