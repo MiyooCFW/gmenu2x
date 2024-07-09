@@ -248,7 +248,7 @@ int MessageBox::exec() {
 		// 		}
 		// 	}
 		// }
-		
+
 		string strButtons, strButtonsText;
 
 		for (uint32_t i = 0; i < buttonText.size(); i++) {

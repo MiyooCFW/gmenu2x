@@ -37,7 +37,7 @@ private:
 	virtual void edit() {
 		/* never called because manageInput() is overridden */
 	}
-	
+
 	const std::vector<std::string> *choices;
 	int selected;
 

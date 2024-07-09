@@ -240,7 +240,7 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 	char tmp_chr[256];
 	const char* voice;
 	//static char rm_tmp_chr[256];
-	
+
 	//if (strcmp(text, rm_tmp_chr) == 0) return;
 	//snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
 
@@ -252,7 +252,7 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
 	system(tmp_chr);
 	if (wait) while (system("pgrep " TTS_ENGINE) == 0) sleep(0.1);
-	
+
 	//fflush(stdout);
 	//freopen("/dev/tty", "w", stdout); // activate stdout
 }

@@ -929,7 +929,7 @@ void Menu::exec() {
 			continue;
 		} else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed)) {
 			gmenu2x->settings();
-		} else if (gmenu2x->input[MENU]) { 
+		} else if (gmenu2x->input[MENU]) {
 			gmenu2x->contextMenu();
 		}
 		// LINK NAVIGATION

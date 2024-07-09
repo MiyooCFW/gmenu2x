@@ -128,7 +128,7 @@ void InputDialog::setKeyboard(int kb) {
 bool InputDialog::exec() {
 	string readWarning = gmenu2x->tr["Entering Text Dialog editor, press B to exit"];
 	gmenu2x->allyTTS(readWarning.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 1);
-	
+
 	Surface *bg = new Surface(gmenu2x->s);
 
 	SDL_Rect box = {gmenu2x->listRect.x + 2, 0, gmenu2x->listRect.w - 4, gmenu2x->font->getHeight() + 4};
@@ -296,7 +296,7 @@ string InputDialog::currKey() {
 	int xc=0;
 	for (uint32_t x = 0; x < kb->at(selRow).length(); x++) {
 		utf8 = gmenu2x->font->utf8Code(kb->at(selRow)[x]);
-		if (xc == selCol) 
+		if (xc == selCol)
 			return kb->at(selRow).substr(x, utf8 ? 2 : 1);
 		if (utf8) x++;
 		xc++;

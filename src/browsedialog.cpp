@@ -95,7 +95,7 @@ bool BrowseDialog::exec() {
 			iY = gmenu2x->listRect.y + 1;
 			for (i = firstElement; i < size() && i <= firstElement + numRows; i++, iY += rowHeight) {
 				if (i == selected) gmenu2x->s->box(gmenu2x->listRect.x, iY, gmenu2x->listRect.w, rowHeight, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
-				
+
 				iconCur = iconFile;
 
 				if (isDirectory(i)) {
