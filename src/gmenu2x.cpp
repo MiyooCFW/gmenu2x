@@ -211,6 +211,30 @@ GMenu2X::~GMenu2X() {
 	delete titlefont;
 }
 
+void GMenu2X::allyTTS(const char* text) {
+	if (!confInt["enableTTS"]) return;
+	char tmp_chr[256];
+	const char* voice;
+
+	voice = VOICE_TTS.c_str();
+
+	system("killall " TTS_ENGINE);
+	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \'%s\' -v%s &", text, voice);
+	system(tmp_chr);
+}
+
+void GMenu2X::allyTTS(const char* file, int gap, int speed) {
+	if (!confInt["enableTTS"]) return;
+	char tmp_chr[256];
+	const char* voice;
+
+	voice = VOICE_TTS.c_str();
+
+	system("killall " TTS_ENGINE);
+	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " -f%s -g%i -s%i -v%s &", file, gap, speed, voice);
+	system(tmp_chr);
+}
+
 void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 	if (!confInt["enableTTS"]) return;
 	char tmp_chr[256];
@@ -337,18 +361,10 @@ void GMenu2X::main(bool autoStart) {
 				case 0: case 1: case 2: {
 				string readHint = tr["Hint: To read a selected value or Link's description press X"];
 				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
-				//SDL_Delay(3500);
 				break;
 				}
-				// case 3: case 4: case 5: {
-				// string readHint = tr["Hint: To read the value in settings' dialog press"] + " [[aI]]";
-				// allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
-				// //SDL_Delay(3500);
-				// break;
-				// }
 				default: {
 				allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
-				//SDL_Delay(1000);
 				break;
 				}
 			}
@@ -1530,6 +1546,7 @@ void GMenu2X::about() {
 #endif
 	// td.appendText(temp);
 	td.appendFile(tr["_about_"] + ".txt");
+	allyTTS((tr["_about_"] + ".txt").c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 	td.exec();
 }
 
@@ -1539,6 +1556,7 @@ void GMenu2X::viewLog() {
 
 	TextDialog td(this, tr["Log Viewer"], tr["Last launched program's output"], "skin:icons/ebook.png");
 	td.appendFile(exe_path() + "/log.txt");
+	allyTTS((exe_path() + "/log.txt").c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 	td.exec();
 
 	MessageBox mb(this, tr["Delete the log file?"], "skin:icons/ebook.png");
@@ -1644,6 +1662,7 @@ void GMenu2X::showManual() {
 		return;
 	}
 
+	allyTTS(linkManual.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 	td.exec();
 }
 
@@ -1670,6 +1689,7 @@ void GMenu2X::explorer() {
 		} else if (ext == ".txt" || ext == ".conf" || ext == ".me" || ext == ".md" || ext == ".xml" || ext == ".log" || ext == ".ini") {
 			TextDialog td(this, tr["Text viewer"], bd.getFile(bd.selected), "skin:icons/ebook.png");
 			td.appendFile(bd.getFilePath(bd.selected));
+			allyTTS(bd.getFilePath(bd.selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 			td.exec();
 #if defined(IPK_SUPPORT)
 		} else if (ext == ".ipk" && file_exists("/usr/bin/opkg")) {

@@ -220,6 +220,8 @@ public:
 	void renameSection();
 	void deleteSection();
 
+	void allyTTS(const char* text);
+	void allyTTS(const char* file, int gap, int speed);
 	void allyTTS(const char* text, int gap, int speed, bool wait);
 
 	string setBackground(Surface *bg, string wallpaper);
