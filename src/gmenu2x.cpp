@@ -248,7 +248,7 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 
 	//freopen("/dev/null", "w", stdout); // nulify stdout
 
-	system("killall " TTS_ENGINE);
+	if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
 	system(tmp_chr);
 	if (wait) while (system("pgrep " TTS_ENGINE) == 0) sleep(0.1);
