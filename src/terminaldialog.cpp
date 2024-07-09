@@ -53,6 +53,8 @@ void TerminalDialog::exec(string cmd) {
 
 	gmenu2x->powerManager->clearTimer();
 
+	gmenu2x->allyTTS(gmenu2x->tr["Processing output."].c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 1);
+
 	while (!feof(pipe) && fgets(buffer, 128, pipe) != NULL) {
 		rawText += buffer;
 		split(text, rawText, "\r\n");
@@ -66,6 +68,8 @@ void TerminalDialog::exec(string cmd) {
 
 	MessageBox mb(gmenu2x, gmenu2x->tr["Done processing."]);
 	mb.setAutoHide(0);
+	string readText = gmenu2x->tr["Done processing."] + /*PAUSE*/ "[[_::_::]]" + gmenu2x->tr["Terminal output as follows"] + /*PAUSE*/ "[[_::_::_::]]" + rawText;
+	gmenu2x->allyTTS(readText.c_str());
 	mb.exec();
 
 	if (text.size() >= rowsPerPage) firstRow = text.size() - rowsPerPage;
