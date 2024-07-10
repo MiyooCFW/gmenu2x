@@ -13,7 +13,8 @@ uint32_t hideAlphaNum(uint32_t interval, void *param) {
 	SDL_RemoveTimer(alphanum_timer); alphanum_timer = NULL;
 	InputManager::wakeUp(0, (void*)false);
 	return 0;
-};
+}
+
 
 BrowseDialog::BrowseDialog(GMenu2X *gmenu2x, const string &title, const string &description, const string &icon):
 Dialog(gmenu2x, title, description, icon) {
@@ -110,6 +111,8 @@ bool BrowseDialog::exec() {
 
 				gmenu2x->s->write(gmenu2x->font, getFileName(i), gmenu2x->listRect.x + 21, iY + rowHeight/2, VAlignMiddle);
 			}
+
+			gmenu2x->allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 0);
 
 			if (gmenu2x->confStr["previewMode"] != "Backdrop") {
 				Surface anim = new Surface(gmenu2x->s);

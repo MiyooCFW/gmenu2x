@@ -44,8 +44,9 @@ public:
 	virtual bool edited();
 
 	void setValue(int value);
-	void setValue(bool value);
+	void setValue(bool value, bool readValue);
 	bool value();
+	void current();
 };
 
 #endif

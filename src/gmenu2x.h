@@ -105,6 +105,14 @@ extern int LAYOUT_VERSION_MAX;
 extern int TEFIX;
 extern int TEFIX_MAX;
 
+extern int SLOW_GAP_TTS;
+extern int SLOW_SPEED_TTS;
+extern int MEDIUM_GAP_TTS;
+extern int MEDIUM_SPEED_TTS;
+extern int FAST_GAP_TTS;
+extern int FAST_SPEED_TTS;
+extern string VOICE_TTS;
+
 typedef FastDelegate0<> MenuAction;
 typedef unordered_map<string, string, hash<string> > ConfStrHash;
 typedef unordered_map<string, int, hash<string> > ConfIntHash;
@@ -211,6 +219,10 @@ public:
 	void addSection();
 	void renameSection();
 	void deleteSection();
+
+	void allyTTS(const char* text);
+	void allyTTS(const char* file, int gap, int speed);
+	void allyTTS(const char* text, int gap, int speed, bool wait);
 
 	string setBackground(Surface *bg, string wallpaper);
 

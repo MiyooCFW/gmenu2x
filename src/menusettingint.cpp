@@ -30,7 +30,7 @@ using fastdelegate::MakeDelegate;
 MenuSettingInt::MenuSettingInt(GMenu2X *gmenu2x, const string &title, const string &description, int *value, int def, int min, int max, int delta):
 MenuSetting(gmenu2x, title, description), _value(value), def(def), min(min), max(max), delta(delta), off(false) {
 	originalValue = *value;
-	setValue(evalIntConf(value, def, min, max));
+	setValue(evalIntConf(value, def, min, max), 0);
 
 	//Delegates
 	// ButtonAction actionInc = MakeDelegate(this, &MenuSettingInt::inc);
@@ -63,21 +63,27 @@ void MenuSettingInt::draw(int y) {
 uint32_t MenuSettingInt::manageInput() {
 	if (gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT)		dec();
 	else if (gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)	inc();
-	else if (gmenu2x->input[DEC])	setValue(value() - 10 * delta);
-	else if (gmenu2x->input[INC])	setValue(value() + 10 * delta);
-	else if (gmenu2x->input[MENU])	setDefault();
+	else if (gmenu2x->input[DEC])		setValue(value() - 10 * delta, 1);
+	else if (gmenu2x->input[INC])		setValue(value() + 10 * delta, 1);
+	else if (gmenu2x->input[MENU])		setDefault();
+	else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL])	current();
+
 	return 0; // SD_NO_ACTION
 }
 
 void MenuSettingInt::inc() {
-	setValue(value() + delta);
+	setValue(value() + delta, 1);
 }
 
 void MenuSettingInt::dec() {
-	setValue(value() - delta);
+	setValue(value() - delta, 1);
 }
 
-void MenuSettingInt::setValue(int value) {
+void MenuSettingInt::current() {
+	setValue(*_value, 1);
+}
+
+void MenuSettingInt::setValue(int value, bool readValue) {
 	if (off && *_value < value && value <= offValue)
 		*_value = offValue + 1;
 	else if (off && *_value > value && value <= offValue)
@@ -92,10 +98,11 @@ void MenuSettingInt::setValue(int value) {
 	ss << *_value;
 	strvalue = "";
 	ss >> strvalue;
+	if (readValue) gmenu2x->allyTTS(strvalue.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS, 0);
 }
 
 void MenuSettingInt::setDefault() {
-	setValue(def);
+	setValue(def, 1);
 }
 
 int MenuSettingInt::value() {

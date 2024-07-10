@@ -43,7 +43,8 @@ private:
 
 	void incSel();
 	void decSel();
-	void setSel(int sel);
+	void setSel(int sel, bool readValue);
+	void currentSel();
 
 	msms_onchange_t onChange;
 	msms_onselect_t onSelect; // variable to store function pointer type

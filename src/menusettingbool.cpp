@@ -25,7 +25,7 @@ MenuSettingBool::MenuSettingBool(GMenu2X *gmenu2x, const string &title, const st
 MenuSetting(gmenu2x, title, description), _ivalue(value) {
 	_value = NULL;
 	originalValue = *value != 0;
-	setValue(this->value());
+	setValue(this->value(), 0);
 	initButton();
 }
 
@@ -33,7 +33,7 @@ MenuSettingBool::MenuSettingBool(GMenu2X *gmenu2x, const string &title, const st
 MenuSetting(gmenu2x, title, description), _value(value) {
 	_ivalue = NULL;
 	originalValue = *value;
-	setValue(this->value());
+	setValue(this->value(), 0);
 	initButton();
 }
 
@@ -61,23 +61,29 @@ uint32_t MenuSettingBool::manageInput() {
 	if (gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[CONFIRM] ||
 		gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT)
 		toggle();
+	else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) current();
 	return 0; // SD_NO_ACTION
 }
 
 void MenuSettingBool::toggle() {
-	setValue(!value());
+	setValue(!value(), 1);
+}
+
+void MenuSettingBool::current() {
+	setValue(value(), 1);
 }
 
 void MenuSettingBool::setValue(int value) {
 	setValue(value != 0);
 }
 
-void MenuSettingBool::setValue(bool value) {
+void MenuSettingBool::setValue(bool value, bool readValue) {
 	if (_value == NULL)
 		*_ivalue = value;
 	else
 		*_value = value;
 	strvalue = value ? "ON" : "OFF";
+	if (readValue) gmenu2x->allyTTS(strvalue.c_str(), SLOW_GAP_TTS, SLOW_SPEED_TTS, 0);
 }
 
 bool MenuSettingBool::value() {

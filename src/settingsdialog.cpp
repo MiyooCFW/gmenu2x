@@ -36,16 +36,17 @@ SettingsDialog::~SettingsDialog() {
 bool SettingsDialog::exec() {
 	bool ts_pressed = false, inputAction = false;
 	uint32_t i, iY, firstElement = 0, action = SD_NO_ACTION, rowHeight, numRows;
+	string readSetting = title + " " + voices[selected]->getTitle() + " " + voices[selected]->getDescription();
+	gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 
 	while (loop) {
+		bool ally = false;
 		gmenu2x->menu->initLayout();
 		gmenu2x->font->setSize(gmenu2x->skinConfInt["fontSize"])->setColor(gmenu2x->skinConfColors[COLOR_FONT])->setOutlineColor(gmenu2x->skinConfColors[COLOR_FONT_OUTLINE]);
 		gmenu2x->titlefont->setSize(gmenu2x->skinConfInt["fontSizeTitle"])->setColor(gmenu2x->skinConfColors[COLOR_FONT_ALT])->setOutlineColor(gmenu2x->skinConfColors[COLOR_FONT_ALT_OUTLINE]);
 		rowHeight = gmenu2x->font->getHeight() + 1;
 		numRows = (gmenu2x->listRect.h - 2)/rowHeight - 1;
 
-		if (selected < 0) selected = voices.size() - 1;
-		if (selected >= voices.size()) selected = 0;
 		gmenu2x->setInputSpeed();
 		voices[selected]->adjustInput();
 
@@ -138,21 +139,31 @@ bool SettingsDialog::exec() {
 					}
 					break;
 				case SD_ACTION_UP:
+					ally = true;
 					selected--;
 					break;
 				case SD_ACTION_DOWN:
+					ally = true;
 					selected++;
 					break;
 				case SD_ACTION_PAGEUP:
+					ally = true;
 					selected -= numRows;
 					if (selected < 0) selected = 0;
 					break;
 				case SD_ACTION_PAGEDOWN:
+					ally = true;
 					selected += numRows;
 					if (selected >= voices.size()) selected = voices.size() - 1;
 					break;
 			}
 		} while (!inputAction);
+		if (selected < 0) selected = voices.size() - 1;
+		if (selected >= voices.size()) selected = 0;
+		if (ally) {
+			readSetting = voices[selected]->getTitle() + " " + voices[selected]->getDescription(); // read whole text for more clarity
+			gmenu2x->allyTTS(readSetting.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+		}
 	}
 
 	gmenu2x->setInputSpeed();

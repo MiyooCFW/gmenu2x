@@ -96,6 +96,14 @@ int TEFIX_MAX = -1;
 
 const char *CARD_ROOT = getenv("HOME");
 
+int SLOW_GAP_TTS = 5;
+int SLOW_SPEED_TTS = 140;
+int MEDIUM_GAP_TTS = 3;
+int MEDIUM_SPEED_TTS = 150;
+int FAST_GAP_TTS = 0; //default for espeak
+int FAST_SPEED_TTS = 175; //default for espeak
+string VOICE_TTS = "en"; //default for espeak
+
 #if defined(TARGET_RETROFW)
 	#include "platform/retrofw.h"
 #elif defined(TARGET_RG350)
@@ -117,6 +125,10 @@ const char *CARD_ROOT = getenv("HOME");
 #ifndef DEFAULT_TEFIX
 #define DEFAULT_TEFIX -1
 #endif
+#ifndef TTS_ENGINE
+#define TTS_ENGINE ":"
+#endif
+
 
 #include "menu.h"
 
@@ -199,6 +211,56 @@ GMenu2X::~GMenu2X() {
 	delete titlefont;
 }
 
+void GMenu2X::allyTTS(const char* text) {
+	if (!confInt["enableTTS"]) return;
+	char tmp_chr[256];
+	const char* voice;
+
+	voice = VOICE_TTS.c_str();
+
+	system("killall " TTS_ENGINE);
+	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \'%s\' -v%s &", text, voice);
+	system(tmp_chr);
+}
+
+void GMenu2X::allyTTS(const char* file, int gap, int speed) {
+	if (!confInt["enableTTS"]) return;
+	char tmp_chr[256];
+	const char* voice;
+
+	voice = VOICE_TTS.c_str();
+
+	system("killall " TTS_ENGINE);
+	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " -f%s -g%i -s%i -v%s &", file, gap, speed, voice);
+	system(tmp_chr);
+}
+
+void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
+	if (!confInt["enableTTS"]) return;
+	char tmp_chr[256];
+	const char* voice;
+	//static char rm_tmp_chr[256];
+
+	//if (strcmp(text, rm_tmp_chr) == 0) return;
+	//snprintf(rm_tmp_chr, sizeof(rm_tmp_chr), "%s", text);
+
+	voice = VOICE_TTS.c_str();
+
+	//freopen("/dev/null", "w", stdout); // nulify stdout
+
+	if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
+	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
+	system(tmp_chr);
+	if (wait) while (system("pgrep " TTS_ENGINE) == 0) {
+		sleep(0.1);
+		input.update(false);
+		if (input[SETTINGS]) system("killall " TTS_ENGINE);
+	}
+
+	//fflush(stdout);
+	//freopen("/dev/tty", "w", stdout); // activate stdout
+}
+
 void GMenu2X::quit() {
 	s->flip(); s->flip(); s->flip(); // flush buffers
 
@@ -210,6 +272,8 @@ void GMenu2X::quit() {
 // 	setVolume(getVolume());
 //#endif	
 	writeConfig();
+
+	system("killall " TTS_ENGINE);
 
 	s->free();
 
@@ -296,7 +360,24 @@ void GMenu2X::main(bool autoStart) {
 	// Hint messages
 	//while (true) {
 	if (confInt["showHints"] == 1) {
-		if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
+		if (confInt["enableTTS"] == 1 && (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "")) {
+			switch (randomInt) {
+				case 0: case 1: case 2: {
+				string readHint = tr["Hint: To read a selected value or Link's description press X"];
+				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+				break;
+				}
+				case 3: case 4: case 5: {
+				string readHint = tr["Hint: You can skip reading a message, by pressing START"];
+				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+				break;
+				}
+				default: {
+				allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+				break;
+				}
+			}
+		} else if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
 			switch (randomInt) {
 				case 0: {
 				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto reset gmenu2x.cfg"]);
@@ -394,6 +475,9 @@ void GMenu2X::main(bool autoStart) {
 			reinit_save();
 		}
 	}
+
+	string readMenu = tr["Welcome to GMenu"];
+	allyTTS(readMenu.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 
 	menu = new Menu(this);
 	initMenu();
@@ -516,6 +600,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		wasActive = SETTINGS;
 
 		input.update();
+		if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
 
 		if (SDL_GetTicks() - button_hold > 1000 && !actionPerformed) {
 			wasActive = 0;
@@ -774,6 +859,7 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Hints"], tr["Show \"Hint\" messages"], &confInt["showHints"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Text To Speak"], tr["Use TTS engine to read menu out loud"], &confInt["enableTTS"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
@@ -951,6 +1037,7 @@ void GMenu2X::readConfig() {
 	// Defaults *** Sync with default values in writeConfig
 	confInt["saveSelection"] = 1;
 	confInt["dialogAutoStart"] = 1;
+	confInt["enableTTS"] = 0;
 	confInt["showHints"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
 	confInt["skinBackdrops"] = 1;
@@ -992,7 +1079,12 @@ void GMenu2X::readConfig() {
 		cfg.close();
 	}
 
-	if (!confStr["lang"].empty()) tr.setLang(confStr["lang"]);
+	if (!confStr["lang"].empty()) {
+		tr.setLang(confStr["lang"]);
+		string voiceTTS = tr["_TTS_voice_"];
+		INFO("voice is set to %s",voiceTTS.c_str());
+		if (voiceTTS != "_TTS_voice_" && !voiceTTS.empty()) VOICE_TTS = voiceTTS;
+	}
 	if (!confStr["wallpaper"].empty() && !file_exists(confStr["wallpaper"])) confStr["wallpaper"] = "";
 	if (confStr["skin"].empty() || !dir_exists("skins/" + confStr["skin"])) confStr["skin"] = "Default";
 
@@ -1464,6 +1556,7 @@ void GMenu2X::about() {
 #endif
 	// td.appendText(temp);
 	td.appendFile(tr["_about_"] + ".txt");
+	allyTTS((tr["_about_"] + ".txt").c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 	td.exec();
 }
 
@@ -1473,6 +1566,7 @@ void GMenu2X::viewLog() {
 
 	TextDialog td(this, tr["Log Viewer"], tr["Last launched program's output"], "skin:icons/ebook.png");
 	td.appendFile(exe_path() + "/log.txt");
+	allyTTS((exe_path() + "/log.txt").c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 	td.exec();
 
 	MessageBox mb(this, tr["Delete the log file?"], "skin:icons/ebook.png");
@@ -1578,6 +1672,7 @@ void GMenu2X::showManual() {
 		return;
 	}
 
+	allyTTS(linkManual.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 	td.exec();
 }
 
@@ -1604,6 +1699,7 @@ void GMenu2X::explorer() {
 		} else if (ext == ".txt" || ext == ".conf" || ext == ".me" || ext == ".md" || ext == ".xml" || ext == ".log" || ext == ".ini") {
 			TextDialog td(this, tr["Text viewer"], bd.getFile(bd.selected), "skin:icons/ebook.png");
 			td.appendFile(bd.getFilePath(bd.selected));
+			allyTTS(bd.getFilePath(bd.selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
 			td.exec();
 #if defined(IPK_SUPPORT)
 		} else if (ext == ".ipk" && file_exists("/usr/bin/opkg")) {

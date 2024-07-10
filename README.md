@@ -60,6 +60,8 @@ The "\_about\_" assigns corresponding text file for displaying _About_ message, 
 
 The "\_keyboard_<table_number>_<line_number>\_" string will modify alternative overlay keyboard on Input Dialog (accesed with MODIFY button).
 
+The "\_TTS_voice\_" string assigns voice type used by TTS engine e.g. "\_TTS_voice\_"=en" for English (check for available voices on your device `/usr/share/espeak-data/voices`)
+
 ### Dictionary
 To view the full list of string messages available to translate in source see: [dictionary.txt](https://github.com/MiyooCFW/gmenu2x/blob/master/dictionary.txt)
 

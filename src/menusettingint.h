@@ -30,9 +30,9 @@ private:
 	int def, min, max, delta;
 	bool off=false;
 	int offValue;
-
 	void inc();
 	void dec();
+	void current();
 
 public:
 	MenuSettingInt(GMenu2X *gmenu2x, const std::string &title, const std::string &description, int *value, int def, int min, int max, int delta=1);
@@ -42,7 +42,7 @@ public:
 	virtual void draw(int);
 	virtual bool edited();
 
-	virtual void setValue(int value);
+	virtual void setValue(int value, bool readValue);
 	virtual void setDefault();
 
 	int value();

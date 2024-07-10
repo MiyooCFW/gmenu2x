@@ -922,10 +922,16 @@ void Menu::exec() {
 
 			selLink()->run();
 		}
-		else if (gmenu2x->input[CANCEL])	continue;
-		else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed))	gmenu2x->settings();
-		else if (gmenu2x->input[MENU])		gmenu2x->contextMenu();
-
+		else if (gmenu2x->input[CANCEL])	{
+			continue;
+		} else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) {
+			if (selLinkApp() != NULL || selLink() != NULL) gmenu2x->allyTTS(iconDescription.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+			continue;
+		} else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed)) {
+			gmenu2x->settings();
+		} else if (gmenu2x->input[MENU]) {
+			gmenu2x->contextMenu();
+		}
 		// LINK NAVIGATION
 		else if ((gmenu2x->input[LEFT] || gmenu2x->input.hatEvent(DLEFT) == DLEFT) && linkCols == 1 && linkRows > 1) pageUp();
 		else if ((gmenu2x->input[RIGHT] || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT) && linkCols == 1 && linkRows > 1) pageDown();
@@ -962,11 +968,26 @@ void Menu::exec() {
 		// 	}
 		// }
 
+		iconTitle = "";
 		iconDescription = "";
 		if (selLinkApp() != NULL) {
+			iconTitle = selLinkApp()->getTitle();
 			iconDescription = selLinkApp()->getDescription();
 		} else if (selLink() != NULL) {
+			iconTitle = selLink()->getTitle();
 			iconDescription = selLink()->getDescription();
+		}
+
+		if (
+			gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN] || gmenu2x->input[MANUAL]
+			|| gmenu2x->input.hatEvent(DLEFT) == DLEFT || gmenu2x->input.hatEvent(DRIGHT) == DRIGHT || gmenu2x->input.hatEvent(DUP) == DUP || gmenu2x->input.hatEvent(DDOWN) == DDOWN
+			|| gmenu2x->input[MANUAL] || gmenu2x->input[MODIFIER]
+		) allyRead = false;
+
+		readSection = gmenu2x->tr["Section"] + " " + gmenu2x->tr[selSectionName()] + " " + gmenu2x->tr["at"] + " " + iconTitle;
+		if (!allyRead) {
+			gmenu2x->allyTTS(readSection.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+			allyRead = true;
 		}
 
 		if (
@@ -978,11 +999,18 @@ void Menu::exec() {
 			SDL_RemoveTimer(iconChangedTimer); iconChangedTimer = NULL;
 			iconChangedTimer = SDL_AddTimer(1000, gmenu2x->input.wakeUp, (void*)false);
 		}
+		if (
+			!iconTitle.empty() &&
+			(gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[LEFT] || gmenu2x->input[RIGHT] || gmenu2x->input[UP] || gmenu2x->input[DOWN])
+		) {
+			gmenu2x->allyTTS(iconTitle.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+		}
 
 		if (gmenu2x->skinConfInt["sectionLabel"] && (gmenu2x->input[SECTION_PREV] || gmenu2x->input[SECTION_NEXT])) {
 			section_changed = SDL_GetTicks();
 			SDL_RemoveTimer(sectionChangedTimer); sectionChangedTimer = NULL;
 			sectionChangedTimer = SDL_AddTimer(2000, gmenu2x->input.wakeUp, (void*)false);
+			gmenu2x->allyTTS(readSection.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 		}
 	}
 }
