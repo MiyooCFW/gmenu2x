@@ -59,6 +59,7 @@ You can run `tools/gen_translate.sh` to generate above list providing argument i
 The "\_about\_" assigns corresponding text file for displaying _About_ message, e.g. "\_about\_=\_about\_en" means _about_en.txt is being used for English translation.
 
 The "\_keyboard_<table_number>_<line_number>\_" string will modify alternative overlay keyboard on Input Dialog (accesed with MODIFY button).
+The "\_keyboard_en_<table_number>_<line_number>\_" string will modify original English overlay keyboard on Input Dialog (accesed directly or with MANUAL button ).
 
 The "\_TTS_voice\_" string assigns voice type used by TTS engine e.g. "\_TTS_voice\_"=en" for English (check for available voices on your device `/usr/share/espeak-data/voices`)
 

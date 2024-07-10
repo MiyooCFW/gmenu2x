@@ -45,15 +45,22 @@ gmenu2x(gmenu2x) {
 	selRow = 0;
 	keyboard.resize(MAX_KB + 1);
 
-	kb11 = "qwertyuiop[]=789";
-	kb12 = "asdfghjkl;'\\`456";
-	kb13 = "zxcvbnm,./-=0123";
-	kb21 = "QWERTYUIOP{}&*()";
-	kb22 = "ASDFGHJKL:\"|~$%^";
-	kb23 = "ZXCVBNM<>?_+\n!@#";
+	kb11 = gmenu2x->tr["_keyboard_en_t1_l1_"];
+	kb12 = gmenu2x->tr["_keyboard_en_t1_l2_"];
+	kb13 = gmenu2x->tr["_keyboard_en_t1_l3_"];
+	kb21 = gmenu2x->tr["_keyboard_en_t2_l1_"];
+	kb22 = gmenu2x->tr["_keyboard_en_t2_l2_"];
+	kb23 = gmenu2x->tr["_keyboard_en_t2_l3_"];
 	kb31 = kb11;
 	kb32 = kb12;
 	kb33 = kb13;
+
+	if (kb11 == "_keyboard_en_t1_l1_") kb11 = "qwertyuiop[]=789";
+	if (kb12 == "_keyboard_en_t1_l2_") kb12 = "asdfghjkl;'\\`456";
+	if (kb13 == "_keyboard_en_t1_l3_") kb13 = "zxcvbnm,./-=0123";
+	if (kb21 == "_keyboard_en_t2_l1_") kb21 = "QWERTYUIOP{}&*()";
+	if (kb22 == "_keyboard_en_t2_l2_") kb22 = "ASDFGHJKL:\"|~$%^";
+	if (kb23 == "_keyboard_en_t2_l3_") kb23 = "ZXCVBNM<>?_+\n!@#";
 
 	kbc11 = gmenu2x->tr["_keyboard_t1_l1_"];
 	kbc12 = gmenu2x->tr["_keyboard_t1_l2_"];
