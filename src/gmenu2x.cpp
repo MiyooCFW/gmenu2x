@@ -251,7 +251,11 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 	if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
 	system(tmp_chr);
-	if (wait) while (system("pgrep " TTS_ENGINE) == 0) sleep(0.1);
+	if (wait) while (system("pgrep " TTS_ENGINE) == 0) {
+		sleep(0.1);
+		input.update(false);
+		if (input[SETTINGS]) system("killall " TTS_ENGINE);
+	}
 
 	//fflush(stdout);
 	//freopen("/dev/tty", "w", stdout); // activate stdout
@@ -360,6 +364,11 @@ void GMenu2X::main(bool autoStart) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
 				string readHint = tr["Hint: To read a selected value or Link's description press X"];
+				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+				break;
+				}
+				case 3: case 4: case 5: {
+				string readHint = tr["Hint: You can skip reading a message, by pressing START"];
 				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
 				break;
 				}
@@ -591,6 +600,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		wasActive = SETTINGS;
 
 		input.update();
+		if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
 
 		if (SDL_GetTicks() - button_hold > 1000 && !actionPerformed) {
 			wasActive = 0;
