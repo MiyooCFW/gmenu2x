@@ -216,7 +216,7 @@ bool InputDialog::exec() {
 
 		if (!allyRead) {
 			readValue = currKey();
-			gmenu2x->allyTTS(readValue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+			gmenu2x->allyTTS(readValue.c_str());
 			allyRead = true;
 		}
 
@@ -277,7 +277,7 @@ bool InputDialog::exec() {
 			gmenu2x->allyTTS(readValue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 		} else if (gmenu2x->input[CONFIRM]) {
 			readValue = readTyped + currKey();
-			gmenu2x->allyTTS(readValue.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
+			gmenu2x->allyTTS(readValue.c_str());
 		}
 	}
 }
