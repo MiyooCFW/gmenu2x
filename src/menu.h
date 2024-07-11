@@ -40,7 +40,6 @@ Handles the menu structure
 class Menu {
 private:
 	GMenu2X *gmenu2x;
-
 	int iSection, iLink;
 	int32_t iFirstDispSection, iFirstDispRow;
 	vector<string> sections;

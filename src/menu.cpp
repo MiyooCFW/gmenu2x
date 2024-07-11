@@ -922,7 +922,7 @@ void Menu::exec() {
 
 			selLink()->run();
 		}
-		else if (gmenu2x->input[CANCEL])	{
+		else if (gmenu2x->input[CANCEL]) {
 			continue;
 		} else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) {
 			if (selLinkApp() != NULL || selLink() != NULL) gmenu2x->allyTTS(iconDescription.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);

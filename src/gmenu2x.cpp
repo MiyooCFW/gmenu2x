@@ -273,7 +273,7 @@ void GMenu2X::quit() {
 //#endif	
 	writeConfig();
 
-	system("killall " TTS_ENGINE);
+	if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
 
 	s->free();
 

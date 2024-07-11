@@ -30,6 +30,7 @@ private:
 	int def, min, max, delta;
 	bool off=false;
 	int offValue;
+
 	void inc();
 	void dec();
 	void current();
