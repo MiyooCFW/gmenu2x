@@ -38,7 +38,7 @@ void ImageViewerDialog::exec() {
 				offsetY +=  gmenu2x->listRect.h / 3;
 				if (offsetY > 0) offsetY = 0;
 			}
-			else if ((gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) && image.raw->w + offsetY > gmenu2x->listRect.h) {
+			else if ((gmenu2x->input[DOWN] || gmenu2x->input.hatEvent(DDOWN) == DDOWN) && image.raw->h + offsetY > gmenu2x->listRect.h) {
 				offsetY -=  gmenu2x->listRect.h / 3;
 				if (image.raw->h + offsetY < gmenu2x->listRect.h) offsetY = gmenu2x->listRect.h - image.raw->h;
 			}
