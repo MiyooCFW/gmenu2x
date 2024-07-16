@@ -131,6 +131,7 @@ const string LinkApp::searchManual() {
 	string filename = exec;
 	string::size_type pos = exec.rfind(".");
 	if (pos != string::npos) filename = exec.substr(0, pos);
+	string imagename = filename + ".man.png";
 	filename += ".man.txt";
 
 	string dname = dir_name(exec) + "/";
@@ -141,6 +142,7 @@ const string LinkApp::searchManual() {
 
 	if (file_exists(linktitle)) return linktitle;
 	if (file_exists(filename)) return filename;
+	if (file_exists(imagename)) return imagename;
 	if (file_exists(dirtitle)) return dirtitle;
 
 	return "";
