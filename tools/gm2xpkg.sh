@@ -338,7 +338,7 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	test -d $ASSETSDIR\
 	 && cp -r $ASSETSDIR/* $TARGET_PATH\
 	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
-	if !(test -e $LINK); then
+	if ! (test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
 		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${TARGET}/" $LINK
@@ -348,8 +348,25 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		fi
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
-	cp $ALIASES $TARGET_PATH
-	cp $MANUAL $TARGET_PATH/${TARGET}.man.txt
+	if test -e $ALIASES; then
+		cp $ALIASES $TARGET_PATH
+	else
+		echo "WARNING: Couldn't locate aliases in ${ALIASES} file"
+	fi
+	if test -e $MANUAL; then
+		if file $MANUAL | grep -q "PNG image"; then
+			MANUAL_EXT=".man.png"
+		elif file $MANUAL | grep -q "ASCII text"; then
+			MANUAL_EXT=".man.txt"
+		else
+			MANUAL_EXT=""
+			echo "WARNING: Unsupported format of manual in ${MANUAL} file. Use PNG image or plain text file"
+		fi
+		! test -z "${MANUAL_EXT}"\
+		 && cp $MANUAL $TARGET_PATH/${TARGET}${MANUAL_EXT}
+	else
+		echo "WARNING: Couldn't locate manual in ${MANUAL} file"
+	fi
 	! test -z "${DOCS[*]}"\
 	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}/" && mv "${TARGET_PATH}"/"${DOCS[$i]}" "${TARGET_PATH}"/"${DOCS[$i]}.txt"; done\
 	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
