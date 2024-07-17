@@ -377,11 +377,11 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
-		cd $RELEASEDIR && zip -rq $TARGET$VERSION.zip ./* && mv *.zip ..
+		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && mv *.zip ..
 		cd ..
-		test -f "${TARGET}${VERSION}.zip"\
-		 && echo "Done packaging ./${TARGET}${VERSION}.zip archive"\
-		 || echo "WARNING: Upss smth went wrong and I couldn't locate ${TARGET}${VERSION}.zip"
+		test -f "${TARGET}_${VERSION}.zip"\
+		 && echo "Done packaging ./${TARGET}_${VERSION}.zip archive"\
+		 || echo "WARNING: Upss smth went wrong and I couldn't locate ${TARGET}_${VERSION}.zip"
 	fi
 	
 	# Create ./package/<target>.ipk
