@@ -351,11 +351,11 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	cp $ALIASES $TARGET_PATH
 	cp $MANUAL $TARGET_PATH/${TARGET}.man.txt
 	! test -z "${DOCS[*]}"\
-	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}"/"${DOCS[$i]}.txt"; done\
+	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}/" && mv "${TARGET_PATH}"/"${DOCS[$i]}" "${TARGET_PATH}"/"${DOCS[$i]}.txt"; done\
 	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
 	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_PATH\
 	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
-	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/" 
+	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
 	
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
