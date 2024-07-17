@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.4
+VER=0.5
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -14,6 +14,8 @@ help_func() {
 	 \t -i, --ipk       generate IPK package
 	 \t -z, --zip       generate ZIP archive
 	 \t -p, --pkg       generate ./package
+	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
+	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in CWD
 	 Instructions:
 	 \t 1. Put inside CWD:
 	 \t\t- ./<target_name> binary
@@ -31,10 +33,82 @@ help_func() {
 	 \t FILE - configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
 }
 
+pkg_config_func() {
+	if test "x${UPDATE_PKGCFG}" == "xyes"; then
+		source "${PKGCFG}"
+	fi
+	echo "# NOTES:
+## All variable values should enclosed within double quotes: \"<value>\"
+## CONFIGURATION FILE for \`gm2xpkg\` script version:
+PKGVER=\"${VER}\"
+
+# EXEC commands (set to \"1\" anyone for desired outcome), you can instead use [OPTIONS] of \`gm2xpkg\`:
+PACKAGE=\"${PACKAGE}\"
+ZIP=\"${ZIP}\"
+IPK=\"${IPK}\"
+CLEAN=\"${CLEAN}\"
+
+# DEBUG session (insert \"yes\" to perform)
+DEBUG=\"${DEBUG}\"
+
+# ENV VAR.
+## Specific (mandatory to provide!)
+TARGET=\"${TARGET}\"  # replace with binary name
+VERSION=\"${VERSION}\"  # replace with correct release version if exist
+
+## Generic - common to all apps (better to not modify)
+HOMEPATH=\"${HOMEPATH}\"
+RELEASEDIR=\"${RELEASEDIR}\"
+ASSETSDIR=\"${ASSETSDIR}\"
+OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\"
+LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in CWD (warning: it may be removed with CLEAN=1)
+ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for selector e.g. old_title=new_title - place in CWD
+MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in CWD
+
+## Link entries (better modify if no <target_name>.lnk file provided)
+TITLE=\"${TITLE}\"
+DESCRI=\"${DESCRI}\"
+SELDIR=\"${SELDIR}\"
+DESTDIR=\"${DESTDIR}\" # default=apps
+SECTION=\"${SECTION}\" # default=applications
+
+## Custom entries (if needed then modify)
+TARGET_DIR=\"${TARGET_DIR}\" # the directory /\$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary if not provided the TARGET_DIR=\$TARGET
+DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${SPACE}\"${DOCS[$i]}\""; done))\
+ # array of extra text files e.g. =(\"LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend
+
+## IPK control entries (if needed then modify)
+PRIORITY=\"${PRIORITY}\"
+MAINTAINER=\"${MAINTAINER}\"
+CONFFILES=\"${CONFFILES}\"
+ARCH=\"${ARCH}\" # default=arm - do not modify for ARM chips
+# CONTROL= # automated output of *.ipk control config file
+DEPENDS=\"${DEPENDS}\" # list of dependency packages e.g. =\"sdl, libpng\" or =\"sdl (>= 2.9.2), sdl_mixer (= ed76d39cda0735d26c14a3e4f4da996e420f6478)\" provide only for shared libs build, otherwise ignored
+SOURCE=\"${SOURCE}\"
+LICENSE=\"${LICENSE}\"\
+" > "${PKGCFG}"
+}
+
+# DEBUG options
+if test "x${DEBUG}" == "xyes"; then
+	set -e
+	# set -xuv
+	trap 'echo "Error on line $LINENO"; sleep 1; exit' ERR
+	trap 'echo "$LINENO: $BASH_COMMAND"' DEBUG
+fi
+
 # ARGS
 ## Sanity test if there was any argument passed:
 test $# -ne 0 &&\
  PKGCFG="${!#}" || PKGCFG="pkg.cfg" # last argument used of [FILE] or use default ./pkg.cfg placement
+
+case "${PKGCFG}" in
+	-h|--help|-V|--ver|--version|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg)
+		PKGCFG="pkg.cfg"
+		;;
+	*)
+		;;
+esac
 
 # OPTIONS
 ## TODO: use getopts
@@ -70,6 +144,35 @@ do
 			echo -e "cleaning all PACKAGES"
 			shift
 			;;
+		-g | --gencfg)
+			echo "using ./${PKGCFG} name as config file"
+			if ! test -e "${PKGCFG}"; then
+				pkg_config_func
+				echo -e "generating standard \"${PKGCFG}\" config file"
+			else 
+				echo -e "Detected present ${PKGCFG} file. Do you wish to overwrite existing configuration?"
+				read -rp "[Y]es, [N]o, [U]pdate:" INPUT
+				case "${INPUT}" in
+					[Yy]*)
+						echo "YES, overwriting existing ${PKGCFG} file"
+						pkg_config_func
+						;;
+					[Nn]*)
+						echo "NO, exiting..."
+						;;
+					[Uu]*)
+						echo "Update, upgrading present ${PKGCFG} file with new config version - ${VER}"
+						UPDATE_PKGCFG=yes
+						pkg_config_func
+						;;
+					*)
+						echo "Invalid choice, please try again"
+						;;
+				esac
+			fi
+			sleep 1
+			exit 0
+			;;
 		--)
 			shift
 			break
@@ -91,15 +194,18 @@ done
 ## Grabing predefined settings from configuration file
 if test -f "${PKGCFG}"; then
 	source "${PKGCFG}"
-	echo "config file found in $(realpath ${PKGCFG}), setting following variables:"
-	grep -v -e '^#' -e '""' "${PKGCFG}"
+	echo "config file found in $(realpath ${PKGCFG}), setting predefined variables..."
+	if test "x${DEBUG}" == "xyes"; then
+		echo "Following variables has been read from ${PKGCFG} file:"
+		grep -v -e '^#' -e '""' "${PKGCFG}"
+	fi
 	if test "${VER}" != "${PKGVER}" ; then
-		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file"
+		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option"
 		sleep 2
 		exit
 	fi
 else
-	echo "no config pkg.cfg file found, executing with predefined values from env or script"
+	echo "no config \"${PKGCFG}\" file found, executing with predefined values from env or script"
 	sleep 1
 fi
 
@@ -122,7 +228,7 @@ if test -z $TARGET; then
 	sleep 2
 	exit
 elif ! test -f "$TARGET"; then
-	echo "No binary found matching name \"${TARGET}\", exiting..."
+	echo "No binary/script found matching name \"${TARGET}\", exiting..."
 	sleep 2
 	exit
 fi
@@ -177,7 +283,7 @@ MAINTAINER=${MAINTAINER:=Unknown}
 CONFFILES=${CONFFILES:=""} # TODO (to preserve & not reinstall user configs)
 ARCH=${ARCH:=arm}
 DEPENDS=${DEPENDS:=""}
-SOURCE=${SOURCE:=""}
+SOURCE=${SOURCE:="Unknown"}
 LICENSE=${LICENSE:="Unknown"}
 
 #---------------------------------------------#
@@ -186,7 +292,7 @@ LICENSE=${LICENSE:="Unknown"}
 LIBS_LD="$(file ${TARGET} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
 if test "${LIBS_LD}" == "dynamically"; then
 	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
-	DEPENDS="${LIBC}, ${DEPENDS}"
+	! test -z ${DEPENDS} && DEPENDS="${LIBC}, ${DEPENDS}" || DEPENDS="${LIBC}"
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
 	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
 	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && exit 1"
@@ -194,8 +300,8 @@ elif test "${LIBS_LD}" == "statically"; then
 	DEPENDS=""
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with no need for externall dependencies"
 else
-	echo "Bad file type or build linking, exiting..."
-	exit 1
+	echo "WARNING: Probably not a binary file (or linking problem), if it's a script pls provide correct interpreter as dependency"
+	sleep 1
 fi
 
 CONTROL="Package: ${TARGET}\n\
@@ -218,12 +324,6 @@ TARGET_DIR=${TITLE}\nDOCS=(${DOCS[*]})\n
 PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}
 "
 
-if ! test -d $ASSETSDIR; then
-	echo "No assets directory found matching name \"${ASSETSDIR}/\", exiting..."
-	sleep 2
-	exit
-fi
-
 if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
 	TARGET_PATH=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
@@ -235,8 +335,10 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	mkdir -p $TARGET_PATH
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
 	mv $RELEASEDIR/*$TARGET $TARGET_PATH/
-	cp -r $ASSETSDIR/* $TARGET_PATH
-	if !(test -e $LINK); then
+	test -d $ASSETSDIR\
+	 && cp -r $ASSETSDIR/* $TARGET_PATH\
+	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
+	if ! (test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
 		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${TARGET}/" $LINK
@@ -246,23 +348,40 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		fi
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
-	cp $ALIASES $TARGET_PATH
-	cp $MANUAL $TARGET_PATH/${TARGET}.man.txt
+	if test -e $ALIASES; then
+		cp $ALIASES $TARGET_PATH
+	else
+		echo "WARNING: Couldn't locate aliases in ${ALIASES} file"
+	fi
+	if test -e $MANUAL; then
+		if file $MANUAL | grep -q "PNG image"; then
+			MANUAL_EXT=".man.png"
+		elif file $MANUAL | grep -q "ASCII text"; then
+			MANUAL_EXT=".man.txt"
+		else
+			MANUAL_EXT=""
+			echo "WARNING: Unsupported format of manual in ${MANUAL} file. Use PNG image or plain text file"
+		fi
+		! test -z "${MANUAL_EXT}"\
+		 && cp $MANUAL $TARGET_PATH/${TARGET}${MANUAL_EXT}
+	else
+		echo "WARNING: Couldn't locate manual in ${MANUAL} file"
+	fi
 	! test -z "${DOCS[*]}"\
-	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}"/"${DOCS[$i]}.txt"; done\
+	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}/" && mv "${TARGET_PATH}"/"${DOCS[$i]}" "${TARGET_PATH}"/"${DOCS[$i]}.txt"; done\
 	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
 	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_PATH\
 	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
-	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/" 
+	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
 	
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
-		cd $RELEASEDIR && zip -rq $TARGET$VERSION.zip ./* && mv *.zip ..
+		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && mv *.zip ..
 		cd ..
-		test -f "${TARGET}${VERSION}.zip"\
-		 && echo "Done packaging ./${TARGET}${VERSION}.zip archive"\
-		 || echo "WARNING: Upss smth went wrong and I couldn't locate ${TARGET}${VERSION}.zip"
+		test -f "${TARGET}_${VERSION}.zip"\
+		 && echo "Done packaging ./${TARGET}_${VERSION}.zip archive"\
+		 || echo "WARNING: Upss smth went wrong and I couldn't locate ${TARGET}_${VERSION}.zip"
 	fi
 	
 	# Create ./package/<target>.ipk
@@ -272,7 +391,7 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		cp -r $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR/
 		mkdir -p $RELEASEDIR/data
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
-		if !(test -d $OPKG_ASSETSDIR/CONTROL); then
+		if ! (test -d $OPKG_ASSETSDIR/CONTROL); then
 			mkdir -p $OPKG_ASSETSDIR/CONTROL
 			echo -e "#!/bin/sh\nsync; echo 'Installing new ${TARGET}..'; rm /var/lib/opkg/info/${TARGET}.list; exit 0" > $OPKG_ASSETSDIR/CONTROL/preinst
 			echo -e "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" > $OPKG_ASSETSDIR/CONTROL/postinst
@@ -295,9 +414,9 @@ elif test $CLEAN -ne 0 >/dev/null 2>&1; then
 	rm -rf ${OPKG_ASSETSDIR:?} && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
 	rm -f $TARGET.ipk && echo "Done CLEANING ./${TARGET}.ipk" || echo "WARNING: Couldn't clean ./${TARGET}.ipk"
 	rm -f $TARGET*.zip && echo "Done CLEANING ./${TARGET}.zip" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
-	rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
+	rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${LINK}"
 else
-	echo "No instructions provided, please set \$PACKAGE/\$ZIP/\$IPK or \$CLEAN in env to 1 for correct output"
+	echo "\nWARNING: No instructions provided, please use -i/-p/-z/-c option or set \$PACKAGE/\$ZIP/\$IPK/\$CLEAN in env to 1 for correct output\n\n"
 	sleep 1
 fi
 #---------------------------------------------#
