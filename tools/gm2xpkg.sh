@@ -48,6 +48,9 @@ ZIP=\"${ZIP}\"
 IPK=\"${IPK}\"
 CLEAN=\"${CLEAN}\"
 
+# DEBUG session (insert \"yes\" to perform)
+DEBUG=\"${DEBUG}\"
+
 # ENV VAR.
 ## Specific (mandatory to provide!)
 TARGET=\"${TARGET}\"  # replace with binary name
@@ -85,6 +88,14 @@ SOURCE=\"${SOURCE}\"
 LICENSE=\"${LICENSE}\"\
 " > "${PKGCFG}"
 }
+
+# DEBUG options
+if test "x${DEBUG}" == "xyes"; then
+	set -e
+	# set -xuv
+	trap 'echo "Error on line $LINENO"; sleep 1; exit' ERR
+	trap 'echo "$LINENO: $BASH_COMMAND"' DEBUG
+fi
 
 # ARGS
 ## Sanity test if there was any argument passed:
@@ -183,8 +194,11 @@ done
 ## Grabing predefined settings from configuration file
 if test -f "${PKGCFG}"; then
 	source "${PKGCFG}"
-	echo "config file found in $(realpath ${PKGCFG}), setting following variables:"
-	grep -v -e '^#' -e '""' "${PKGCFG}"
+	echo "config file found in $(realpath ${PKGCFG}), setting predefined variables..."
+	if test "x${DEBUG}" == "xyes"; then
+		echo "Following variables has been read from ${PKGCFG} file:"
+		grep -v -e '^#' -e '""' "${PKGCFG}"
+	fi
 	if test "${VER}" != "${PKGVER}" ; then
 		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file"
 		sleep 2
