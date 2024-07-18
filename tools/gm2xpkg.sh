@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.5
+VER=0.6
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -292,7 +292,7 @@ LICENSE=${LICENSE:="Unknown"}
 LIBS_LD="$(file ${TARGET} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
 if test "${LIBS_LD}" == "dynamically"; then
 	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
-	! test -z ${DEPENDS} && DEPENDS="${LIBC}, ${DEPENDS}" || DEPENDS="${LIBC}"
+	! test -z "${DEPENDS}" && DEPENDS="${LIBC}, ${DEPENDS}" || DEPENDS="${LIBC}"
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
 	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
 	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && exit 1"
