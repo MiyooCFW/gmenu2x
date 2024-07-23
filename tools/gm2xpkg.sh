@@ -73,6 +73,7 @@ DESTDIR=\"${DESTDIR}\" # default=apps
 SECTION=\"${SECTION}\" # default=applications
 
 ## Custom entries (if needed then modify)
+TARGET_EXEC=\"${TARGET_EXEC}\" # the executable name that's being used by frontend when running an app, may be a script name or binary (default)
 TARGET_DIR=\"${TARGET_DIR}\" # the directory /\$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary if not provided the TARGET_DIR=\$TARGET
 DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${SPACE}\"${DOCS[$i]}\""; done))\
  # array of extra text files e.g. =(\"LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend
@@ -270,7 +271,7 @@ fi
 ## Custom entries
 if test -z $TARGET_DIR; then
 	TARGET_DIR=${TARGET}
-	echo "no target directory provided, setting path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+	echo "no target directory provided, setting target install path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
 fi
 if test ${#DOCS[@]} -eq 0 || test -z "${DOCS[*]}"; then
 	DOCS=("")
@@ -319,8 +320,8 @@ echo -e "Using following configuration:
 PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n
 TARGET=${TARGET}\nVERSION=${VERSION}\n
 HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n
-TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nTARGET_DIR=${TARGET_DIR}\nSECTION=${SECTION}\n
-TARGET_DIR=${TITLE}\nDOCS=(${DOCS[*]})\n
+TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n
+TARGET_EXEC=${TARGET_EXEC}\nTARGET_DIR=${TARGET_DIR}\nDOCS=(${DOCS[*]})\n
 PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}
 "
 
@@ -338,10 +339,13 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	test -d $ASSETSDIR\
 	 && cp -r $ASSETSDIR/* $TARGET_PATH\
 	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
+	test -z "${TARGET_EXEC}"\
+	 && TARGET_EXEC="${TARGET}"\
+	 || echo "Custom executable \"${TARGET_EXEC}\" is being used by frontend's links launcher"
 	if ! (test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
-		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${TARGET}/" $LINK
+		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${TARGET_EXEC}/" $LINK
 		test -n "$SELDIR" && echo "selectordir=${SELDIR}" >> $LINK
 		if test -e $ALIASES; then
 			echo "selectoraliases=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${ALIASES}" >> $LINK
