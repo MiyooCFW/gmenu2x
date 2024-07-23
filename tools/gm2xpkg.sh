@@ -61,7 +61,7 @@ HOMEPATH=\"${HOMEPATH}\"
 RELEASEDIR=\"${RELEASEDIR}\"
 ASSETSDIR=\"${ASSETSDIR}\"
 OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\"
-LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in CWD (warning: it may be removed with CLEAN=1)
+LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in CWD
 ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for selector e.g. old_title=new_title - place in CWD
 MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in CWD
 
@@ -346,6 +346,8 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		if test -e $ALIASES; then
 			echo "selectoraliases=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${ALIASES}" >> $LINK
 		fi
+	else
+		LINK_CUSTOM="yes"
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
 	if test -e $ALIASES; then
@@ -414,7 +416,9 @@ elif test $CLEAN -ne 0 >/dev/null 2>&1; then
 	rm -rf ${OPKG_ASSETSDIR:?} && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
 	rm -f $TARGET.ipk && echo "Done CLEANING ./${TARGET}.ipk" || echo "WARNING: Couldn't clean ./${TARGET}.ipk"
 	rm -f $TARGET*.zip && echo "Done CLEANING ./${TARGET}.zip" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
-	rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${LINK}"
+	if ! test "x${LINK_CUSTOM}" == "xyes"; then
+		rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${LINK}"
+	fi
 else
 	echo "\nWARNING: No instructions provided, please use -i/-p/-z/-c option or set \$PACKAGE/\$ZIP/\$IPK/\$CLEAN in env to 1 for correct output\n\n"
 	sleep 1
