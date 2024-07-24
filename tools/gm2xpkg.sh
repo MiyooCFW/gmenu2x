@@ -38,7 +38,7 @@ pkg_config_func() {
 		source "${PKGCFG}"
 	fi
 	echo "# NOTES:
-## All variable values should enclosed within double quotes: \"<value>\"
+## All variable values should be enclosed within double quotes: \"<value>\"
 ## CONFIGURATION FILE for \`gm2xpkg\` script version:
 PKGVER=\"${VER}\"
 
@@ -74,7 +74,7 @@ SECTION=\"${SECTION}\" # default=applications
 
 ## Custom entries (if needed then modify)
 TARGET_EXEC=\"${TARGET_EXEC}\" # the executable name that's being used by frontend when running an app, may be a script name or binary (default)
-TARGET_DIR=\"${TARGET_DIR}\" # the directory /\$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary if not provided the TARGET_DIR=\$TARGET
+TARGET_DIR=\"${TARGET_DIR}\" # the install directory /\$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary if not provided the TARGET_DIR=\$TARGET
 DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${SPACE}\"${DOCS[$i]}\""; done))\
  # array of extra text files e.g. =(\"LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend
 
