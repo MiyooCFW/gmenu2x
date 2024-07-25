@@ -51,9 +51,6 @@ gmenu2x(gmenu2x) {
 	kb21 = gmenu2x->tr["_keyboard_en_t2_l1_"];
 	kb22 = gmenu2x->tr["_keyboard_en_t2_l2_"];
 	kb23 = gmenu2x->tr["_keyboard_en_t2_l3_"];
-	kb31 = kb11;
-	kb32 = kb12;
-	kb33 = kb13;
 
 	if (kb11 == "_keyboard_en_t1_l1_") kb11 = "qwertyuiop[]=789";
 	if (kb12 == "_keyboard_en_t1_l2_") kb12 = "asdfghjkl;'\\`456";
@@ -61,6 +58,9 @@ gmenu2x(gmenu2x) {
 	if (kb21 == "_keyboard_en_t2_l1_") kb21 = "QWERTYUIOP{}&*()";
 	if (kb22 == "_keyboard_en_t2_l2_") kb22 = "ASDFGHJKL:\"|~$%^";
 	if (kb23 == "_keyboard_en_t2_l3_") kb23 = "ZXCVBNM<>?_+\n!@#";
+	kb31 = kb11;
+	kb32 = kb12;
+	kb33 = kb13;
 
 	kbc11 = gmenu2x->tr["_keyboard_t1_l1_"];
 	kbc12 = gmenu2x->tr["_keyboard_t1_l2_"];
