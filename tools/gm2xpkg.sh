@@ -224,6 +224,8 @@ CLEAN=${CLEAN:=0}
 
 # ENV VAR.
 ## Specific
+TARGET=${TARGET:=""}
+VERSION=${VERSION:=""}
 if test -z $TARGET; then
 	echo "No binary name provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
@@ -251,6 +253,8 @@ MANUAL=${MANUAL:=$TARGET.man.txt}
 TITLE=${TITLE:="$TARGET"}
 DESCRI=${DESCRI:="${TARGET} app"}
 SELDIR=${SELDIR:=""}
+DESTDIR=${DESTDIR:=""}
+SECTION=${SECTION:=""}
 if test -z $DESTDIR; then
 	DESTDIR=apps
 	echo "no destination directory provided, setting path to default ${HOMEPATH}/${DESTDIR}"
@@ -259,6 +263,25 @@ if test -z $SECTION; then
 	SECTION=applications
 	echo "no gmenu2x section provided, setting default \"${SECTION}\" in use"
 fi
+
+SELBROWSER=${SELBROWSER:="true"}
+SELFILTER=${SELFILTER:=""}
+SELSCREENS=${SELSCREENS:=""}
+ICON=${ICON:=""}
+BAKCDROP=${BAKCDROP:=""}
+PARAMS=${PARAMS:=""}
+
+if test -z $SELDIR || test "$SELBROWSER" == "true"; then
+	SELBROWSER=""
+elif ! test -z $SELDIR &&  test "$SELBROWSER" == "false"; then
+	SELBROWSER=""
+	echo "WARNING: you can't set selectorbrowser value for \"Show Folders\" while selectordirectory is empty"
+fi
+
+CLOCK=${CLOCK:=""}
+LAYOUT=${LAYOUT:=""}
+TEFIX=${TEFIX:=""}
+
 if test -f "${TARGET}.lnk"; then
 	# source ${TARGET}.lnk
 	echo "gmenu2x link file found, setting following link entries:"
@@ -345,11 +368,21 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	if ! (test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
+		test -n "$ICON"   && echo "icon=${ICON}" >> $LINK
 		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${TARGET_EXEC}/" $LINK
+		test -n "$PARAMS" && echo "params=${PARAMS}" >> $LINK
+		test -n "$CLOCK"  && echo "clock=${CLOCK}" >> $LINK
+		test -n "$LAYOUT" && echo "layout=${LAYOUT}" >> $LINK
+		test -n "$LAYOUT" && echo "layout=${LAYOUT}" >> $LINK
+		test -n "$TEFIX"  && echo "tefix=${TEFIX}" >> $LINK
 		test -n "$SELDIR" && echo "selectordir=${SELDIR}" >> $LINK
+		test -n "$SELBROWSER" && echo "selectorbrowser=${SELBROWSER}" >> $LINK
+		test -n "$SELFILTER" && echo "selectorfilter=${SELFILTER}" >> $LINK
+		test -n "$SELSCREENS" && echo "selectorscreens=${SELSCREENS}" >> $LINK
 		if test -e $ALIASES; then
 			echo "selectoraliases=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${ALIASES}" >> $LINK
 		fi
+		test -n "$BAKCDROP" && echo "backdrop=${BAKCDROP}" >> $LINK
 	else
 		LINK_CUSTOM="yes"
 	fi
