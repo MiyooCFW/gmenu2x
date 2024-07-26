@@ -72,7 +72,7 @@ DESCRI=\"${DESCRI}\" # [string] short description
 DESTDIR=\"${DESTDIR}\" # [string] (default=\"apps\") installation path in \$HOME directory, 
 SECTION=\"${SECTION}\" # [string] (default=\"applications\") section in menu
 ### Additional
-SELDIR=\"${SELDIR}\" # [path] for search directory (activates selector)
+SELDIR=\"${SELDIR}\" # [path] for search directory (activates selector, don't append path with \"/\" to use AUTO selectorelement mode)
 SELBROWSER=\"${SELBROWSER}\" # [bool] (default=\"true\") don't show directories in selector browser with \"false\" - aka \"Show Folders\" option
 SELFILTER=\"${SELFILTER}\" # [string] activates FileFilter in selector e.g. =\".gba,.zip\"
 SELSCREENS=\"${SELSCREENS}\" # [path] to Boxarts' directory in selector
