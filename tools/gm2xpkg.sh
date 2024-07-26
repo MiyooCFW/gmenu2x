@@ -53,7 +53,7 @@ DEBUG=\"${DEBUG}\"
 
 # ENV VAR.
 ## Specific (mandatory to provide!)
-TARGET=\"${TARGET}\"  # replace with binary name
+TARGET=\"${TARGET}\"  # replace with binary PATH/<file_name>
 VERSION=\"${VERSION}\"  # replace with correct release version if exist
 
 ## Generic - common to all apps (better to not modify)
@@ -66,14 +66,26 @@ ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for s
 MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in CWD
 
 ## Link entries (better modify if no <target_name>.lnk file provided)
-TITLE=\"${TITLE}\"
-DESCRI=\"${DESCRI}\"
-SELDIR=\"${SELDIR}\"
-DESTDIR=\"${DESTDIR}\" # default=apps
-SECTION=\"${SECTION}\" # default=applications
+### Primary
+TITLE=\"${TITLE}\" # [string] program title
+DESCRI=\"${DESCRI}\" # [string] short description
+DESTDIR=\"${DESTDIR}\" # [string] (default=\"apps\") installation path in \$HOME directory, 
+SECTION=\"${SECTION}\" # [string] (default=\"applications\") section in menu
+### Additional
+SELDIR=\"${SELDIR}\" # [path] for search directory (activates selector)
+SELBROWSER=\"${SELBROWSER}\" # [bool] (default=\"true\") don't show directories in selector browser with \"false\" - aka \"Show Folders\" option
+SELFILTER=\"${SELFILTER}\" # [string] activates FileFilter in selector e.g. =\".gba,.zip\"
+SELSCREENS=\"${SELSCREENS}\" # [path] to Boxarts' directory in selector
+ICON=\"${ICON}\" # [path] change default display icon in menu
+BAKCDROP=\"${BAKCDROP}\" # [path] activates backdrop display under icon in menu
+PARAMS=\"${PARAMS}\" # [string] Parameters (options/args) being passed to execution cmd
+### HW Specific
+CLOCK=\"${CLOCK}\" # [int] CPU frequency
+LAYOUT=\"${LAYOUT}\" # [int] SDL Keyboard (face buttons) layout
+TEFIX=\"${TEFIX}\" # [int] Tearing FIX method
 
 ## Custom entries (if needed then modify)
-TARGET_EXEC=\"${TARGET_EXEC}\" # the executable name that's being used by frontend when running an app, may be a script name or binary (default)
+TARGET_EXEC=\"${TARGET_EXEC}\" # the executable <file_name> that's being used by frontend when running an app, for e.g. may be a custom script (default=<target_name>)
 TARGET_DIR=\"${TARGET_DIR}\" # the install directory /\$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary if not provided the TARGET_DIR=\$TARGET
 DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${SPACE}\"${DOCS[$i]}\""; done))\
  # array of extra text files e.g. =(\"LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend
@@ -227,13 +239,17 @@ CLEAN=${CLEAN:=0}
 TARGET=${TARGET:=""}
 VERSION=${VERSION:=""}
 if test -z $TARGET; then
-	echo "No binary name provided, please set \$TARGET in your env with correct execution program name"
+	echo "No binary PATH/<filename> provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
 	exit
 elif ! test -f "$TARGET"; then
-	echo "No binary/script found matching name \"${TARGET}\", exiting..."
+	echo "No binary/script found matching \"${TARGET}\", exiting..."
 	sleep 2
 	exit
+else
+	TARGET_PATH_DIR="${TARGET%/*}"
+	TARGET_PATH="${TARGET}"
+	TARGET="${TARGET##*/}"
 fi
 if test -z $VERSION; then
 	VERSION=$(date +%Y-%m-%d\ %H:%M)
@@ -282,19 +298,25 @@ CLOCK=${CLOCK:=""}
 LAYOUT=${LAYOUT:=""}
 TEFIX=${TEFIX:=""}
 
-if test -f "${TARGET}.lnk"; then
+if test -f "${LINK}"; then
 	# source ${TARGET}.lnk
 	echo "gmenu2x link file found, setting following link entries:"
-	grep -v '^#' ${TARGET}.lnk
+	grep -v '^#' ${LINK}
 else
 	echo "no link file found, executing with predefined values:"
 	echo -e "title=$TITLE\ndescription=$DESCRI\nselectordir=$SELDIR"
 fi
 
 ## Custom entries
+if test -z "${TARGET_EXEC}"; then
+	TARGET_EXEC="${TARGET}"
+else
+	TARGET_EXEC="${TARGET_EXEC##*/}"
+	echo "Custom executable \"${TARGET_EXEC}\" name is being used by frontend's links launcher"
+fi
 if test -z $TARGET_DIR; then
 	TARGET_DIR=${TARGET}
-	echo "no target directory provided, setting target install path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+	echo "no target install directory provided, setting target install path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
 fi
 if test ${#DOCS[@]} -eq 0 || test -z "${DOCS[*]}"; then
 	DOCS=("")
@@ -313,9 +335,9 @@ LICENSE=${LICENSE:="Unknown"}
 #---------------------------------------------#
 # CODE execution
 
-LIBS_LD="$(file ${TARGET} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
+LIBS_LD="$(file ${TARGET_PATH} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
 if test "${LIBS_LD}" == "dynamically"; then
-	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
+	LIBC=$(file ${TARGET_PATH} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
 	! test -z "${DEPENDS}" && DEPENDS="${LIBC}, ${DEPENDS}" || DEPENDS="${LIBC}"
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
 	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
@@ -349,22 +371,19 @@ PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${A
 "
 
 if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
-	TARGET_PATH=$RELEASEDIR/$DESTDIR/$TARGET_DIR
+	TARGET_INSTALL_DIR=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
 	rm -rf $RELEASEDIR
 	mkdir -p $RELEASEDIR
 	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
-	cp *$TARGET $RELEASEDIR/
-	mkdir -p $TARGET_PATH
+	cp $TARGET_PATH $RELEASEDIR/
+	mkdir -p $TARGET_INSTALL_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
-	mv $RELEASEDIR/*$TARGET $TARGET_PATH/
+	mv $RELEASEDIR/*$TARGET $TARGET_INSTALL_DIR/
 	test -d $ASSETSDIR\
-	 && cp -r $ASSETSDIR/* $TARGET_PATH\
+	 && cp -r $ASSETSDIR/* $TARGET_INSTALL_DIR\
 	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
-	test -z "${TARGET_EXEC}"\
-	 && TARGET_EXEC="${TARGET}"\
-	 || echo "Custom executable \"${TARGET_EXEC}\" is being used by frontend's links launcher"
 	if ! (test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
@@ -388,7 +407,7 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
 	if test -e $ALIASES; then
-		cp $ALIASES $TARGET_PATH
+		cp $ALIASES $TARGET_INSTALL_DIR
 	else
 		echo "WARNING: Couldn't locate aliases in ${ALIASES} file"
 	fi
@@ -402,14 +421,14 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 			echo "WARNING: Unsupported format of manual in ${MANUAL} file. Use PNG image or plain text file"
 		fi
 		! test -z "${MANUAL_EXT}"\
-		 && cp $MANUAL $TARGET_PATH/${TARGET}${MANUAL_EXT}
+		 && cp $MANUAL $TARGET_INSTALL_DIR/${TARGET}${MANUAL_EXT}
 	else
 		echo "WARNING: Couldn't locate manual in ${MANUAL} file"
 	fi
 	! test -z "${DOCS[*]}"\
-	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}/" && mv "${TARGET_PATH}"/"${DOCS[$i]##*/}" "${TARGET_PATH}"/"${DOCS[$i]##*/}.txt"; done\
+	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}.txt"; done\
 	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
-	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_PATH\
+	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR\
 	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
 	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
 	
