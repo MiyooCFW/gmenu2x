@@ -303,24 +303,15 @@ if test -f "${LINK}"; then
 	echo "gmenu2x link file found, setting following link entries:"
 	grep -v '^#' ${LINK}
 else
-	echo "no link file found, executing with predefined values:"
-	echo -e "
-title=$TITLE
-description=$DESCRI
-icon=$ICON
-exec=<auto_generated>
-params=$PARAMS
-manual=<auto_generated>
-clock=$CLOCK
-layout=$LAYOUT
-tefix=$TEFIX
-selectordir=$SELDIR
-selectorbrowser=$SELBROWSER
-selectorfilter=$SELFILTER
-selectorscreens=$SELSCREENS
-selectoraliases=<auto_generated>
-backdrop=$BAKCDROP
-"
+	echo -e "no link file found, executing with predefined values..."
+	if test "x${DEBUG}" == "xyes"; then
+		echo -e "Following parameters has been set from predefined values:"
+		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
+		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
+		echo -e "manual=<auto_generated>\nclock=$CLOCK\nlayout=$LAYOUT\ntefix=$TEFIX\nselectordir=$SELDIR"
+		echo -e "selectorbrowser=$SELBROWSER\nselectorfilter=$SELFILTER\nselectorscreens=$SELSCREENS"
+		echo -e "selectoraliases=<auto_generated>\nbackdrop=$BAKCDROP\n"
+	fi
 fi
 
 ## Custom entries
@@ -350,7 +341,7 @@ LICENSE=${LICENSE:="Unknown"}
 
 #---------------------------------------------#
 # CODE execution
-
+echo -e "---"
 LIBS_LD="$(file ${TARGET_PATH} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
 if test "${LIBS_LD}" == "dynamically"; then
 	LIBC=$(file ${TARGET_PATH} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
@@ -377,15 +368,16 @@ Priority: ${PRIORITY}\n\
 Maintainer: ${MAINTAINER}\n\
 Architecture: ${ARCH}"
 
-echo -e "Using following configuration:
-PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n
-TARGET=${TARGET}\nVERSION=${VERSION}\n
-HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n
-TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n
-TARGET_EXEC=${TARGET_EXEC}\nTARGET_DIR=${TARGET_DIR}\nDOCS=(${DOCS[*]})\n
-PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}
-"
-
+echo -e "Starting configuration..."
+if test "x${DEBUG}" == "xyes"; then
+	echo -e "\nUsing following configuration setup:"
+	echo -e "PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n-"
+	echo -e "TARGET=${TARGET}\nVERSION=${VERSION}\n-"
+	echo -e "HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n-"
+	echo -e "TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n-"
+	echo -e "TARGET_EXEC=${TARGET_EXEC}\nTARGET_DIR=${TARGET_DIR}\nDOCS=(${DOCS[*]})\n-"
+	echo -e "PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}\n"
+fi
 if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
 	TARGET_INSTALL_DIR=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
