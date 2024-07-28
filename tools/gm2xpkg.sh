@@ -215,7 +215,7 @@ if test -f "${PKGCFG}"; then
 	if test "${VER}" != "${PKGVER}" ; then
 		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option"
 		sleep 2
-		exit
+		exit 1
 	fi
 else
 	echo "no config \"${PKGCFG}\" file found, executing with predefined values from env or script"
@@ -241,11 +241,11 @@ VERSION=${VERSION:=""}
 if test -z $TARGET; then
 	echo "No binary PATH/<filename> provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
-	exit
+	exit 1
 elif ! test -f "$TARGET"; then
 	echo "No binary/script found matching \"${TARGET}\", exiting..."
 	sleep 2
-	exit
+	exit 1
 else
 	TARGET_PATH_DIR="${TARGET%/*}"
 	TARGET_PATH="${TARGET}"
