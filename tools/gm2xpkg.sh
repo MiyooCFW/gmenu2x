@@ -480,16 +480,25 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		# mv $TARGET.ipk $RELEASEDIR/
 	fi
 	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -rf ${RELEASEDIR:?}/*; fi
-elif test $CLEAN -ne 0 >/dev/null 2>&1; then
-	rm -rf ${RELEASEDIR:?} && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR}"
-	rm -rf ${OPKG_ASSETSDIR:?} && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
-	rm -f $TARGET.ipk && echo "Done CLEANING ./${TARGET}.ipk" || echo "WARNING: Couldn't clean ./${TARGET}.ipk"
-	rm -f ${TARGET}_${VERSION}.zip && echo "Done CLEANING ./${TARGET}_${VERSION}.zip" || echo "WARNING: Couldn't clean ./${TARGET}_${VERSION}.zip"
-	if ! test "x${LINK_CUSTOM}" == "xyes"; then
-		rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${LINK}"
+fi
+if test $CLEAN -ne 0 >/dev/null 2>&1; then
+	echo -e "---"
+	if ! test $PACKAGE -ne 0; then
+		rm -r ${RELEASEDIR:?} >/dev/null 2>&1 && echo "Done CLEANING release dir ./${RELEASEDIR}"
 	fi
-else
-	echo "\nWARNING: No instructions provided, please use -i/-p/-z/-c option or set \$PACKAGE/\$ZIP/\$IPK/\$CLEAN in env to 1 for correct output\n\n"
+	rm -r ${OPKG_ASSETSDIR:?} >/dev/null 2>&1 && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
+	if ! test $IPK -ne 0; then
+		rm $TARGET.ipk >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}.ipk"
+	fi
+	if ! test $ZIP -ne 0; then
+		rm ${TARGET}_${VERSION}.zip >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}_${VERSION}.zip"
+	fi
+	if ! test "x${LINK_CUSTOM}" == "xyes"; then
+		rm $LINK >/dev/null 2>&1 && echo "Done CLEANING link ./${LINK}"
+	fi
+fi
+if test $PACKAGE -ne 1 >/dev/null 2>&1 && test $ZIP -ne 1 >/dev/null 2>&1 && test $IPK -ne 1 >/dev/null 2>&1 && test $CLEAN -ne 1 >/dev/null; then
+	echo -e "\nWARNING: No instructions provided, please use -i/-p/-z/-c option or set \$PACKAGE/\$ZIP/\$IPK/\$CLEAN in env to 1 for correct output\n\n"
 	sleep 1
 fi
 #---------------------------------------------#
