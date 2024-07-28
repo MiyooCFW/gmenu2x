@@ -6,8 +6,8 @@ MIYOOCFW_VER=2.0.0
 help_func() {
 	echo -e "Usage: gm2xpkg [OPTION] [FILE]"
 	echo -e "   or: gm2xpkg"
-	echo -e "GMenu2X packager v${VER} tool to generate working release for your binary in CWD with configuration FILE.\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)"
-	echo -e "With no FILE provided, use \"pkg.cfg\" in CWD.\n
+	echo -e "GMenu2X packager v${VER} tool to generate working release for your binary in PWD with configuration FILE.\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)"
+	echo -e "With no FILE provided, use \"pkg.cfg\" in PWD.\n
 	 Options:
 	 \t -h, --help      print this help screen
 	 \t -V, --version   print gm2xpkg version
@@ -15,9 +15,9 @@ help_func() {
 	 \t -z, --zip       generate ZIP archive
 	 \t -p, --pkg       generate ./package
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
-	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in CWD
+	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in PWD
 	 Instructions:
-	 \t 1. Put inside CWD:
+	 \t 1. Put inside PWD:
 	 \t\t- ./<target_name> binary
 	 \t\t- ./assets/ dir with all necessary files which goes in same place where binary goes
 	 \t\t- ./opkg_assets/ dir with custom IPK's control files (these are auto-generated if missing).
@@ -25,11 +25,11 @@ help_func() {
 	 \t 3. Run program:
 	 \t\t$: ./gm2xpkg.sh
 	 \t --or-- 
-	 \t 3. Install & run program from usr space in CWD:
+	 \t 3. Install & run program from usr space in PWD:
 	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg
 	 \t\t$: gm2xpkg
 	 Notes:
-	 \t CWD  - Current Working Directory
+	 \t PWD  - Present Working Directory PATH
 	 \t FILE - configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
 }
 
@@ -61,9 +61,9 @@ HOMEPATH=\"${HOMEPATH}\"
 RELEASEDIR=\"${RELEASEDIR}\"
 ASSETSDIR=\"${ASSETSDIR}\"
 OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\"
-LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in CWD
-ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for selector e.g. old_title=new_title - place in CWD
-MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in CWD
+LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in PWD
+ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for selector e.g. old_title=new_title - place in PWD
+MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in PWD
 
 ## Link entries (better modify if no <target_name>.lnk file provided)
 ### Primary
