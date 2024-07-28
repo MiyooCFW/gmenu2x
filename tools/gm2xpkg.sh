@@ -10,6 +10,7 @@ help_func() {
 	echo -e "With no FILE provided, use \"pkg.cfg\" in PWD.\n
 	 Options:
 	 \t -h, --help      print this help screen
+	 \t -v, --verbose   output more process info
 	 \t -V, --version   print gm2xpkg version
 	 \t -i, --ipk       generate IPK package
 	 \t -z, --zip       generate ZIP archive
@@ -48,8 +49,8 @@ ZIP=\"${ZIP}\"
 IPK=\"${IPK}\"
 CLEAN=\"${CLEAN}\"
 
-# DEBUG session (insert \"yes\" to perform)
-DEBUG=\"${DEBUG}\"
+# VERBOSE mode (insert \"yes\" to have more info)
+VERBOSE=\"${VERBOSE}\"
 
 # ENV VAR.
 ## Specific (mandatory to provide!)
@@ -61,7 +62,7 @@ HOMEPATH=\"${HOMEPATH}\"
 RELEASEDIR=\"${RELEASEDIR}\"
 ASSETSDIR=\"${ASSETSDIR}\"
 OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\"
-LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in PWD
+LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in PWD (warning: it may be removed with CLEAN=1)
 ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for selector e.g. old_title=new_title - place in PWD
 MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in PWD
 
@@ -116,7 +117,7 @@ test $# -ne 0 &&\
  PKGCFG="${!#}" || PKGCFG="pkg.cfg" # last argument used of [FILE] or use default ./pkg.cfg placement
 
 case "${PKGCFG}" in
-	-h|--help|-V|--ver|--version|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg)
+	-h|--help|-V|--ver|--version|-v|--verbose|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg)
 		PKGCFG="pkg.cfg"
 		;;
 	*)
@@ -136,6 +137,11 @@ do
 		-V | --ver | --version)
 			echo -e "GM2X PACKAGER version ${VER} for MiyooCFW ${MIYOOCFW}"
 			exit 0
+			;;
+		-v | --verbose)
+			VERBOSE="yes"
+			echo -e "running in VERBOSE mode"
+			shift
 			;;
 		-i | --ipk)
 			IPK_OPT="1"
@@ -208,7 +214,7 @@ done
 if test -f "${PKGCFG}"; then
 	source "${PKGCFG}"
 	echo "config file found in $(realpath ${PKGCFG}), setting predefined variables..."
-	if test "x${DEBUG}" == "xyes"; then
+	if test "x${VERBOSE}" == "xyes"; then
 		echo "Following variables has been read from ${PKGCFG} file:"
 		grep -v -e '^#' -e '""' "${PKGCFG}"
 	fi
@@ -304,7 +310,7 @@ if test -f "${LINK}"; then
 	grep -v '^#' ${LINK}
 else
 	echo -e "no link file found, executing with predefined values..."
-	if test "x${DEBUG}" == "xyes"; then
+	if test "x${VERBOSE}" == "xyes"; then
 		echo -e "Following parameters has been set from predefined values:"
 		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
 		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
@@ -369,7 +375,7 @@ Maintainer: ${MAINTAINER}\n\
 Architecture: ${ARCH}"
 
 echo -e "Starting configuration..."
-if test "x${DEBUG}" == "xyes"; then
+if test "x${VERBOSE}" == "xyes"; then
 	echo -e "\nUsing following configuration setup:"
 	echo -e "PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n-"
 	echo -e "TARGET=${TARGET}\nVERSION=${VERSION}\n-"
@@ -478,7 +484,7 @@ elif test $CLEAN -ne 0 >/dev/null 2>&1; then
 	rm -rf ${RELEASEDIR:?} && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR}"
 	rm -rf ${OPKG_ASSETSDIR:?} && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
 	rm -f $TARGET.ipk && echo "Done CLEANING ./${TARGET}.ipk" || echo "WARNING: Couldn't clean ./${TARGET}.ipk"
-	rm -f $TARGET*.zip && echo "Done CLEANING ./${TARGET}.zip" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
+	rm -f ${TARGET}_${VERSION}.zip && echo "Done CLEANING ./${TARGET}_${VERSION}.zip" || echo "WARNING: Couldn't clean ./${TARGET}_${VERSION}.zip"
 	if ! test "x${LINK_CUSTOM}" == "xyes"; then
 		rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${LINK}"
 	fi
