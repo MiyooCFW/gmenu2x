@@ -69,7 +69,7 @@ MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage descrip
 ### Primary
 TITLE=\"${TITLE}\" # [string] program title
 DESCRI=\"${DESCRI}\" # [string] short description
-DESTDIR=\"${DESTDIR}\" # [string] (default=\"apps\") installation path in \$HOME directory, 
+DESTDIR=\"${DESTDIR}\" # [string] (default=\"apps\") installation path in \$HOME directory - not a link entry
 SECTION=\"${SECTION}\" # [string] (default=\"applications\") section in menu
 ### Additional
 SELDIR=\"${SELDIR}\" # [path] for search directory (activates selector, don't append path with \"/\" to use AUTO selectorelement mode)
@@ -304,7 +304,23 @@ if test -f "${LINK}"; then
 	grep -v '^#' ${LINK}
 else
 	echo "no link file found, executing with predefined values:"
-	echo -e "title=$TITLE\ndescription=$DESCRI\nselectordir=$SELDIR"
+	echo -e "
+title=$TITLE
+description=$DESCRI
+icon=$ICON
+exec=<auto_generated>
+params=$PARAMS
+manual=<auto_generated>
+clock=$CLOCK
+layout=$LAYOUT
+tefix=$TEFIX
+selectordir=$SELDIR
+selectorbrowser=$SELBROWSER
+selectorfilter=$SELFILTER
+selectorscreens=$SELSCREENS
+selectoraliases=<auto_generated>
+backdrop=$BAKCDROP
+"
 fi
 
 ## Custom entries
