@@ -252,7 +252,7 @@ else
 	TARGET="${TARGET##*/}"
 fi
 if test -z $VERSION; then
-	VERSION=$(date +%Y-%m-%d\ %H:%M)
+	VERSION=$(date +%Y-%m-%d\_%H:%M)
 	echo "no release Version provided, setting it to curret time ${VERSION}"
 fi
 
@@ -443,11 +443,10 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	# Create ./package/<target_version>.zip
 	if test $ZIP -ne 0 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
-		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && mv *.zip ..
-		cd ..
-		test -f "${TARGET}_${VERSION}.zip"\
+		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && mv *.zip ..\
 		 && echo "Done packaging ./${TARGET}_${VERSION}.zip archive"\
-		 || echo "WARNING: Upss smth went wrong and I couldn't locate ${TARGET}_${VERSION}.zip"
+		 || echo "WARNING: Upss smth went wrong and I couldn't create ${TARGET}_${VERSION}.zip"
+		cd ..
 	fi
 	
 	# Create ./package/<target>.ipk
