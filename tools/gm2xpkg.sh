@@ -347,7 +347,7 @@ LICENSE=${LICENSE:="Unknown"}
 
 #---------------------------------------------#
 # CODE execution
-echo -e "---"
+echo -e "\tStarting gm2xpkg..."
 LIBS_LD="$(file ${TARGET_PATH} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
 if test "${LIBS_LD}" == "dynamically"; then
 	LIBC=$(file ${TARGET_PATH} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
@@ -462,11 +462,13 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		cp -r $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR/
 		mkdir -p $RELEASEDIR/data
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
-		if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst; }; then
+		if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
 			mkdir -p $OPKG_ASSETSDIR/CONTROL
 			echo -e "#!/bin/sh\nsync; echo 'Installing new ${TARGET}..'; rm /var/lib/opkg/info/${TARGET}.list; exit 0" > $OPKG_ASSETSDIR/CONTROL/preinst
 			echo -e "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" > $OPKG_ASSETSDIR/CONTROL/postinst
 			echo -e $CONTROL > $OPKG_ASSETSDIR/CONTROL/control
+		else
+			OPKG_ASSETSDIR_CUSTOM="yes"
 		fi
 		chmod +x $OPKG_ASSETSDIR/CONTROL/postinst $OPKG_ASSETSDIR/CONTROL/preinst
 		cp -r $OPKG_ASSETSDIR/CONTROL $RELEASEDIR
@@ -486,7 +488,9 @@ if test $CLEAN -eq 1 >/dev/null 2>&1; then
 	if test $PACKAGE -ne 1; then
 		rm -r ${RELEASEDIR:?} >/dev/null 2>&1 && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "INFO: Not able or no need to clean release dir ./${RELEASEDIR}"
 	fi
-	rm -r ${OPKG_ASSETSDIR:?} >/dev/null 2>&1 && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
+	if ! test "x${OPKG_ASSETSDIR_CUSTOM}" == "xyes"; then
+		rm -r ${OPKG_ASSETSDIR:?} >/dev/null 2>&1 && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
+	fi
 	if test $IPK -ne 1; then
 		rm $TARGET.ipk >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}.ipk" || echo "INFO: Not able or no need to clean ./${TARGET}.ipk"
 	fi
@@ -494,11 +498,13 @@ if test $CLEAN -eq 1 >/dev/null 2>&1; then
 		rm ${TARGET}_${VERSION}.zip >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}_${VERSION}.zip" || echo "INFO: Not able or no need to clean ./${TARGET}_${VERSION}.zip"
 	fi
 	if ! test "x${LINK_CUSTOM}" == "xyes"; then
-		rm $LINK >/dev/null 2>&1 && echo "Done CLEANING link ./${LINK}" || echo "INFO: Not able or no need to clean link ./${LINK}"
+		rm $LINK >/dev/null 2>&1 && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean link ./${LINK}"
 	fi
 fi
 if test $PACKAGE -ne 1 >/dev/null 2>&1 && test $ZIP -ne 1 >/dev/null 2>&1 && test $IPK -ne 1 >/dev/null 2>&1 && test $CLEAN -ne 1 >/dev/null; then
 	echo -e "\nWARNING: No instructions provided, please use -i/-p/-z/-c option or set \$PACKAGE/\$ZIP/\$IPK/\$CLEAN in env to 1 for correct output\n\n"
 	sleep 1
+else
+	echo -e "\tExiting gm2xpkg..."
 fi
 #---------------------------------------------#
