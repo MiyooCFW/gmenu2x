@@ -384,7 +384,7 @@ if test "x${VERBOSE}" == "xyes"; then
 	echo -e "TARGET_EXEC=${TARGET_EXEC}\nTARGET_DIR=${TARGET_DIR}\nDOCS=(${DOCS[*]})\n-"
 	echo -e "PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}\n"
 fi
-if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
+if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || test $IPK -eq 1 >/dev/null 2>&1; then
 	TARGET_INSTALL_DIR=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
 	rm -rf $RELEASEDIR
@@ -443,11 +443,11 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}.txt"; done\
 	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
 	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR\
-	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
+	 && (test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
 	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
 	
 	# Create ./package/<target_version>.zip
-	if test $ZIP -ne 0 >/dev/null 2>&1; then
+	if test $ZIP -eq 1 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && mv *.zip ..\
 		 && echo "Done packaging ./${TARGET}_${VERSION}.zip archive"\
@@ -456,7 +456,7 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 	fi
 	
 	# Create ./package/<target>.ipk
-	if test $IPK -ne 0 >/dev/null 2>&1; then
+	if test $IPK -eq 1 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		mkdir -p .$HOMEPATH
 		cp -r $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR/
@@ -479,22 +479,22 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		 && rm $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary && rm -r $RELEASEDIR/CONTROL/ $RELEASEDIR/data/
 		# mv $TARGET.ipk $RELEASEDIR/
 	fi
-	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -rf ${RELEASEDIR:?}/*; fi
+	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -r ${RELEASEDIR:?}/* >/dev/null 2>&1 || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR} after done packaging"; fi
 fi
-if test $CLEAN -ne 0 >/dev/null 2>&1; then
+if test $CLEAN -eq 1 >/dev/null 2>&1; then
 	echo -e "---"
-	if ! test $PACKAGE -ne 0; then
-		rm -r ${RELEASEDIR:?} >/dev/null 2>&1 && echo "Done CLEANING release dir ./${RELEASEDIR}"
+	if test $PACKAGE -ne 1; then
+		rm -r ${RELEASEDIR:?} >/dev/null 2>&1 && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "INFO: Not able or no need to clean release dir ./${RELEASEDIR}"
 	fi
 	rm -r ${OPKG_ASSETSDIR:?} >/dev/null 2>&1 && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
-	if ! test $IPK -ne 0; then
-		rm $TARGET.ipk >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}.ipk"
+	if test $IPK -ne 1; then
+		rm $TARGET.ipk >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}.ipk" || echo "INFO: Not able or no need to clean ./${TARGET}.ipk"
 	fi
-	if ! test $ZIP -ne 0; then
-		rm ${TARGET}_${VERSION}.zip >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}_${VERSION}.zip"
+	if test $ZIP -ne 1; then
+		rm ${TARGET}_${VERSION}.zip >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}_${VERSION}.zip" || echo "INFO: Not able or no need to clean ./${TARGET}_${VERSION}.zip"
 	fi
 	if ! test "x${LINK_CUSTOM}" == "xyes"; then
-		rm $LINK >/dev/null 2>&1 && echo "Done CLEANING link ./${LINK}"
+		rm $LINK >/dev/null 2>&1 && echo "Done CLEANING link ./${LINK}" || echo "INFO: Not able or no need to clean link ./${LINK}"
 	fi
 fi
 if test $PACKAGE -ne 1 >/dev/null 2>&1 && test $ZIP -ne 1 >/dev/null 2>&1 && test $IPK -ne 1 >/dev/null 2>&1 && test $CLEAN -ne 1 >/dev/null; then
