@@ -481,7 +481,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		 && rm $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary && rm -r $RELEASEDIR/CONTROL/ $RELEASEDIR/data/
 		# mv $TARGET.ipk $RELEASEDIR/
 	fi
-	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -r ${RELEASEDIR:?}/* >/dev/null 2>&1 || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR} after done packaging"; fi
+	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -r ${RELEASEDIR:?}/ >/dev/null 2>&1 || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR} after done packaging"; fi
 fi
 if test $CLEAN -eq 1 >/dev/null 2>&1; then
 	echo -e "---"
