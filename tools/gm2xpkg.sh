@@ -1,23 +1,24 @@
 #!/bin/bash
 
-VER=0.5
+VER=0.6
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
 	echo -e "Usage: gm2xpkg [OPTION] [FILE]"
 	echo -e "   or: gm2xpkg"
-	echo -e "GMenu2X packager v${VER} tool to generate working release for your binary in CWD with configuration FILE.\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)"
-	echo -e "With no FILE provided, use \"pkg.cfg\" in CWD.\n
+	echo -e "GMenu2X packager v${VER} tool to generate working release for your binary in PWD with configuration FILE.\n(aimed at MiyooCFW-${MIYOOCFW_VER} currently)"
+	echo -e "With no FILE provided, use \"pkg.cfg\" in PWD.\n
 	 Options:
 	 \t -h, --help      print this help screen
+	 \t -v, --verbose   output more process info
 	 \t -V, --version   print gm2xpkg version
 	 \t -i, --ipk       generate IPK package
 	 \t -z, --zip       generate ZIP archive
 	 \t -p, --pkg       generate ./package
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
-	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in CWD
+	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in PWD
 	 Instructions:
-	 \t 1. Put inside CWD:
+	 \t 1. Put inside PWD:
 	 \t\t- ./<target_name> binary
 	 \t\t- ./assets/ dir with all necessary files which goes in same place where binary goes
 	 \t\t- ./opkg_assets/ dir with custom IPK's control files (these are auto-generated if missing).
@@ -25,11 +26,11 @@ help_func() {
 	 \t 3. Run program:
 	 \t\t$: ./gm2xpkg.sh
 	 \t --or-- 
-	 \t 3. Install & run program from usr space in CWD:
+	 \t 3. Install & run program from usr space in PWD:
 	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg
 	 \t\t$: gm2xpkg
 	 Notes:
-	 \t CWD  - Current Working Directory
+	 \t PWD  - Present Working Directory PATH
 	 \t FILE - configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
 }
 
@@ -38,7 +39,7 @@ pkg_config_func() {
 		source "${PKGCFG}"
 	fi
 	echo "# NOTES:
-## All variable values should enclosed within double quotes: \"<value>\"
+## All variable values should be enclosed within double quotes: \"<value>\"
 ## CONFIGURATION FILE for \`gm2xpkg\` script version:
 PKGVER=\"${VER}\"
 
@@ -48,34 +49,47 @@ ZIP=\"${ZIP}\"
 IPK=\"${IPK}\"
 CLEAN=\"${CLEAN}\"
 
-# DEBUG session (insert \"yes\" to perform)
-DEBUG=\"${DEBUG}\"
+# VERBOSE mode (insert \"yes\" to have more info)
+VERBOSE=\"${VERBOSE}\"
 
 # ENV VAR.
 ## Specific (mandatory to provide!)
-TARGET=\"${TARGET}\"  # replace with binary name
-VERSION=\"${VERSION}\"  # replace with correct release version if exist
+TARGET=\"${TARGET}\"  # [fullpath], replace with target's binary fullpath (<path>/<file_name>)
+VERSION=\"${VERSION}\"  # [string], replace with correct release version if exist of target
 
 ## Generic - common to all apps (better to not modify)
-HOMEPATH=\"${HOMEPATH}\"
-RELEASEDIR=\"${RELEASEDIR}\"
-ASSETSDIR=\"${ASSETSDIR}\"
-OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\"
-LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in CWD (warning: it may be removed with CLEAN=1)
-ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for selector e.g. old_title=new_title - place in CWD
-MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in CWD
+HOMEPATH=\"${HOMEPATH}\" # [path] of home directory for installation process
+RELEASEDIR=\"${RELEASEDIR}\" # [path] to package output directory, specified with [-p] option
+ASSETSDIR=\"${ASSETSDIR}\" # [path] to dir containg all the necessary assets for a target
+OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\" # [path] to dir containg the ./CONTROL directory with [control, preinst, postinst] files, auto-generated if not provided (warning: it may be removed with CLEAN=1)
+LINK=\"${LINK}\" # [fullpath] of gm2x link, modify if exec binary name may be different from target name (warning: it may be removed with CLEAN=1)
+ALIASES=\"${ALIASES}\" # [fullpath] of *.txt file holding new names for selector e.g. old_title=new_title
+MANUAL=\"${MANUAL}\" # [fullpath] of *.man.txt file holding usage description of target app
 
 ## Link entries (better modify if no <target_name>.lnk file provided)
-TITLE=\"${TITLE}\"
-DESCRI=\"${DESCRI}\"
-SELDIR=\"${SELDIR}\"
-DESTDIR=\"${DESTDIR}\" # default=apps
-SECTION=\"${SECTION}\" # default=applications
+### Primary
+TITLE=\"${TITLE}\" # [string], program title
+DESCRI=\"${DESCRI}\" # [string], short description
+DESTDIR=\"${DESTDIR}\" # [string], (default=\"apps\") installation pathname in \$HOMEPATH directory - not a link entry
+SECTION=\"${SECTION}\" # [string], (default=\"applications\") section in menu
+### Additional
+SELDIR=\"${SELDIR}\" # [path] for search directory (activates selector, don't append path with \"/\" to use AUTO selectorelement mode)
+SELBROWSER=\"${SELBROWSER}\" # [bool], (default=\"true\") don't show directories in selector browser with \"false\" - aka \"Show Folders\" option
+SELFILTER=\"${SELFILTER}\" # [string], activates FileFilter in selector e.g. =\".gba,.zip\"
+SELSCREENS=\"${SELSCREENS}\" # [path] to Boxarts' directory in selector
+ICON=\"${ICON}\" # [fullpath] to icon being used in menu (instead of default)
+BACKDROP=\"${BACKDROP}\" # [fullpath] to backdrop being displayed under icon in menu (default=\"\" thus OFF)
+PARAMS=\"${PARAMS}\" # [string], parameters (options; args) being passed to execution cmd
+### HW Specific
+CLOCK=\"${CLOCK}\" # [int], CPU frequency in MHz
+LAYOUT=\"${LAYOUT}\" # [int], SDL Keyboard (face buttons) layout
+TEFIX=\"${TEFIX}\" # [int], Tearing FIX method
 
 ## Custom entries (if needed then modify)
-TARGET_DIR=\"${TARGET_DIR}\" # the directory /\$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary if not provided the TARGET_DIR=\$TARGET
+TARGET_DIR=\"${TARGET_DIR}\" # [path], the install directory \$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary (default TARGET_DIR=\$(basename \$TARGET))
+TARGET_EXEC=\"${TARGET_EXEC}\" # [string], the executable <file_name> that's being used by frontend when running an app, for e.g. may be a custom script (default TARGET_EXEC=\$(basename \$TARGET))
 DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${SPACE}\"${DOCS[$i]}\""; done))\
- # array of extra text files e.g. =(\"LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend
+ # [array] of fullpaths to extra text files e.g. =(\"docs/LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend and placed in \$TARGET_DIR
 
 ## IPK control entries (if needed then modify)
 PRIORITY=\"${PRIORITY}\"
@@ -103,7 +117,7 @@ test $# -ne 0 &&\
  PKGCFG="${!#}" || PKGCFG="pkg.cfg" # last argument used of [FILE] or use default ./pkg.cfg placement
 
 case "${PKGCFG}" in
-	-h|--help|-V|--ver|--version|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg)
+	-h|--help|-V|--ver|--version|-v|--verbose|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg)
 		PKGCFG="pkg.cfg"
 		;;
 	*)
@@ -123,6 +137,11 @@ do
 		-V | --ver | --version)
 			echo -e "GM2X PACKAGER version ${VER} for MiyooCFW ${MIYOOCFW}"
 			exit 0
+			;;
+		-v | --verbose)
+			VERBOSE="yes"
+			echo -e "running in VERBOSE mode"
+			shift
 			;;
 		-i | --ipk)
 			IPK_OPT="1"
@@ -195,14 +214,14 @@ done
 if test -f "${PKGCFG}"; then
 	source "${PKGCFG}"
 	echo "config file found in $(realpath ${PKGCFG}), setting predefined variables..."
-	if test "x${DEBUG}" == "xyes"; then
+	if test "x${VERBOSE}" == "xyes"; then
 		echo "Following variables has been read from ${PKGCFG} file:"
 		grep -v -e '^#' -e '""' "${PKGCFG}"
 	fi
 	if test "${VER}" != "${PKGVER}" ; then
 		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option"
 		sleep 2
-		exit
+		exit 1
 	fi
 else
 	echo "no config \"${PKGCFG}\" file found, executing with predefined values from env or script"
@@ -223,17 +242,23 @@ CLEAN=${CLEAN:=0}
 
 # ENV VAR.
 ## Specific
+TARGET=${TARGET:=""}
+VERSION=${VERSION:=""}
 if test -z $TARGET; then
-	echo "No binary name provided, please set \$TARGET in your env with correct execution program name"
+	echo "No binary PATH/<filename> provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
-	exit
+	exit 1
 elif ! test -f "$TARGET"; then
-	echo "No binary/script found matching name \"${TARGET}\", exiting..."
+	echo "No binary/script found matching \"${TARGET}\", exiting..."
 	sleep 2
-	exit
+	exit 1
+else
+	TARGET_PATH_DIR="${TARGET%/*}"
+	TARGET_PATH="${TARGET}"
+	TARGET="${TARGET##*/}"
 fi
 if test -z $VERSION; then
-	VERSION=$(date +%Y-%m-%d\ %H:%M)
+	VERSION=$(date +%Y-%m-%d\_%H:%M)
 	echo "no release Version provided, setting it to curret time ${VERSION}"
 fi
 
@@ -250,27 +275,63 @@ MANUAL=${MANUAL:=$TARGET.man.txt}
 TITLE=${TITLE:="$TARGET"}
 DESCRI=${DESCRI:="${TARGET} app"}
 SELDIR=${SELDIR:=""}
+DESTDIR=${DESTDIR:=""}
+SECTION=${SECTION:=""}
 if test -z $DESTDIR; then
 	DESTDIR=apps
-	echo "no destination directory provided, setting path to default ${HOMEPATH}/${DESTDIR}"
+	echo "no destination directory provided, setting path to default ${HOMEPATH}/${DESTDIR}/"
+else
+	DESTDIR=${DESTDIR##*/}
 fi
 if test -z $SECTION; then
 	SECTION=applications
 	echo "no gmenu2x section provided, setting default \"${SECTION}\" in use"
 fi
-if test -f "${TARGET}.lnk"; then
+
+SELBROWSER=${SELBROWSER:="true"}
+SELFILTER=${SELFILTER:=""}
+SELSCREENS=${SELSCREENS:=""}
+ICON=${ICON:=""}
+BACKDROP=${BACKDROP:=""}
+PARAMS=${PARAMS:=""}
+
+if test -z $SELDIR || test "$SELBROWSER" == "true"; then
+	SELBROWSER=""
+elif ! test -z $SELDIR &&  test "$SELBROWSER" == "false"; then
+	SELBROWSER=""
+	echo "WARNING: you can't set selectorbrowser value for \"Show Folders\" while selectordirectory is empty"
+fi
+
+CLOCK=${CLOCK:=""}
+LAYOUT=${LAYOUT:=""}
+TEFIX=${TEFIX:=""}
+
+if test -f "${LINK}"; then
 	# source ${TARGET}.lnk
 	echo "gmenu2x link file found, setting following link entries:"
-	grep -v '^#' ${TARGET}.lnk
+	grep -v '^#' ${LINK}
 else
-	echo "no link file found, executing with predefined values:"
-	echo -e "title=$TITLE\ndescription=$DESCRI\nselectordir=$SELDIR"
+	echo -e "no link file found, executing with predefined values..."
+	if test "x${VERBOSE}" == "xyes"; then
+		echo -e "Following parameters has been set from predefined values:"
+		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
+		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
+		echo -e "manual=<auto_generated>\nclock=$CLOCK\nlayout=$LAYOUT\ntefix=$TEFIX\nselectordir=$SELDIR"
+		echo -e "selectorbrowser=$SELBROWSER\nselectorfilter=$SELFILTER\nselectorscreens=$SELSCREENS"
+		echo -e "selectoraliases=<auto_generated>\nbackdrop=$BACKDROP\n"
+	fi
 fi
 
 ## Custom entries
 if test -z $TARGET_DIR; then
-	TARGET_DIR=${TARGET}
-	echo "no target directory provided, setting path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+	TARGET_DIR="$(basename ${TARGET})"
+	echo "no target install directory provided, setting target install path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}/"
+fi
+if test -z "${TARGET_EXEC}"; then
+	TARGET_EXEC="${TARGET##*/}"
+else
+	TARGET_EXEC="${TARGET_EXEC##*/}"
+	echo "Custom executable \"${TARGET_EXEC}\" is being used by frontend's links launcher"
 fi
 if test ${#DOCS[@]} -eq 0 || test -z "${DOCS[*]}"; then
 	DOCS=("")
@@ -288,11 +349,11 @@ LICENSE=${LICENSE:="Unknown"}
 
 #---------------------------------------------#
 # CODE execution
-
-LIBS_LD="$(file ${TARGET} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
+echo -e "\tStarting gm2xpkg..."
+LIBS_LD="$(file ${TARGET_PATH} | sed -E 's/.* ([^ ]+) linked.*/\1/')"
 if test "${LIBS_LD}" == "dynamically"; then
-	LIBC=$(file ${TARGET} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
-	! test -z ${DEPENDS} && DEPENDS="${LIBC}, ${DEPENDS}" || DEPENDS="${LIBC}"
+	LIBC=$(file ${TARGET_PATH} | sed -n 's/.*ld-\([a-zA-Z]*\).*/\1/p' | tr '[:upper:]' '[:lower:]')
+	! test -z "${DEPENDS}" && DEPENDS="${LIBC}, ${DEPENDS}" || DEPENDS="${LIBC}"
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
 	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
 	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && exit 1"
@@ -315,41 +376,54 @@ Priority: ${PRIORITY}\n\
 Maintainer: ${MAINTAINER}\n\
 Architecture: ${ARCH}"
 
-echo -e "Using following configuration:
-PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n
-TARGET=${TARGET}\nVERSION=${VERSION}\n
-HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n
-TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nTARGET_DIR=${TARGET_DIR}\nSECTION=${SECTION}\n
-TARGET_DIR=${TITLE}\nDOCS=(${DOCS[*]})\n
-PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}
-"
-
-if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || test $IPK -ne 0 >/dev/null 2>&1; then
-	TARGET_PATH=$RELEASEDIR/$DESTDIR/$TARGET_DIR
+echo -e "Starting configuration..."
+if test "x${VERBOSE}" == "xyes"; then
+	echo -e "\nUsing following configuration setup:"
+	echo -e "PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n-"
+	echo -e "TARGET=${TARGET}\nVERSION=${VERSION}\n-"
+	echo -e "HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n-"
+	echo -e "TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n-"
+	echo -e "TARGET_EXEC=${TARGET_EXEC}\nTARGET_DIR=${TARGET_DIR}\nDOCS=(${DOCS[*]})\n-"
+	echo -e "PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}\n"
+fi
+if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || test $IPK -eq 1 >/dev/null 2>&1; then
+	TARGET_INSTALL_DIR=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
 	rm -rf $RELEASEDIR
 	mkdir -p $RELEASEDIR
 	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
-	cp *$TARGET $RELEASEDIR/
-	mkdir -p $TARGET_PATH
+	cp $TARGET_PATH $RELEASEDIR/
+	mkdir -p $TARGET_INSTALL_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
-	mv $RELEASEDIR/*$TARGET $TARGET_PATH/
+	mv $RELEASEDIR/*$TARGET $TARGET_INSTALL_DIR/
 	test -d $ASSETSDIR\
-	 && cp -r $ASSETSDIR/* $TARGET_PATH\
+	 && cp -r $ASSETSDIR/* $TARGET_INSTALL_DIR\
 	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
 	if ! (test -e $LINK); then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
-		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${TARGET}/" $LINK
+		test -n "$ICON"   && echo "icon=${ICON}" >> $LINK
+		sed -i "s/^exec=.*/exec=\\${HOMEPATH}\/${DESTDIR}\/${TARGET_DIR}\/${TARGET_EXEC}/" $LINK
+		test -n "$PARAMS" && echo "params=${PARAMS}" >> $LINK
+		test -n "$CLOCK"  && echo "clock=${CLOCK}" >> $LINK
+		test -n "$LAYOUT" && echo "layout=${LAYOUT}" >> $LINK
+		test -n "$LAYOUT" && echo "layout=${LAYOUT}" >> $LINK
+		test -n "$TEFIX"  && echo "tefix=${TEFIX}" >> $LINK
 		test -n "$SELDIR" && echo "selectordir=${SELDIR}" >> $LINK
+		test -n "$SELBROWSER" && echo "selectorbrowser=${SELBROWSER}" >> $LINK
+		test -n "$SELFILTER" && echo "selectorfilter=${SELFILTER}" >> $LINK
+		test -n "$SELSCREENS" && echo "selectorscreens=${SELSCREENS}" >> $LINK
 		if test -e $ALIASES; then
-			echo "selectoraliases=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${ALIASES}" >> $LINK
+			echo "selectoraliases=${HOMEPATH}/${DESTDIR}/${TARGET_DIR}/${ALIASES}" >> $LINK
 		fi
+		test -n "$BACKDROP" && echo "backdrop=${BACKDROP}" >> $LINK
+	else
+		LINK_CUSTOM="yes"
 	fi
-	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
+	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION/
 	if test -e $ALIASES; then
-		cp $ALIASES $TARGET_PATH
+		cp $ALIASES $TARGET_INSTALL_DIR
 	else
 		echo "WARNING: Couldn't locate aliases in ${ALIASES} file"
 	fi
@@ -363,39 +437,40 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 			echo "WARNING: Unsupported format of manual in ${MANUAL} file. Use PNG image or plain text file"
 		fi
 		! test -z "${MANUAL_EXT}"\
-		 && cp $MANUAL $TARGET_PATH/${TARGET}${MANUAL_EXT}
+		 && cp $MANUAL $TARGET_INSTALL_DIR/${TARGET}${MANUAL_EXT}
 	else
 		echo "WARNING: Couldn't locate manual in ${MANUAL} file"
 	fi
 	! test -z "${DOCS[*]}"\
-	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_PATH}/" && mv "${TARGET_PATH}"/"${DOCS[$i]}" "${TARGET_PATH}"/"${DOCS[$i]}.txt"; done\
+	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}.txt"; done\
 	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
-	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_PATH\
-	 && (test $PACKAGE -ne 0 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
+	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR\
+	 && (test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
 	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
 	
 	# Create ./package/<target_version>.zip
-	if test $ZIP -ne 0 >/dev/null 2>&1; then
+	if test $ZIP -eq 1 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
-		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && mv *.zip ..
-		cd ..
-		test -f "${TARGET}_${VERSION}.zip"\
+		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && mv *.zip ..\
 		 && echo "Done packaging ./${TARGET}_${VERSION}.zip archive"\
-		 || echo "WARNING: Upss smth went wrong and I couldn't locate ${TARGET}_${VERSION}.zip"
+		 || echo "WARNING: Upss smth went wrong and I couldn't create ${TARGET}_${VERSION}.zip"
+		cd ..
 	fi
 	
 	# Create ./package/<target>.ipk
-	if test $IPK -ne 0 >/dev/null 2>&1; then
+	if test $IPK -eq 1 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		mkdir -p .$HOMEPATH
 		cp -r $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR/
 		mkdir -p $RELEASEDIR/data
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
-		if ! (test -d $OPKG_ASSETSDIR/CONTROL); then
+		if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
 			mkdir -p $OPKG_ASSETSDIR/CONTROL
 			echo -e "#!/bin/sh\nsync; echo 'Installing new ${TARGET}..'; rm /var/lib/opkg/info/${TARGET}.list; exit 0" > $OPKG_ASSETSDIR/CONTROL/preinst
 			echo -e "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" > $OPKG_ASSETSDIR/CONTROL/postinst
 			echo -e $CONTROL > $OPKG_ASSETSDIR/CONTROL/control
+		else
+			OPKG_ASSETSDIR_CUSTOM="yes"
 		fi
 		chmod +x $OPKG_ASSETSDIR/CONTROL/postinst $OPKG_ASSETSDIR/CONTROL/preinst
 		cp -r $OPKG_ASSETSDIR/CONTROL $RELEASEDIR
@@ -408,15 +483,30 @@ if test $PACKAGE -ne 0 >/dev/null 2>&1 || test $ZIP -ne 0 >/dev/null 2>&1 || tes
 		 && rm $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary && rm -r $RELEASEDIR/CONTROL/ $RELEASEDIR/data/
 		# mv $TARGET.ipk $RELEASEDIR/
 	fi
-	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -rf ${RELEASEDIR:?}/*; fi
-elif test $CLEAN -ne 0 >/dev/null 2>&1; then
-	rm -rf ${RELEASEDIR:?} && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR}"
-	rm -rf ${OPKG_ASSETSDIR:?} && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
-	rm -f $TARGET.ipk && echo "Done CLEANING ./${TARGET}.ipk" || echo "WARNING: Couldn't clean ./${TARGET}.ipk"
-	rm -f $TARGET*.zip && echo "Done CLEANING ./${TARGET}.zip" || echo "WARNING: Couldn't clean ./${TARGET}.zip"
-	rm -f $LINK && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean ./${LINK}"
-else
-	echo "\nWARNING: No instructions provided, please use -i/-p/-z/-c option or set \$PACKAGE/\$ZIP/\$IPK/\$CLEAN in env to 1 for correct output\n\n"
+	if test $PACKAGE -eq 0 >/dev/null 2>&1; then rm -r ${RELEASEDIR:?}/ >/dev/null 2>&1 || echo "WARNING: Couldn't clean release dir ./${RELEASEDIR} after done packaging"; fi
+fi
+if test $CLEAN -eq 1 >/dev/null 2>&1; then
+	echo -e "---"
+	if test $PACKAGE -ne 1; then
+		rm -r ${RELEASEDIR:?} >/dev/null 2>&1 && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "INFO: Not able or no need to clean release dir ./${RELEASEDIR}"
+	fi
+	if ! test "x${OPKG_ASSETSDIR_CUSTOM}" == "xyes"; then
+		rm -r ${OPKG_ASSETSDIR:?} >/dev/null 2>&1 && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
+	fi
+	if test $IPK -ne 1; then
+		rm $TARGET.ipk >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}.ipk" || echo "INFO: Not able or no need to clean ./${TARGET}.ipk"
+	fi
+	if test $ZIP -ne 1; then
+		rm ${TARGET}_${VERSION}.zip >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}_${VERSION}.zip" || echo "INFO: Not able or no need to clean ./${TARGET}_${VERSION}.zip"
+	fi
+	if ! test "x${LINK_CUSTOM}" == "xyes"; then
+		rm $LINK >/dev/null 2>&1 && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean link ./${LINK}"
+	fi
+fi
+if test $PACKAGE -ne 1 >/dev/null 2>&1 && test $ZIP -ne 1 >/dev/null 2>&1 && test $IPK -ne 1 >/dev/null 2>&1 && test $CLEAN -ne 1 >/dev/null; then
+	echo -e "\nWARNING: No instructions provided, please use -i/-p/-z/-c option or set \$PACKAGE/\$ZIP/\$IPK/\$CLEAN in env to 1 for correct output\n\n"
 	sleep 1
+else
+	echo -e "\tExiting gm2xpkg..."
 fi
 #---------------------------------------------#
