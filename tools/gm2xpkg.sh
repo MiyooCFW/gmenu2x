@@ -54,42 +54,42 @@ VERBOSE=\"${VERBOSE}\"
 
 # ENV VAR.
 ## Specific (mandatory to provide!)
-TARGET=\"${TARGET}\"  # replace with binary PATH/<file_name>
-VERSION=\"${VERSION}\"  # replace with correct release version if exist
+TARGET=\"${TARGET}\"  # [fullpath], replace with target's binary fullpath (<path>/<file_name>)
+VERSION=\"${VERSION}\"  # [string], replace with correct release version if exist of target
 
 ## Generic - common to all apps (better to not modify)
-HOMEPATH=\"${HOMEPATH}\"
-RELEASEDIR=\"${RELEASEDIR}\"
-ASSETSDIR=\"${ASSETSDIR}\"
-OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\"
-LINK=\"${LINK}\" # full name of gm2x link, modify if exec binary name may be different from target name - place in PWD (warning: it may be removed with CLEAN=1)
-ALIASES=\"${ALIASES}\" # full name (with ext) of *.txt file with new names for selector e.g. old_title=new_title - place in PWD
-MANUAL=\"${MANUAL}\" # full name (with ext) of *.man.txt file with usage description of target app - place in PWD
+HOMEPATH=\"${HOMEPATH}\" # [path] of home directory for installation process
+RELEASEDIR=\"${RELEASEDIR}\" # [path] to package output directory, specified with [-p] option
+ASSETSDIR=\"${ASSETSDIR}\" # [path] to dir containg all the necessary assets for a target
+OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\" # [path] to dir containg the ./CONTROL directory with [control, preinst, postinst] files, auto-generated if not provided (warning: it may be removed with CLEAN=1)
+LINK=\"${LINK}\" # [fullpath] of gm2x link, modify if exec binary name may be different from target name (warning: it may be removed with CLEAN=1)
+ALIASES=\"${ALIASES}\" # [fullpath] of *.txt file holding new names for selector e.g. old_title=new_title
+MANUAL=\"${MANUAL}\" # [fullpath] of *.man.txt file holding usage description of target app
 
 ## Link entries (better modify if no <target_name>.lnk file provided)
 ### Primary
-TITLE=\"${TITLE}\" # [string] program title
-DESCRI=\"${DESCRI}\" # [string] short description
-DESTDIR=\"${DESTDIR}\" # [string] (default=\"apps\") installation path in \$HOME directory - not a link entry
-SECTION=\"${SECTION}\" # [string] (default=\"applications\") section in menu
+TITLE=\"${TITLE}\" # [string], program title
+DESCRI=\"${DESCRI}\" # [string], short description
+DESTDIR=\"${DESTDIR}\" # [string], (default=\"apps\") installation pathname in \$HOMEPATH directory - not a link entry
+SECTION=\"${SECTION}\" # [string], (default=\"applications\") section in menu
 ### Additional
 SELDIR=\"${SELDIR}\" # [path] for search directory (activates selector, don't append path with \"/\" to use AUTO selectorelement mode)
-SELBROWSER=\"${SELBROWSER}\" # [bool] (default=\"true\") don't show directories in selector browser with \"false\" - aka \"Show Folders\" option
-SELFILTER=\"${SELFILTER}\" # [string] activates FileFilter in selector e.g. =\".gba,.zip\"
+SELBROWSER=\"${SELBROWSER}\" # [bool], (default=\"true\") don't show directories in selector browser with \"false\" - aka \"Show Folders\" option
+SELFILTER=\"${SELFILTER}\" # [string], activates FileFilter in selector e.g. =\".gba,.zip\"
 SELSCREENS=\"${SELSCREENS}\" # [path] to Boxarts' directory in selector
-ICON=\"${ICON}\" # [path] change default display icon in menu
-BAKCDROP=\"${BAKCDROP}\" # [path] activates backdrop display under icon in menu
-PARAMS=\"${PARAMS}\" # [string] Parameters (options/args) being passed to execution cmd
+ICON=\"${ICON}\" # [fullpath] to icon being used in menu (instead of default)
+BACKDROP=\"${BACKDROP}\" # [fullpath] to backdrop being displayed under icon in menu (default=\"\" thus OFF)
+PARAMS=\"${PARAMS}\" # [string], parameters (options; args) being passed to execution cmd
 ### HW Specific
-CLOCK=\"${CLOCK}\" # [int] CPU frequency
-LAYOUT=\"${LAYOUT}\" # [int] SDL Keyboard (face buttons) layout
-TEFIX=\"${TEFIX}\" # [int] Tearing FIX method
+CLOCK=\"${CLOCK}\" # [int], CPU frequency in MHz
+LAYOUT=\"${LAYOUT}\" # [int], SDL Keyboard (face buttons) layout
+TEFIX=\"${TEFIX}\" # [int], Tearing FIX method
 
 ## Custom entries (if needed then modify)
-TARGET_EXEC=\"${TARGET_EXEC}\" # the executable <file_name> that's being used by frontend when running an app, for e.g. may be a custom script (default=<target_name>)
-TARGET_DIR=\"${TARGET_DIR}\" # the install directory /\$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary if not provided the TARGET_DIR=\$TARGET
+TARGET_DIR=\"${TARGET_DIR}\" # [path], the install directory \$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary (default TARGET_DIR=\$(basename \$TARGET))
+TARGET_EXEC=\"${TARGET_EXEC}\" # [string], the executable <file_name> that's being used by frontend when running an app, for e.g. may be a custom script (default TARGET_EXEC=\$(basename \$TARGET))
 DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${SPACE}\"${DOCS[$i]}\""; done))\
- # array of extra text files e.g. =(\"LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend
+ # [array] of fullpaths to extra text files e.g. =(\"docs/LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend and placed in \$TARGET_DIR
 
 ## IPK control entries (if needed then modify)
 PRIORITY=\"${PRIORITY}\"
@@ -279,7 +279,9 @@ DESTDIR=${DESTDIR:=""}
 SECTION=${SECTION:=""}
 if test -z $DESTDIR; then
 	DESTDIR=apps
-	echo "no destination directory provided, setting path to default ${HOMEPATH}/${DESTDIR}"
+	echo "no destination directory provided, setting path to default ${HOMEPATH}/${DESTDIR}/"
+else
+	DESTDIR=${DESTDIR##*/}
 fi
 if test -z $SECTION; then
 	SECTION=applications
@@ -290,7 +292,7 @@ SELBROWSER=${SELBROWSER:="true"}
 SELFILTER=${SELFILTER:=""}
 SELSCREENS=${SELSCREENS:=""}
 ICON=${ICON:=""}
-BAKCDROP=${BAKCDROP:=""}
+BACKDROP=${BACKDROP:=""}
 PARAMS=${PARAMS:=""}
 
 if test -z $SELDIR || test "$SELBROWSER" == "true"; then
@@ -316,20 +318,20 @@ else
 		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
 		echo -e "manual=<auto_generated>\nclock=$CLOCK\nlayout=$LAYOUT\ntefix=$TEFIX\nselectordir=$SELDIR"
 		echo -e "selectorbrowser=$SELBROWSER\nselectorfilter=$SELFILTER\nselectorscreens=$SELSCREENS"
-		echo -e "selectoraliases=<auto_generated>\nbackdrop=$BAKCDROP\n"
+		echo -e "selectoraliases=<auto_generated>\nbackdrop=$BACKDROP\n"
 	fi
 fi
 
 ## Custom entries
+if test -z $TARGET_DIR; then
+	TARGET_DIR="$(basename ${TARGET})"
+	echo "no target install directory provided, setting target install path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}/"
+fi
 if test -z "${TARGET_EXEC}"; then
-	TARGET_EXEC="${TARGET}"
+	TARGET_EXEC="${TARGET##*/}"
 else
 	TARGET_EXEC="${TARGET_EXEC##*/}"
-	echo "Custom executable \"${TARGET_EXEC}\" name is being used by frontend's links launcher"
-fi
-if test -z $TARGET_DIR; then
-	TARGET_DIR=${TARGET}
-	echo "no target install directory provided, setting target install path to default ${HOMEPATH}/${DESTDIR}/${TARGET_DIR}"
+	echo "Custom executable \"${TARGET_EXEC}\" is being used by frontend's links launcher"
 fi
 if test ${#DOCS[@]} -eq 0 || test -z "${DOCS[*]}"; then
 	DOCS=("")
@@ -402,7 +404,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
 		test -n "$ICON"   && echo "icon=${ICON}" >> $LINK
-		sed -i "s/^exec=.*/exec=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${TARGET_EXEC}/" $LINK
+		sed -i "s/^exec=.*/exec=\\${HOMEPATH}\/${DESTDIR}\/${TARGET_DIR}\/${TARGET_EXEC}/" $LINK
 		test -n "$PARAMS" && echo "params=${PARAMS}" >> $LINK
 		test -n "$CLOCK"  && echo "clock=${CLOCK}" >> $LINK
 		test -n "$LAYOUT" && echo "layout=${LAYOUT}" >> $LINK
@@ -413,13 +415,13 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		test -n "$SELFILTER" && echo "selectorfilter=${SELFILTER}" >> $LINK
 		test -n "$SELSCREENS" && echo "selectorscreens=${SELSCREENS}" >> $LINK
 		if test -e $ALIASES; then
-			echo "selectoraliases=\/mnt\/${DESTDIR}\/${TARGET_DIR}\/${ALIASES}" >> $LINK
+			echo "selectoraliases=${HOMEPATH}/${DESTDIR}/${TARGET_DIR}/${ALIASES}" >> $LINK
 		fi
-		test -n "$BAKCDROP" && echo "backdrop=${BAKCDROP}" >> $LINK
+		test -n "$BACKDROP" && echo "backdrop=${BACKDROP}" >> $LINK
 	else
 		LINK_CUSTOM="yes"
 	fi
-	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION
+	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION/
 	if test -e $ALIASES; then
 		cp $ALIASES $TARGET_INSTALL_DIR
 	else
