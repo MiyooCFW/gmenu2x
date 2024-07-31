@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.6
+VER=0.7
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -97,7 +97,7 @@ MAINTAINER=\"${MAINTAINER}\"
 CONFFILES=\"${CONFFILES}\"
 ARCH=\"${ARCH}\" # default=arm - do not modify for ARM chips
 # CONTROL= # automated output of *.ipk control config file
-DEPENDS=\"${DEPENDS}\" # list of dependency packages e.g. =\"sdl, libpng\" or =\"sdl (>= 2.9.2), sdl_mixer (= ed76d39cda0735d26c14a3e4f4da996e420f6478)\" provide only for shared libs build, otherwise ignored
+DEPENDS=\"${DEPENDS}\" # list of dependency packages e.g. =\"sdl, libpng\" or =\"sdl (>= 2.9.2), sdl_mixer (= ed76d39cda0735d26c14a3e4f4da996e420f6478)\" provide only for shared libs build, otherwise ignored (run \"readelf -d \$TARGET | grep NEEDED\" to bisect)
 SOURCE=\"${SOURCE}\"
 LICENSE=\"${LICENSE}\"\
 " > "${PKGCFG}"
@@ -442,7 +442,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		echo "WARNING: Couldn't locate manual in ${MANUAL} file"
 	fi
 	! test -z "${DOCS[*]}"\
-	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}.txt"; done\
+	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt"; done\
 	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
 	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR\
 	 && (test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
