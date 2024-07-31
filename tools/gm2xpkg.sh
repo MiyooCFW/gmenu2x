@@ -31,7 +31,7 @@ help_func() {
 	 \t\t$: gm2xpkg
 	 Notes:
 	 \t PWD  - Present Working Directory PATH
-	 \t FILE - configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
+	 \t FILE - fullpath to configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
 }
 
 pkg_config_func() {
@@ -139,7 +139,8 @@ do
 			exit 0
 			;;
 		-v | --verbose)
-			VERBOSE="yes"
+			VERBOSE_OPT="yes"
+			VERBOSE="${VERBOSE_OPT}"
 			echo -e "running in VERBOSE mode"
 			shift
 			;;
@@ -212,12 +213,14 @@ done
 # CONFIG FILE
 ## Grabing predefined settings from configuration file
 if test -f "${PKGCFG}"; then
-	source "${PKGCFG}"
 	echo "config file found in $(realpath ${PKGCFG}), setting predefined variables..."
 	if test "x${VERBOSE}" == "xyes"; then
-		echo "INFO: Following variables has been read from ${PKGCFG} file:"
+		echo "INFO: Following variables will be read from ${PKGCFG} file:"
+		echo "<<<${PKGCFG##*/}>>>"
 		grep -v -e '^#' -e '""' "${PKGCFG}"
+		echo "<<<EOF>>>"
 	fi
+	source "${PKGCFG}"
 	if test "${VER}" != "${PKGVER}" ; then
 		echo -e "ERROR: GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option"
 		sleep 2
@@ -233,6 +236,7 @@ PACKAGE=${PACKAGE:=${PACKAGE_OPT}}
 ZIP=${ZIP:=${ZIP_OPT}}
 IPK=${IPK:=${IPK_OPT}}
 CLEAN=${CLEAN:=${CLEAN_OPT}}
+VERBOSE=${VERBOSE:=${VERBOSE_OPT}}
 
 # EXEC commands
 PACKAGE=${PACKAGE:=0}
@@ -308,9 +312,10 @@ TEFIX=${TEFIX:=""}
 
 if test -f "${LINK}"; then
 	# source ${TARGET}.lnk
-	echo "gmenu2x link file found in ${LINK}, setting following link entries:"
+	echo "gmenu2x link file found in $(realpath ${LINK}), setting following link entries:"
 	echo "<<<${LINK##*/}>>>"
 	grep -v '^#' ${LINK}
+	echo "<<<EOF>>>"
 else
 	echo -e "no link file found, executing with predefined values..."
 	if test "x${VERBOSE}" == "xyes"; then
@@ -366,13 +371,16 @@ if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/pr
 		echo -e "${CONTROL}"
 	fi
 else
-	echo "opkg assets dir&files found in \"${OPKG_ASSETSDIR}/CONTROL\", setting following CONTROL entries:"
+	echo "opkg assets dir&files found in \"$(realpath ${OPKG_ASSETSDIR})/CONTROL\", setting following CONTROL entries:"
 	echo "<<<control>>>:"
 	cat ${OPKG_ASSETSDIR}/CONTROL/control
+	echo "<<<EOF>>>"
 	echo "<<<preinst>>>:"
 	cat ${OPKG_ASSETSDIR}/CONTROL/preinst
+	echo "<<<EOF>>>"
 	echo "<<<postinst>>>:"
 	cat ${OPKG_ASSETSDIR}/CONTROL/postinst
+	echo "<<<EOF>>>"
 fi
 
 #---------------------------------------------#
