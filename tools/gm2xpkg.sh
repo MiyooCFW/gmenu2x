@@ -215,11 +215,11 @@ if test -f "${PKGCFG}"; then
 	source "${PKGCFG}"
 	echo "config file found in $(realpath ${PKGCFG}), setting predefined variables..."
 	if test "x${VERBOSE}" == "xyes"; then
-		echo "Following variables has been read from ${PKGCFG} file:"
+		echo "INFO: Following variables has been read from ${PKGCFG} file:"
 		grep -v -e '^#' -e '""' "${PKGCFG}"
 	fi
 	if test "${VER}" != "${PKGVER}" ; then
-		echo -e "GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option"
+		echo -e "ERROR: GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option"
 		sleep 2
 		exit 1
 	fi
@@ -245,11 +245,11 @@ CLEAN=${CLEAN:=0}
 TARGET=${TARGET:=""}
 VERSION=${VERSION:=""}
 if test -z $TARGET; then
-	echo "No binary PATH/<filename> provided, please set \$TARGET in your env with correct execution program name"
+	echo "ERROR: No binary PATH/<filename> provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
 	exit 1
 elif ! test -f "$TARGET"; then
-	echo "No binary/script found matching \"${TARGET}\", exiting..."
+	echo "ERROR: No binary/script found matching \"${TARGET}\", exiting..."
 	sleep 2
 	exit 1
 else
@@ -308,12 +308,13 @@ TEFIX=${TEFIX:=""}
 
 if test -f "${LINK}"; then
 	# source ${TARGET}.lnk
-	echo "gmenu2x link file found, setting following link entries:"
+	echo "gmenu2x link file found in ${LINK}, setting following link entries:"
+	echo "<<<${LINK##*/}>>>"
 	grep -v '^#' ${LINK}
 else
 	echo -e "no link file found, executing with predefined values..."
 	if test "x${VERBOSE}" == "xyes"; then
-		echo -e "Following parameters has been set from predefined values:"
+		echo -e "INFO: Following gmenu parameters has been set from predefined values:"
 		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
 		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
 		echo -e "manual=<auto_generated>\nclock=$CLOCK\nlayout=$LAYOUT\ntefix=$TEFIX\nselectordir=$SELDIR"
@@ -335,7 +336,7 @@ else
 fi
 if test ${#DOCS[@]} -eq 0 || test -z "${DOCS[*]}"; then
 	DOCS=("")
-	echo "INFO: Hmm... I suggest you add some documention via \$DOCS[] variable"
+	echo "WARNING: Hmm... I suggest you add some documention via \$DOCS[] variable"
 fi
 
 ## IPK control entries
@@ -346,6 +347,33 @@ ARCH=${ARCH:=arm}
 DEPENDS=${DEPENDS:=""}
 SOURCE=${SOURCE:="Unknown"}
 LICENSE=${LICENSE:="Unknown"}
+
+CONTROL="Package: ${TARGET}\n\
+Version: ${VERSION}\n\
+Depends: ${DEPENDS}\n\
+Source: ${SOURCE}\n\
+License: ${LICENSE}\n\
+Description: ${DESCRI}\n\
+Section: ${SECTION}\n\
+Priority: ${PRIORITY}\n\
+Maintainer: ${MAINTAINER}\n\
+Architecture: ${ARCH}"
+
+if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
+	echo -e "no opkg assets dir&files found, executing with predefined values..."
+	if test "x${VERBOSE}" == "xyes"; then
+		echo -e "INFO: Following opkg <<<control>>> instructions has been set from predefined values (plus basic <<<preinst|postinst>>>):"
+		echo -e "${CONTROL}"
+	fi
+else
+	echo "opkg assets dir&files found in \"${OPKG_ASSETSDIR}/CONTROL\", setting following CONTROL entries:"
+	echo "<<<control>>>:"
+	cat ${OPKG_ASSETSDIR}/CONTROL/control
+	echo "<<<preinst>>>:"
+	cat ${OPKG_ASSETSDIR}/CONTROL/preinst
+	echo "<<<postinst>>>:"
+	cat ${OPKG_ASSETSDIR}/CONTROL/postinst
+fi
 
 #---------------------------------------------#
 # CODE execution
@@ -365,20 +393,9 @@ else
 	sleep 1
 fi
 
-CONTROL="Package: ${TARGET}\n\
-Version: ${VERSION}\n\
-Depends: ${DEPENDS}\n\
-Source: ${SOURCE}\n\
-License: ${LICENSE}\n\
-Description: ${DESCRI}\n\
-Section: ${SECTION}\n\
-Priority: ${PRIORITY}\n\
-Maintainer: ${MAINTAINER}\n\
-Architecture: ${ARCH}"
-
 echo -e "Starting configuration..."
 if test "x${VERBOSE}" == "xyes"; then
-	echo -e "\nUsing following configuration setup:"
+	echo -e "\nINFO: Using following configuration setup:"
 	echo -e "PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n-"
 	echo -e "TARGET=${TARGET}\nVERSION=${VERSION}\n-"
 	echo -e "HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n-"
@@ -488,16 +505,16 @@ fi
 if test $CLEAN -eq 1 >/dev/null 2>&1; then
 	echo -e "---"
 	if test $PACKAGE -ne 1; then
-		rm -r ${RELEASEDIR:?} >/dev/null 2>&1 && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "INFO: Not able or no need to clean release dir ./${RELEASEDIR}"
+		rm -r ${RELEASEDIR:?} >/dev/null 2>&1 && echo "Done CLEANING release dir ./${RELEASEDIR}" || echo "Not able or no need to clean release dir ./${RELEASEDIR}"
 	fi
 	if ! test "x${OPKG_ASSETSDIR_CUSTOM}" == "xyes"; then
 		rm -r ${OPKG_ASSETSDIR:?} >/dev/null 2>&1 && echo "Done CLEANING opkg assets dir ./${OPKG_ASSETSDIR}" || echo "WARNING: Couldn't clean opkg assets dir ./${OPKG_ASSETSDIR}"
 	fi
 	if test $IPK -ne 1; then
-		rm $TARGET.ipk >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}.ipk" || echo "INFO: Not able or no need to clean ./${TARGET}.ipk"
+		rm $TARGET.ipk >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}.ipk" || echo "Not able or no need to clean ./${TARGET}.ipk"
 	fi
 	if test $ZIP -ne 1; then
-		rm ${TARGET}_${VERSION}.zip >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}_${VERSION}.zip" || echo "INFO: Not able or no need to clean ./${TARGET}_${VERSION}.zip"
+		rm ${TARGET}_${VERSION}.zip >/dev/null 2>&1 && echo "Done CLEANING ./${TARGET}_${VERSION}.zip" || echo "Not able or no need to clean ./${TARGET}_${VERSION}.zip"
 	fi
 	if ! test "x${LINK_CUSTOM}" == "xyes"; then
 		rm $LINK >/dev/null 2>&1 && echo "Done CLEANING link ./${LINK}" || echo "WARNING: Couldn't clean link ./${LINK}"
