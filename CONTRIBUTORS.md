@@ -40,6 +40,7 @@ Kevin Winfield-Pantoja, aka [@pokeparadox](pokeparadox@gmail.com)
 - Polish: Apaczer;  
 - Portuguese (Brazil): azurejoga, oliverbot
 - Russian: MayanKoyote
+- French: ploupipoulpi, TriForceX
 
 ### DONORS:
 - EvilDragon
