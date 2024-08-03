@@ -1,48 +1,47 @@
-## Credits
-GMenu2X Copyright (c) 2006-2010 Massimiliano Torromeo, aka [@mtorromeo](https://github.com/mtorromeo)  
-GMenuNX 2018-2019 by [pingflood](https://github.com/pingflood)  
-GMenu2X 2022 (modded GMenuNX) by [Apaczer](https://github.com/Apaczer)
+## Créditos
+GMenu2X Copyright (c) 2006-2010 Massimiliano Torromeo, também conhecido como [@mtorromeo](https://github.com/mtorromeo)  
+GMenuNX 2018-2019 por [pingflood](https://github.com/pingflood)  
+GMenu2X 2022 (modificado GMenuNX) por [Apaczer](https://github.com/Apaczer)
 
-### DEVELOPMENT
-Kevin Winfield-Pantoja, aka [@pokeparadox](pokeparadox@gmail.com)  
+### DESENVOLVIMENTO
+Kevin Winfield-Pantoja, também conhecido como [@pokeparadox](pokeparadox@gmail.com)  
 [@Pickle136](pickle136@gmail.com)  
 [nfriedly](https://github.com/nfriedly)  
 [ericrkjones](https://github.com/ericrkjones)  
 [tiopex](https://github.com/tiopex)  
 [stevenhoving](https://github.com/stevenhoving)  
 
-### GENERAL:
-- NoidZ for his gp2x' buttons graphics
-- Pickle for the initial Wiz and Caanoo ports 
-- Steward-Fu for the initial RetroGame ports
-- TonyJih for the new RetroFW features
-- Fontes for the RetroFW graphics
-- Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X); Yann Vaillant (WIZ); msx, jbanes, jutley and scooterpsu (RetroFW); 
+###GERAL:
+- NoidZ pelos gráficos dos botões gp2x
+- Pickle para os ports Wiz e Caanoo iniciais 
+- Steward-Fu para os ports RetroGame iniciais
+- TonyJih pelos novos recursos do RetroFW
+- Fontes para os gráficos RetroFW
+- Goemon4, PokeParadox, PSyMastR e Tripmonkey_uk (GP2X); Yann Vaillant (WIZ); msx, jbanes, jutley e scooterpsu (RetroFW); 
 
-### THEMES:
-- s4ilence for FontiGrid, Nsdark skin
-- bhardwaj for GameShow, NeonWave skin
-- mtorromeo for original skin
-- BryMD for updated FontiGrid icons
+### TEMAS:
+- s4ilence para FontiGrid, skin  Nsdark
+- bhardwaj para GameShow, skin NeonWave
+- mtorromeo para skin original
+- BryMD para ícones FontiGrid atualizadas
 
-### BETA TESTERS:
+### TESTADORES BETA:
 
-#### * MiyooCFW:
+#### *MiyooCFW:
 - salvacam, SolidOne, MayanKoyote
 
-### * Others:
-- Goemon4, PokeParadox, PSyMastR and Tripmonkey_uk (GP2X)
+### * Outros:
+- Goemon4, PokeParadox, PSyMastR e Tripmonkey_uk (GP2X)
 - Yann Vaillant (WIZ)
-- msx, jbanes, jutley and scooterpsu (RetroFW) 
+- msx, jbanes, jutley e scooterpsu (RetroFW) 
 
-### TRANSLATORS:
-- Chinese(CN): RUANRUI1995
-- Polish: Apaczer;  
-- Portuguese(Brazil): azurejoga, oliveruh
-- Russian: MayanKoyote
+### TRADUTORES:
+- Chinês (CN): RUANRUI1995
+- Polonês: Apaczer;  
+- Português (Brasil): azurejoga, oliveruh
+- Russo: MayanKoyote
 
-### DONORS:
-- EvilDragon
+### DOADORES:- EvilDragon
 - Tecnologie Creative
 - TelcoLou, 
 - gaterooze, 
@@ -54,4 +53,4 @@ Kevin Winfield-Pantoja, aka [@pokeparadox](pokeparadox@gmail.com)
 - Jacopastorius, 
 - lorystorm90.
 
-and all the anonymous colaborators...  
+e todos os colaboradores anônimos...
