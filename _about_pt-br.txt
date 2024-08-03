@@ -1,32 +1,32 @@
-GMenu2X is developed for the MiyooCFW and released under the GNU GPL license v2.
-This fork has been based of GMenuNX by pingflood.
-Source code for current build: https://github.com/MiyooCFW/gmenu2x
+GMenu2X foi desenvolvido para MiyooCFW e lançado sob a licença GNU GPL v2.
+Este fork foi baseado no GMenuNX do pingflood.
+Código-fonte da compilação atual: https://github.com/MiyooCFW/gmenu2x
 
-Controls
+Controles
 ----
-(Bittboy's specific in round brackets)
+(Específico do Bittboy entre colchetes)
 
-* A: Accept / Launch selected link / Confirm action;
-* B: Back / Cancel action;
-* X: Goes up one directory in file browser;
-* X-hold: Bring up Date&Time quick dialog;
-* X + Y: Switch from/to Default font;
-* Y: Bring up the manual/readme;
-* Y-hold: Restart the GMenu2X;
-* L1(TB), R1(TA): Switch between sections left/right or PageUp/PageDown on lists;
-* L2, R2: Fast Decrement/Increment of selected value;
-* START: GMenu2X settings;
-* START-hold:  Toggle Suspend mode;
-* SELECT: Bring up the contextual menu;
-* SELECT-hold: Disable TV-output;
-* SELECT + L1(TB): Volume control;
-* SELECT + R1(TA): Change screen brightness;
-* SELECT + START: Take a screenshot;
-* RESET: Bring up Poweroff dialog;
+* A: Aceitar/Iniciar link selecionado/Confirmar ação;
+* B: Ação Voltar/Cancelar;
+* X: sobe um diretório no navegador de arquivos;
+* X-hold: Abre a caixa de diálogo rápida de Data e Hora;
+* X + Y: Alternar de/para fonte padrão;
+* Y: Abra o manual/leia-me;
+* Y-hold: Reinicie o GMenu2X;
+* L1(TB), R1(TA): Alterna entre seções esquerda/direita ou PageUp/PageDown nas listas;
+* L2, R2: Decremento/Incremento rápido do valor selecionado;
+* START: configurações do GMenu2X;
+* START-hold: Alternar modo de suspensão;
+* Select: Abra o menu contextual;
+* SELECT-hold: Desativa a saída de TV;
+* Select + L1(TB): Controle de volume;
+* SELECT + R1(TA): Altera o brilho da tela;
+* Select + START: Faça uma captura de tela;
+* RESET: Abre a caixa de diálogo Poweroff;
 
-In settings:
+Nas configurações:
 
-* A, LEFT, RIGHT: Accept, select or toggle setting;
-* B: Back or cancel edits and return;
-* START: Save edits and return;
-* SELECT: Clear or set default value.
+* A, ESQUERDA, DIREITA: Aceita, seleciona ou alterna configuração;
+*B: Anular ou cancelar edições e retornar;
+* START: Salve as edições e retorne;
+* SELECT: Limpa ou define o valor padrão.  
