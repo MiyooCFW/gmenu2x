@@ -218,7 +218,7 @@ void GMenu2X::allyTTS(const char* text) {
 
 	voice = VOICE_TTS.c_str();
 
-	system("killall " TTS_ENGINE);
+	system("killall " TTS_ENGINE " >/dev/null 2>&1");
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \'%s\' -v%s &", text, voice);
 	system(tmp_chr);
 }
@@ -230,7 +230,7 @@ void GMenu2X::allyTTS(const char* file, int gap, int speed) {
 
 	voice = VOICE_TTS.c_str();
 
-	system("killall " TTS_ENGINE);
+	system("killall " TTS_ENGINE " >/dev/null 2>&1");
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " -f%s -g%i -s%i -v%s &", file, gap, speed, voice);
 	system(tmp_chr);
 }
@@ -248,13 +248,13 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 
 	//freopen("/dev/null", "w", stdout); // nulify stdout
 
-	if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
+	if (confInt["enableTTS"]) system("killall " TTS_ENGINE " >/dev/null 2>&1");
 	snprintf(tmp_chr, sizeof(tmp_chr), TTS_ENGINE " \"%s\" -g%i -s%i -v%s &", text, gap, speed, voice);
 	system(tmp_chr);
-	if (wait) while (system("pgrep " TTS_ENGINE) == 0) {
-		sleep(0.1);
+	if (wait) while (system("pgrep " TTS_ENGINE " >/dev/null 2>&1") == 0) {
+		usleep(100000);
 		input.update(false);
-		if (input[SETTINGS]) system("killall " TTS_ENGINE);
+		if (input[SETTINGS]) system("killall " TTS_ENGINE " >/dev/null 2>&1");
 	}
 
 	//fflush(stdout);
