@@ -6,27 +6,27 @@ Controles
 ----
 (Específico do Bittboy entre colchetes)
 
-* A: Aceitar/Iniciar link selecionado/Confirmar ação;
-* B: Ação Voltar/Cancelar;
+* A: Aceitar / Iniciar link selecionado / Confirmar ação;
+* B: Ação Voltar / Cancelar;
 * X: sobe um diretório no navegador de arquivos;
-* X-hold: Abre a caixa de diálogo rápida de Data e Hora;
+* X-segure: Abre a caixa de diálogo rápida de Data e Hora;
 * X + Y: Alternar de/para fonte padrão;
 * Y: Abra o manual/leia-me;
-* Y-hold: Reinicie o GMenu2X;
+* Y-segure: Reinicie o GMenu2X;
 * L1(TB), R1(TA): Alterna entre seções esquerda/direita ou PageUp/PageDown nas listas;
 * L2, R2: Decremento/Incremento rápido do valor selecionado;
 * START: configurações do GMenu2X;
-* START-hold: Alternar modo de suspensão;
-* Select: Abra o menu contextual;
-* SELECT-hold: Desativa a saída de TV;
-* Select + L1(TB): Controle de volume;
+* START-segure: Alternar modo de suspensão;
+* SELECT: Abra o menu contextual;
+* SELECT-segure: Desativa a saída de TV;
+* SELECT + L1(TB): Controle de volume;
 * SELECT + R1(TA): Altera o brilho da tela;
-* Select + START: Faça uma captura de tela;
+* SELECT + START: Faça uma captura de tela;
 * RESET: Abre a caixa de diálogo Poweroff;
 
 Nas configurações:
 
 * A, ESQUERDA, DIREITA: Aceita, seleciona ou alterna configuração;
-*B: Anular ou cancelar edições e retornar;
+* B: Anular ou cancelar edições e retornar;
 * START: Salve as edições e retorne;
-* SELECT: Limpa ou define o valor padrão.  
+* SELECT: Limpa ou define o valor padrão.
