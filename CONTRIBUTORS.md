@@ -4,12 +4,12 @@ GMenuNX 2018-2019 by [pingflood](https://github.com/pingflood)
 GMenu2X 2022 (modded GMenuNX) by [Apaczer](https://github.com/Apaczer)
 
 ### DEVELOPMENT
-Kevin Winfield-Pantoja, aka [@pokeparadox](pokeparadox@gmail.com)
-[@Pickle136](pickle136@gmail.com)
-[nfriedly](https://github.com/nfriedly)
-[ericrkjones](https://github.com/ericrkjones)
-[tiopex](https://github.com/tiopex)
-[stevenhoving](https://github.com/stevenhoving)
+Kevin Winfield-Pantoja, aka [@pokeparadox](pokeparadox@gmail.com)  
+[@Pickle136](pickle136@gmail.com)  
+[nfriedly](https://github.com/nfriedly)  
+[ericrkjones](https://github.com/ericrkjones)  
+[tiopex](https://github.com/tiopex)  
+[stevenhoving](https://github.com/stevenhoving)  
 
 ### GENERAL:
 - NoidZ for his gp2x' buttons graphics
@@ -36,9 +36,9 @@ Kevin Winfield-Pantoja, aka [@pokeparadox](pokeparadox@gmail.com)
 - msx, jbanes, jutley and scooterpsu (RetroFW) 
 
 ### TRANSLATORS:
-- Chinese (CN): RUANRUI1995
+- Chinese(CN): RUANRUI1995
 - Polish: Apaczer;  
-- Portuguese (Brazil): azurejoga, oliverbot
+- Portuguese(Brazil): azurejoga, oliveruh
 - Russian: MayanKoyote
 - French: ploupipoulpi, TriForceX
 

@@ -1,0 +1,32 @@
+GMenu2X foi desenvolvido para MiyooCFW e lançado sob a licença GNU GPL v2.
+Este fork foi baseado no GMenuNX do pingflood.
+Código-fonte da compilação atual: https://github.com/MiyooCFW/gmenu2x
+
+Controles
+----
+(Específico do Bittboy entre colchetes)
+
+* A: Aceitar / Iniciar link selecionado / Confirmar ação;
+* B: Ação Voltar / Cancelar;
+* X: sobe um diretório no navegador de arquivos;
+* X-segure: Abre a caixa de diálogo rápida de Data e Hora;
+* X + Y: Alternar de/para fonte padrão;
+* Y: Abra o manual/leia-me;
+* Y-segure: Reinicie o GMenu2X;
+* L1(TB), R1(TA): Alterna entre seções esquerda/direita ou PageUp/PageDown nas listas;
+* L2, R2: Decremento/Incremento rápido do valor selecionado;
+* START: configurações do GMenu2X;
+* START-segure: Alternar modo de suspensão;
+* SELECT: Abra o menu contextual;
+* SELECT-segure: Desativa a saída de TV;
+* SELECT + L1(TB): Controle de volume;
+* SELECT + R1(TA): Altera o brilho da tela;
+* SELECT + START: Faça uma captura de tela;
+* RESET: Abre a caixa de diálogo Poweroff;
+
+Nas configurações:
+
+* A, ESQUERDA, DIREITA: Aceita, seleciona ou alterna configuração;
+* B: Anular ou cancelar edições e retornar;
+* START: Salve as edições e retorne;
+* SELECT: Limpa ou define o valor padrão.
