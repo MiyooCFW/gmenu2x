@@ -164,7 +164,7 @@ void MenuSettingRGBA::setSelPart(uint16_t value) {
 		case 3: setA(value); break;
 		default: setR(value); break;
 	}
-	string readRGBA = gmenu2x->tr["RGBA values are "] + strR + " " + strG + " " + strB + " " + strA;
+	string readRGBA = gmenu2x->tr["RGBA values are"] + " " + strR + " " + strG + " " + strB + " " + strA;
 	gmenu2x->allyTTS(readRGBA.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 }
 
