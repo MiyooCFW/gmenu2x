@@ -4,13 +4,14 @@ BUILDTIME := "$(shell date +%F\ %H:%M)"
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
 GMENU2X_HASH := -D__BUILDTIME__=$(BUILDTIME) -D__COMMIT_HASH__=$(COMMIT_HASH)
 
-CC			:= gcc
-CXX			:= g++
-STRIP		:= strip
+CC := $(CROSS_COMPILE)gcc
+CXX := $(CROSS_COMPILE)g++
+STRIP := $(CROSS_COMPILE)strip
 
-SYSROOT     := $(shell $(CC) --print-sysroot)
-SDL_CFLAGS  := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
-SDL_LIBS    := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
+SYSROOT := $(shell $(CC) --print-sysroot)
+SDL_CFLAGS := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
+SDL_LIBS := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
+FREETYPE_LIBS := $(shell $(SYSROOT)/usr/bin/freetype-config --libs)
 
 CFLAGS = -DPLATFORM=\"$(PLATFORM)\" $(GMENU2X_HASH) -DLOG_LEVEL=4
 CFLAGS += -O0 -ggdb -g -pg $(SDL_CFLAGS)
@@ -19,7 +20,7 @@ CFLAGS += -Isrc -Isrc/libopk
 CFLAGS += -DTARGET_LINUX -DHW_TVOUT -DHW_UDC -DHW_EXT_SD -DHW_SCALER -DOPK_SUPPORT -DIPK_SUPPORT
 
 LDFLAGS = -Wl,-Bstatic -Lsrc/libopk -l:libopk.a
-LDFLAGS += -Wl,-Bdynamic -lz $(SDL_LIBS) -lSDL_image -lSDL_ttf
+LDFLAGS += -Wl,-Bdynamic -lz $(SDL_LIBS) -lSDL_image -lSDL_ttf -ltiff $(FREETYPE_LIBS) -ljpeg -lwebp
 
 OBJDIR = /tmp/gmenu2x/$(PLATFORM)
 DISTDIR = dist/$(PLATFORM)
