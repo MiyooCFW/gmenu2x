@@ -15,8 +15,7 @@ STRIP := $(CROSS_COMPILE)strip
 
 SYSROOT := $(shell $(CC) --print-sysroot)
 SDL_CFLAGS := $(shell $(SYSROOT)/usr/bin/sdl-config --cflags)
-SDL_LIBS := $(shell $(SYSROOT)/usr/bin/sdl-config --libs)
-FREETYPE_LIBS := $(shell $(SYSROOT)/usr/bin/freetype-config --libs)
+PKG_LIBS := $(shell $(SYSROOT)/../../usr/bin/pkg-config --libs sdl SDL_image SDL_ttf)
 
 CFLAGS = -DPLATFORM=\"$(PLATFORM)\" -DLOG_LEVEL=3 $(GMENU2X_HASH)
 CFLAGS += -Isrc
@@ -24,7 +23,7 @@ CFLAGS += -Isrc
 CFLAGS += -O0 -ggdb -g3 $(SDL_CFLAGS)
 CFLAGS += -DTARGET_MIYOO -DHW_LIDVOL -DIPK_SUPPORT
 
-LDFLAGS = $(SDL_LIBS) -lSDL_image -lSDL_ttf -ltiff $(FREETYPE_LIBS) -ljpeg -lwebp
+LDFLAGS = $(PKG_LIBS)
 
 OBJDIR = /tmp/gmenu2x/$(PLATFORM)
 DISTDIR = dist/$(PLATFORM)
