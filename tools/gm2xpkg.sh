@@ -31,7 +31,7 @@ help_func() {
 	 \t\t$: gm2xpkg
 	 Notes:
 	 \t PWD  - Present Working Directory PATH
-	 \t FILE - fullpath to configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
+	 \t FILE - path to configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
 }
 
 pkg_config_func() {
@@ -54,31 +54,31 @@ VERBOSE=\"${VERBOSE}\"
 
 # ENV VAR.
 ## Specific (mandatory to provide!)
-TARGET=\"${TARGET}\"  # [fullpath], replace with target's binary fullpath (<path>/<file_name>)
-VERSION=\"${VERSION}\"  # [string], replace with correct release version if exist of target
+TARGET=\"${TARGET}\"  # [filepath], replace with target's working binary path (<path>/<file_name>)
+VERSION=\"${VERSION}\"  # [string], replace with correct release version if exist of target binary
 
 ## Generic - common to all apps (better to not modify)
-HOMEPATH=\"${HOMEPATH}\" # [path] of home directory for installation process
-RELEASEDIR=\"${RELEASEDIR}\" # [path] to package output directory, specified with [-p] option
-ASSETSDIR=\"${ASSETSDIR}\" # [path] to dir containg all the necessary assets for a target
-OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\" # [path] to dir containg the ./CONTROL directory with [control, preinst, postinst] files, auto-generated if not provided (warning: it may be removed with CLEAN=1)
-LINK=\"${LINK}\" # [fullpath] of gm2x link, modify if exec binary name may be different from target name (warning: it may be removed with CLEAN=1)
-ALIASES=\"${ALIASES}\" # [fullpath] of *.txt file holding new names for selector e.g. old_title=new_title
-MANUAL=\"${MANUAL}\" # [fullpath] of *.man.txt file holding usage description of target app
+HOMEPATH=\"${HOMEPATH}\" # [dirpath], target device fullpath home directory for installation process
+RELEASEDIR=\"${RELEASEDIR}\" # [dirpath], host package output directory, specified with [-p] option
+ASSETSDIR=\"${ASSETSDIR}\" # [dirpath], host dir containg all the necessary assets for a target
+OPKG_ASSETSDIR=\"${OPKG_ASSETSDIR}\" # [dirpath], host dir containg the ./CONTROL directory with [control, preinst, postinst] files, auto-generated if not provided (warning: it may be removed with CLEAN=1)
+LINK=\"${LINK}\" # [filepath], host path to custom gm2x link, modify if you want to use your pre-edited *.lnk file (warning: it may be removed with CLEAN=1)
+ALIASES=\"${ALIASES}\" # [filepath], host path to *.txt file holding new names for selector e.g. old_title=new_title
+MANUAL=\"${MANUAL}\" # [filepath], host path to *.man.txt file holding usage description of target app
 
 ## Link entries (better modify if no <target_name>.lnk file provided)
 ### Primary
 TITLE=\"${TITLE}\" # [string], program title
 DESCRI=\"${DESCRI}\" # [string], short description
-DESTDIR=\"${DESTDIR}\" # [string], (default=\"apps\") installation pathname in \$HOMEPATH directory - not a link entry
+DESTDIR=\"${DESTDIR}\" # [string], (default=\"apps\") installation pathname in target device \$HOMEPATH directory - not a link entry
 SECTION=\"${SECTION}\" # [string], (default=\"applications\") section in menu
 ### Additional
-SELDIR=\"${SELDIR}\" # [path] for search directory (activates selector, don't append path with \"/\" to use AUTO selectorelement mode)
+SELDIR=\"${SELDIR}\" # [dirpath], target device fullpath search directory (activates selector, don't append path with \"/\" to use AUTO selectorelement mode)
 SELBROWSER=\"${SELBROWSER}\" # [bool], (default=\"true\") don't show directories in selector browser with \"false\" - aka \"Show Folders\" option
 SELFILTER=\"${SELFILTER}\" # [string], activates FileFilter in selector e.g. =\".gba,.zip\"
-SELSCREENS=\"${SELSCREENS}\" # [path] to Boxarts' directory in selector
-ICON=\"${ICON}\" # [fullpath] to icon being used in menu (instead of default)
-BACKDROP=\"${BACKDROP}\" # [fullpath] to backdrop being displayed under icon in menu (default=\"\" thus OFF)
+SELSCREENS=\"${SELSCREENS}\" # [dirpath],  target fullpath Boxarts' directory in selector
+ICON=\"${ICON}\" # [filepath], target fullpath to icon being used in menu (instead of default)
+BACKDROP=\"${BACKDROP}\" # [filepath], target fullpath to backdrop being displayed under icon in menu (default=\"\" thus OFF)
 PARAMS=\"${PARAMS}\" # [string], parameters (options; args) being passed to execution cmd
 ### HW Specific
 CLOCK=\"${CLOCK}\" # [int], CPU frequency in MHz
@@ -86,10 +86,10 @@ LAYOUT=\"${LAYOUT}\" # [int], SDL Keyboard (face buttons) layout
 TEFIX=\"${TEFIX}\" # [int], Tearing FIX method
 
 ## Custom entries (if needed then modify)
-TARGET_DIR=\"${TARGET_DIR}\" # [path], the install directory \$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary (default TARGET_DIR=\$(basename \$TARGET))
-TARGET_EXEC=\"${TARGET_EXEC}\" # [string], the executable <file_name> that's being used by frontend when running an app, for e.g. may be a custom script (default TARGET_EXEC=\$(basename \$TARGET))
+TARGET_DIR=\"${TARGET_DIR}\" # [dirpath], target device install directory \$HOMEPATH/\$DESTDIR/\$TARGET_DIR of executable binary (default TARGET_DIR=\$(basename \$TARGET))
+TARGET_EXEC=\"${TARGET_EXEC}\" # [string], the executable <file_name> that's being used by frontend when running an app from \$TARGET_DIR, for e.g. may be a custom script (default TARGET_EXEC=\$(basename \$TARGET))
 DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${SPACE}\"${DOCS[$i]}\""; done))\
- # [array] of fullpaths to extra text files e.g. =(\"docs/LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend and placed in \$TARGET_DIR
+ # [array] of filepaths to extra text files e.g. =(\"docs/LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend and placed in \$TARGET_DIR
 
 ## IPK control entries (if needed then modify)
 PRIORITY=\"${PRIORITY}\"
