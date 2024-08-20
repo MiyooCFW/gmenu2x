@@ -92,6 +92,7 @@ DOCS=($(for i in "${!DOCS[@]}"; do test "${i}" != "0" && SPACE=" "; echo -n "${S
  # [array] of filepaths to extra text files e.g. =(\"docs/LICENSE\" \"CHANGELOG\" \"CONTRIBUTORS\") which will be copied & converted to *.txt files for ease of use by frontend and placed in \$TARGET_DIR
 
 ## IPK control entries (if needed then modify)
+PKG=\"${PKG}\" # default=\$TARGET - name of the opkg package
 PRIORITY=\"${PRIORITY}\"
 MAINTAINER=\"${MAINTAINER}\"
 CONFFILES=\"${CONFFILES}\"
@@ -345,6 +346,7 @@ if test ${#DOCS[@]} -eq 0 || test -z "${DOCS[*]}"; then
 fi
 
 ## IPK control entries
+PKG=${PKG:=${TARGET}}
 PRIORITY=${PRIORITY:=optional}
 MAINTAINER=${MAINTAINER:=Unknown}
 CONFFILES=${CONFFILES:=""} # TODO (to preserve & not reinstall user configs)
@@ -353,7 +355,7 @@ DEPENDS=${DEPENDS:=""}
 SOURCE=${SOURCE:="Unknown"}
 LICENSE=${LICENSE:="Unknown"}
 
-CONTROL="Package: ${TARGET}\n\
+CONTROL="Package: ${PKG}\n\
 Version: ${VERSION}\n\
 Depends: ${DEPENDS}\n\
 Source: ${SOURCE}\n\
