@@ -17,6 +17,7 @@ help_func() {
 	 \t -p, --pkg       generate ./package
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
 	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in PWD
+	 \t -f, --force     force gm2xpkg execution commands even without present target's binary  
 	 Instructions:
 	 \t 1. Put inside PWD:
 	 \t\t- ./<target_name> binary
@@ -118,7 +119,7 @@ test $# -ne 0 &&\
  PKGCFG="${!#}" || PKGCFG="pkg.cfg" # last argument used of [FILE] or use default ./pkg.cfg placement
 
 case "${PKGCFG}" in
-	-h|--help|-V|--ver|--version|-v|--verbose|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg)
+	-h|--help|-V|--ver|--version|-v|--verbose|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg|-f|--force)
 		PKGCFG="pkg.cfg"
 		;;
 	*)
@@ -194,6 +195,11 @@ do
 			sleep 1
 			exit 0
 			;;
+		-f | --force)
+			FORCE="yes"
+			echo -e "forcing EXECution commands"
+			shift
+			;;
 		--)
 			shift
 			break
@@ -254,9 +260,13 @@ if test -z $TARGET; then
 	sleep 2
 	exit 1
 elif ! test -f "$TARGET"; then
-	echo "ERROR: No binary/script found matching \"${TARGET}\", exiting..."
-	sleep 2
-	exit 1
+	if test "x${FORCE}" != "xyes"; then
+		echo "ERROR: No binary/script found matching \"${TARGET}\", exiting..."
+		sleep 2
+		exit 1
+	else
+		touch $TARGET
+	fi
 else
 	TARGET_PATH_DIR="${TARGET%/*}"
 	TARGET_PATH="${TARGET}"
@@ -420,7 +430,9 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	mkdir -p $RELEASEDIR
 	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
-	cp $TARGET_PATH $RELEASEDIR/
+	if test "x${FORCE}" != "xyes"; then
+		cp $TARGET_PATH $RELEASEDIR/
+	fi
 	mkdir -p $TARGET_INSTALL_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
 	mv $RELEASEDIR/*$TARGET $TARGET_INSTALL_DIR/
