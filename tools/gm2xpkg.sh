@@ -32,7 +32,8 @@ help_func() {
 	 \t\t$: gm2xpkg
 	 Notes:
 	 \t PWD  - Present Working Directory PATH
-	 \t FILE - path to configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\""
+	 \t FILE - path to configuration with formula from gh repo file: \"MiyooCFW/gmenu2x/tools/pkg.cfg\"
+	 \t For debugging gm2xpkg session, you may prefix or export \"DEBUG=yes\" variable before launching"
 }
 
 pkg_config_func() {
@@ -106,7 +107,8 @@ LICENSE=\"${LICENSE}\"\
 }
 
 # DEBUG options
-if test "x${DEBUG}" == "xyes"; then
+if test "x${DEBUG}" = "xyes"; then
+	echo "starting DEBUG mode session"
 	set -e
 	# set -xuv
 	trap 'echo "Error on line $LINENO"; sleep 1; exit' ERR
@@ -259,15 +261,16 @@ if test -z $TARGET; then
 	echo "ERROR: No binary PATH/<filename> provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
 	exit 1
-elif ! test -f "$TARGET"; then
-	if test "x${FORCE}" != "xyes"; then
+elif ! test -f "$TARGET" && test "x${FORCE}" != "xyes"; then
 		echo "ERROR: No binary/script found matching \"${TARGET}\", exiting..."
 		sleep 2
 		exit 1
-	else
-		touch $TARGET
-	fi
 else
+	if test "x${FORCE}" == "xyes"; then
+		test -f "$TARGET" \
+		 && bash -c "echo "ERROR:\ Force\ mode\ configuration\ issue\ -\ found\ existing\ \\$TARGET=\"${TARGET}\"\ file,\ exiting..." && sleep 2 && killall gm2xpkg"\
+		 || touch $TARGET
+	fi
 	TARGET_PATH_DIR="${TARGET%/*}"
 	TARGET_PATH="${TARGET}"
 	TARGET="${TARGET##*/}"
@@ -404,7 +407,7 @@ if test "${LIBS_LD}" == "dynamically"; then
 	! test -z "${DEPENDS}" && DEPENDS="${LIBC}, ${DEPENDS}" || DEPENDS="${LIBC}"
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
 	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
-	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && exit 1"
+	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && killall gm2xpkg"
 elif test "${LIBS_LD}" == "statically"; then
 	DEPENDS=""
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with no need for externall dependencies"
@@ -432,6 +435,8 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	mkdir -p $OPKG_ASSETSDIR
 	if test "x${FORCE}" != "xyes"; then
 		cp $TARGET_PATH $RELEASEDIR/
+	else
+		rm ${TARGET}
 	fi
 	mkdir -p $TARGET_INSTALL_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
