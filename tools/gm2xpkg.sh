@@ -313,11 +313,10 @@ ICON=${ICON:=""}
 BACKDROP=${BACKDROP:=""}
 PARAMS=${PARAMS:=""}
 
-if test -z $SELDIR || test "$SELBROWSER" == "true"; then
+if test -z $SELDIR; then
 	SELBROWSER=""
-elif ! test -z $SELDIR &&  test "$SELBROWSER" == "false"; then
-	SELBROWSER=""
-	echo "WARNING: you can't set selectorbrowser value for \"Show Folders\" while selectordirectory is empty"
+	test "$SELBROWSER" == "false"\
+	 && echo "WARNING: you can't set selectorbrowser value for \"Show Folders\" while selectordirectory is empty"
 fi
 
 CLOCK=${CLOCK:=""}
