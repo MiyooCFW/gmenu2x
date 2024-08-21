@@ -485,9 +485,10 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	else
 		echo "WARNING: Couldn't locate manual in ${MANUAL} file"
 	fi
-	! test -z "${DOCS[*]}"\
-	 && for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt"; done\
-	 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
+	if ! test -z "${DOCS[*]}"; then
+		for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt"; done\
+		 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
+	fi
 	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR\
 	 && (test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
 	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
