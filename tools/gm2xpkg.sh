@@ -435,11 +435,12 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	if test "x${FORCE}" != "xyes"; then
 		cp $TARGET_PATH $RELEASEDIR/
 	else
-		rm ${TARGET}
+		rm $TARGET_PATH
 	fi
 	mkdir -p $TARGET_INSTALL_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
-	mv $RELEASEDIR/*$TARGET $TARGET_INSTALL_DIR/
+	test "x${FORCE}" != "xyes"\
+	 && mv $RELEASEDIR/$TARGET $TARGET_INSTALL_DIR/
 	test -d $ASSETSDIR\
 	 && cp -r $ASSETSDIR/* $TARGET_INSTALL_DIR\
 	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
