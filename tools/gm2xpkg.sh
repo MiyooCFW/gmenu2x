@@ -271,7 +271,7 @@ else
 		 && bash -c "echo "ERROR:\ Force\ mode\ configuration\ issue\ -\ found\ existing\ \\$TARGET=\"${TARGET}\"\ file,\ exiting..." && sleep 2 && killall gm2xpkg"\
 		 || touch $TARGET
 	fi
-	TARGET_PATH_DIR="${TARGET%/*}"
+	#TARGET_PATH_DIR="${TARGET%/*}"
 	TARGET_PATH="${TARGET}"
 	TARGET="${TARGET##*/}"
 fi
@@ -454,7 +454,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	test -d $ASSETSDIR\
 	 && cp -r $ASSETSDIR/* $TARGET_INSTALL_DIR\
 	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
-	if ! (test -e $LINK); then
+	if ! test -e $LINK; then
 		touch $LINK
 		echo -e "title=${TITLE}\ndescription=${DESCRI}\nexec=" > $LINK
 		test -n "$ICON"   && echo "icon=${ICON}" >> $LINK
@@ -499,9 +499,11 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt"; done\
 		 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
 	fi
-	test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR\
-	 && (test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging")\
-	 || echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
+	if test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR; then
+	 	test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging"
+	else
+		echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
+	fi
 	
 	# Create ./package/<target_version>.zip
 	if test $ZIP -eq 1 >/dev/null 2>&1; then
