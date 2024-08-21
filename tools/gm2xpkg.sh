@@ -332,12 +332,22 @@ if test -f "${LINK}"; then
 else
 	echo -e "no link file found, executing with predefined values..."
 	if test "x${VERBOSE}" == "xyes"; then
-		echo -e "INFO: Following gmenu parameters has been set from predefined values:"
-		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
-		echo -e "title=$TITLE\ndescription=$DESCRI\nicon=$ICON\nexec=<auto_generated>\nparams=$PARAMS"
-		echo -e "manual=<auto_generated>\nclock=$CLOCK\nlayout=$LAYOUT\ntefix=$TEFIX\nselectordir=$SELDIR"
-		echo -e "selectorbrowser=$SELBROWSER\nselectorfilter=$SELFILTER\nselectorscreens=$SELSCREENS"
-		echo -e "selectoraliases=<auto_generated>\nbackdrop=$BACKDROP\n"
+		echo -e "INFO: Following gmenu parameters has been set from predefined values:
+		 title=$TITLE
+		 description=$DESCRI
+		 icon=$ICON
+		 exec=<auto_generated>
+		 params=$PARAMS
+		 manual=<auto_generated>
+		 clock=$CLOCK
+		 layout=$LAYOUT
+		 tefix=$TEFIX
+		 selectordir=$SELDIR
+		 selectorbrowser=$SELBROWSER
+		 selectorfilter=$SELFILTER
+		 selectorscreens=$SELSCREENS
+		 selectoraliases=<auto_generated>
+		 backdrop=$BACKDROP"
 	fi
 fi
 
@@ -459,7 +469,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		test -n "$SELFILTER" && echo "selectorfilter=${SELFILTER}" >> $LINK
 		test -n "$SELSCREENS" && echo "selectorscreens=${SELSCREENS}" >> $LINK
 		if test -e $ALIASES; then
-			echo "selectoraliases=${HOMEPATH}/${DESTDIR}/${TARGET_DIR}/${ALIASES}" >> $LINK
+			echo "selectoraliases=${HOMEPATH}/${DESTDIR}/${TARGET_DIR}/aliases.txt" >> $LINK
 		fi
 		test -n "$BACKDROP" && echo "backdrop=${BACKDROP}" >> $LINK
 	else
@@ -467,7 +477,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	fi
 	cp $LINK $RELEASEDIR/gmenu2x/sections/$SECTION/
 	if test -e $ALIASES; then
-		cp $ALIASES $TARGET_INSTALL_DIR
+		cp $ALIASES $TARGET_INSTALL_DIR/aliases.txt
 	else
 		echo "WARNING: Couldn't locate aliases in ${ALIASES} file"
 	fi
