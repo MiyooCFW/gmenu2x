@@ -389,22 +389,25 @@ Maintainer: ${MAINTAINER}\n\
 Architecture: ${ARCH}"
 
 if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
-	echo -e "no opkg assets dir&files found, executing with predefined values..."
+	echo -e "no opkg assets dir&files found, executing with predefined CONTROL specific values..."
 	if test "x${VERBOSE}" == "xyes"; then
 		echo -e "INFO: Following opkg <<<control>>> instructions has been set from predefined values (plus basic <<<preinst|postinst>>>):"
 		echo -e "${CONTROL}"
 	fi
 else
-	echo "opkg assets dir&files found in \"$(realpath ${OPKG_ASSETSDIR})/CONTROL\", setting following CONTROL entries:"
-	echo "<<<control>>>:"
-	cat ${OPKG_ASSETSDIR}/CONTROL/control
-	echo "<<<EOF>>>"
-	echo "<<<preinst>>>:"
-	cat ${OPKG_ASSETSDIR}/CONTROL/preinst
-	echo "<<<EOF>>>"
-	echo "<<<postinst>>>:"
-	cat ${OPKG_ASSETSDIR}/CONTROL/postinst
-	echo "<<<EOF>>>"
+	echo "opkg assets dir&files found in \"$(realpath ${OPKG_ASSETSDIR})/CONTROL\", using existing CONTROL files."
+	if test "x${VERBOSE}" == "xyes"; then
+		echo -e "INFO: Following opkg <<<control>>> instructions has been set from existing files:"
+		echo "<<<control>>>:"
+		cat ${OPKG_ASSETSDIR}/CONTROL/control
+		echo "<<<EOF>>>"
+		echo "<<<preinst>>>:"
+		cat ${OPKG_ASSETSDIR}/CONTROL/preinst
+		echo "<<<EOF>>>"
+		echo "<<<postinst>>>:"
+		cat ${OPKG_ASSETSDIR}/CONTROL/postinst
+		echo "<<<EOF>>>"
+	fi
 fi
 
 #---------------------------------------------#
