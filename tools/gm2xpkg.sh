@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.7
+VER=0.8
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -420,13 +420,28 @@ if test "${LIBS_LD}" == "dynamically"; then
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
 	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
 	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && killall gm2xpkg"
+	test "x${VERBOSE}" == "xyes"\
+	 && echo "Adding \"${LIBC}\" dependency to \"Depends:\" control entry"
 elif test "${LIBS_LD}" == "statically"; then
 	DEPENDS=""
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with no need for externall dependencies"
+	test "x${VERBOSE}" == "xyes"\
+	 && echo "Removing any dependencies from \"Depends:\" control entry"
 else
 	echo "WARNING: Probably not a binary file (or linking problem), if it's a script pls provide correct interpreter as dependency"
 	sleep 1
 fi
+
+CONTROL="Package: ${PKG}\n\
+Version: ${VERSION}\n\
+Depends: ${DEPENDS}\n\
+Source: ${SOURCE}\n\
+License: ${LICENSE}\n\
+Description: ${DESCRI}\n\
+Section: ${SECTION}\n\
+Priority: ${PRIORITY}\n\
+Maintainer: ${MAINTAINER}\n\
+Architecture: ${ARCH}"
 
 echo -e "Starting configuration..."
 if test "x${VERBOSE}" == "xyes"; then
