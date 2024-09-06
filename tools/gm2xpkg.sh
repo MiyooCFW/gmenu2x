@@ -106,6 +106,19 @@ LICENSE=\"${LICENSE}\"\
 " > "${PKGCFG}"
 }
 
+opkg_control_func() {
+CONTROL="Package: ${PKG}\n\
+Version: ${VERSION}\n\
+Depends: ${DEPENDS}\n\
+Source: ${SOURCE}\n\
+License: ${LICENSE}\n\
+Description: ${DESCRI}\n\
+Section: ${SECTION}\n\
+Priority: ${PRIORITY}\n\
+Maintainer: ${MAINTAINER}\n\
+Architecture: ${ARCH}"
+}
+
 # DEBUG options
 if test "x${DEBUG}" = "xyes"; then
 	echo "starting DEBUG mode session"
@@ -377,16 +390,7 @@ DEPENDS=${DEPENDS:=""}
 SOURCE=${SOURCE:="Unknown"}
 LICENSE=${LICENSE:="Unknown"}
 
-CONTROL="Package: ${PKG}\n\
-Version: ${VERSION}\n\
-Depends: ${DEPENDS}\n\
-Source: ${SOURCE}\n\
-License: ${LICENSE}\n\
-Description: ${DESCRI}\n\
-Section: ${SECTION}\n\
-Priority: ${PRIORITY}\n\
-Maintainer: ${MAINTAINER}\n\
-Architecture: ${ARCH}"
+opkg_control_func
 
 if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
 	echo -e "no opkg assets dir&files found, executing with predefined CONTROL specific values..."
@@ -432,16 +436,7 @@ else
 	sleep 1
 fi
 
-CONTROL="Package: ${PKG}\n\
-Version: ${VERSION}\n\
-Depends: ${DEPENDS}\n\
-Source: ${SOURCE}\n\
-License: ${LICENSE}\n\
-Description: ${DESCRI}\n\
-Section: ${SECTION}\n\
-Priority: ${PRIORITY}\n\
-Maintainer: ${MAINTAINER}\n\
-Architecture: ${ARCH}"
+opkg_control_func
 
 echo -e "Starting configuration..."
 if test "x${VERBOSE}" == "xyes"; then
@@ -449,9 +444,11 @@ if test "x${VERBOSE}" == "xyes"; then
 	echo -e "PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n-"
 	echo -e "TARGET=${TARGET}\nVERSION=${VERSION}\n-"
 	echo -e "HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n-"
-	echo -e "TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n-"
-	echo -e "TARGET_EXEC=${TARGET_EXEC}\nTARGET_DIR=${TARGET_DIR}\nDOCS=(${DOCS[*]})\n-"
-	echo -e "PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}\n"
+	echo -e "TITLE=${TITLE}\nDESCRI=${DESCRI}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n-"
+	echo -e "SELDIR=${SELDIR}\nSELBROWSER=${SELBROWSER}\nSELFILTER=${SELFILTER}\nSELSCREENS=${SELSCREENS}\nICON=${ICON}\nBACKDROP=${BACKDROP}\nPARAMS=${PARAMS}\n-"
+	echo -e "CLOCK=${CLOCK}\nLAYOUT=${LAYOUT}\nTEFIX=${TEFIX}\n-"
+	echo -e "TARGET_DIR=${TARGET_DIR}\nTARGET_EXEC=${TARGET_EXEC}\nDOCS=(${DOCS[*]})\n-"
+	echo -e "PKG=${PKG}\nPRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}\n"
 fi
 if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || test $IPK -eq 1 >/dev/null 2>&1; then
 	TARGET_INSTALL_DIR=$RELEASEDIR/$DESTDIR/$TARGET_DIR
