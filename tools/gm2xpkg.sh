@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.7
+VER=0.8
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -17,7 +17,7 @@ help_func() {
 	 \t -p, --pkg       generate ./package
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
 	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in PWD
-	 \t -f, --force     force gm2xpkg execution commands even without present target's binary  
+	 \t -f, --force     force execution even without present target's binary or incompatible .cfg version
 	 Instructions:
 	 \t 1. Put inside PWD:
 	 \t\t- ./<target_name> binary
@@ -26,7 +26,7 @@ help_func() {
 	 \t 2. Edit settings in ./pkg.cfg file
 	 \t 3. Run program:
 	 \t\t$: ./gm2xpkg.sh
-	 \t --or-- 
+	 \t --or--
 	 \t 3. Install & run program from usr space in PWD:
 	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg
 	 \t\t$: gm2xpkg
@@ -104,6 +104,19 @@ DEPENDS=\"${DEPENDS}\" # list of dependency packages e.g. =\"sdl, libpng\" or =\
 SOURCE=\"${SOURCE}\"
 LICENSE=\"${LICENSE}\"\
 " > "${PKGCFG}"
+}
+
+opkg_control_func() {
+CONTROL="Package: ${PKG}\n\
+Version: ${VERSION}\n\
+Depends: ${DEPENDS}\n\
+Source: ${SOURCE}\n\
+License: ${LICENSE}\n\
+Description: ${DESCRI}\n\
+Section: ${SECTION}\n\
+Priority: ${PRIORITY}\n\
+Maintainer: ${MAINTAINER}\n\
+Architecture: ${ARCH}"
 }
 
 # DEBUG options
@@ -231,9 +244,14 @@ if test -f "${PKGCFG}"; then
 	fi
 	source "${PKGCFG}"
 	if test "${VER}" != "${PKGVER}" ; then
-		echo -e "ERROR: GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option"
-		sleep 2
-		exit 1
+		echo -e "ERROR: GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option\n"
+		if test "x${FORCE}" == "xyes"; then
+			echo "WARNING: Force-mode active, running regardless deprecated/incompatible ${PKGCFG}."
+		else
+			echo -e "\tExiting gm2xpkg..."
+			sleep 2
+			exit 1
+		fi
 	fi
 else
 	echo "no config \"${PKGCFG}\" file found, executing with predefined values from env or script"
@@ -261,20 +279,22 @@ if test -z $TARGET; then
 	echo "ERROR: No binary PATH/<filename> provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
 	exit 1
-elif ! test -f "$TARGET" && test "x${FORCE}" != "xyes"; then
-		echo "ERROR: No binary/script found matching \"${TARGET}\", exiting..."
-		sleep 2
-		exit 1
+elif ! test -f "$TARGET"; then
+		echo "ERROR: No binary/script found matching \"${TARGET}\""
+		if test "x${FORCE}" == "xyes"; then
+			echo "WARNING: Force-mode active, running regardless missing target \"${TARGET}\" file."
+			touch $TARGET
+		else
+			echo -e "\tExiting gm2xpkg..."
+			sleep 2
+			exit 1
+		fi
 else
-	if test "x${FORCE}" == "xyes"; then
-		test -f "$TARGET" \
-		 && bash -c "echo "ERROR:\ Force\ mode\ configuration\ issue\ -\ found\ existing\ \\$TARGET=\"${TARGET}\"\ file,\ exiting..." && sleep 2 && killall gm2xpkg"\
-		 || touch $TARGET
-	fi
-	#TARGET_PATH_DIR="${TARGET%/*}"
-	TARGET_PATH="${TARGET}"
-	TARGET="${TARGET##*/}"
+	TARGET_EXIST="yes"
 fi
+#TARGET_PATH_DIR="${TARGET%/*}"
+TARGET_PATH="${TARGET}"
+TARGET="${TARGET##*/}"
 if test -z $VERSION; then
 	VERSION=$(date +%Y-%m-%d\_%H:%M)
 	echo "no release Version provided, setting it to curret time ${VERSION}"
@@ -377,16 +397,7 @@ DEPENDS=${DEPENDS:=""}
 SOURCE=${SOURCE:="Unknown"}
 LICENSE=${LICENSE:="Unknown"}
 
-CONTROL="Package: ${PKG}\n\
-Version: ${VERSION}\n\
-Depends: ${DEPENDS}\n\
-Source: ${SOURCE}\n\
-License: ${LICENSE}\n\
-Description: ${DESCRI}\n\
-Section: ${SECTION}\n\
-Priority: ${PRIORITY}\n\
-Maintainer: ${MAINTAINER}\n\
-Architecture: ${ARCH}"
+opkg_control_func
 
 if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
 	echo -e "no opkg assets dir&files found, executing with predefined CONTROL specific values..."
@@ -420,13 +431,19 @@ if test "${LIBS_LD}" == "dynamically"; then
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with ${LIBC} libc implementation"
 	test "${LIBC}" == "uclibc" || test "${LIBC}" == "musl"\
 	 || bash -c "echo "ERROR:\ The\ \"${LIBC}\"\ is\ invalid\ libs\ interpreter" && sleep 2 && killall gm2xpkg"
+	test "x${VERBOSE}" == "xyes"\
+	 && echo "Adding \"${LIBC}\" dependency to \"Depends:\" control entry"
 elif test "${LIBS_LD}" == "statically"; then
 	DEPENDS=""
 	echo "Target binary \"${TARGET}\" is ${LIBS_LD} linked with no need for externall dependencies"
+	test "x${VERBOSE}" == "xyes"\
+	 && echo "Removing any dependencies from \"Depends:\" control entry"
 else
 	echo "WARNING: Probably not a binary file (or linking problem), if it's a script pls provide correct interpreter as dependency"
 	sleep 1
 fi
+
+opkg_control_func
 
 echo -e "Starting configuration..."
 if test "x${VERBOSE}" == "xyes"; then
@@ -434,9 +451,11 @@ if test "x${VERBOSE}" == "xyes"; then
 	echo -e "PACKAGE=${PACKAGE}\nZIP=${ZIP}\nIPK=${IPK}\nCLEAN=${CLEAN}\n-"
 	echo -e "TARGET=${TARGET}\nVERSION=${VERSION}\n-"
 	echo -e "HOMEPATH=${HOMEPATH}\nRELEASEDIR=${RELEASEDIR}\nASSETSDIR=${ASSETSDIR}\nOPKG_ASSETSDIR=${OPKG_ASSETSDIR}\nLINK=${LINK}\nALIASES=${ALIASES}\nMANUAL=${MANUAL}\n-"
-	echo -e "TITLE=${TITLE}\nDESCRI=${DESCRI}\nSELDIR=${SELDIR}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n-"
-	echo -e "TARGET_EXEC=${TARGET_EXEC}\nTARGET_DIR=${TARGET_DIR}\nDOCS=(${DOCS[*]})\n-"
-	echo -e "PRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}\n"
+	echo -e "TITLE=${TITLE}\nDESCRI=${DESCRI}\nDESTDIR=${DESTDIR}\nSECTION=${SECTION}\n-"
+	echo -e "SELDIR=${SELDIR}\nSELBROWSER=${SELBROWSER}\nSELFILTER=${SELFILTER}\nSELSCREENS=${SELSCREENS}\nICON=${ICON}\nBACKDROP=${BACKDROP}\nPARAMS=${PARAMS}\n-"
+	echo -e "CLOCK=${CLOCK}\nLAYOUT=${LAYOUT}\nTEFIX=${TEFIX}\n-"
+	echo -e "TARGET_DIR=${TARGET_DIR}\nTARGET_EXEC=${TARGET_EXEC}\nDOCS=(${DOCS[*]})\n-"
+	echo -e "PKG=${PKG}\nPRIORITY=${PRIORITY}\nMAINTAINER=${MAINTAINER}\nCONFFILES=${CONFFILES}\nARCH=${ARCH}\nDEPENDS=${DEPENDS}\nSOURCE=${SOURCE}\nLICENSE=${LICENSE}\n"
 fi
 if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || test $IPK -eq 1 >/dev/null 2>&1; then
 	TARGET_INSTALL_DIR=$RELEASEDIR/$DESTDIR/$TARGET_DIR
@@ -445,7 +464,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	mkdir -p $RELEASEDIR
 	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
-	if test "x${FORCE}" != "xyes"; then
+	if test "x${FORCE}" != "xyes" || test "x${TARGET_EXIST}" == "xyes"; then
 		cp $TARGET_PATH $RELEASEDIR/
 	else
 		rm $TARGET_PATH
@@ -499,8 +518,12 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		echo "WARNING: Couldn't locate manual in ${MANUAL} file"
 	fi
 	if ! test -z "${DOCS[*]}"; then
-		for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt"; done\
-		 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
+		for i in "${!DOCS[@]}"; do
+			cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/"
+			if ! test "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" -ef "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt"; then
+				mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt" || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
+			fi
+		done
 	fi
 	if test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR; then
 	 	test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging"
