@@ -17,7 +17,7 @@ help_func() {
 	 \t -p, --pkg       generate ./package
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
 	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in PWD
-	 \t -f, --force     force gm2xpkg execution commands even without present target's binary  
+	 \t -f, --force     force gm2xpkg execution commands even without present target's binary
 	 Instructions:
 	 \t 1. Put inside PWD:
 	 \t\t- ./<target_name> binary
@@ -511,8 +511,12 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		echo "WARNING: Couldn't locate manual in ${MANUAL} file"
 	fi
 	if ! test -z "${DOCS[*]}"; then
-		for i in "${!DOCS[@]}"; do cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/" && mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt"; done\
-		 || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
+		for i in "${!DOCS[@]}"; do
+			cp "${DOCS[$i]}" "${TARGET_INSTALL_DIR}/"
+			if ! test "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" -ef "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt"; then
+				mv "${TARGET_INSTALL_DIR}"/"${DOCS[$i]##*/}" "${TARGET_INSTALL_DIR}"/"$(basename ${DOCS[$i]%.*}).txt" || echo "WARNING: Upss smth went wrong and I couldn't read text ${DOCS[*]} files"
+			fi
+		done
 	fi
 	if test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR; then
 	 	test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging"
