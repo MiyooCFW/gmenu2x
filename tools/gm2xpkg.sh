@@ -17,7 +17,7 @@ help_func() {
 	 \t -p, --pkg       generate ./package
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
 	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in PWD
-	 \t -f, --force     force gm2xpkg execution commands even without present target's binary
+	 \t -f, --force     force execution even without present target's binary or incompatible .cfg version
 	 Instructions:
 	 \t 1. Put inside PWD:
 	 \t\t- ./<target_name> binary
@@ -26,7 +26,7 @@ help_func() {
 	 \t 2. Edit settings in ./pkg.cfg file
 	 \t 3. Run program:
 	 \t\t$: ./gm2xpkg.sh
-	 \t --or-- 
+	 \t --or--
 	 \t 3. Install & run program from usr space in PWD:
 	 \t\t$: install -m 755 gm2xpkg.sh /usr/bin/gm2xpkg
 	 \t\t$: gm2xpkg
@@ -244,9 +244,14 @@ if test -f "${PKGCFG}"; then
 	fi
 	source "${PKGCFG}"
 	if test "${VER}" != "${PKGVER}" ; then
-		echo -e "ERROR: GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option"
-		sleep 2
-		exit 1
+		echo -e "ERROR: GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option\n"
+		if test "x${FORCE}" == "xyes"; then
+			echo "WARNING: Force-mode active, running regardless deprecated/incompatible ${PKGCFG}."
+		else
+			echo -e "\tExiting gm2xpkg..."
+			sleep 2
+			exit 1
+		fi
 	fi
 else
 	echo "no config \"${PKGCFG}\" file found, executing with predefined values from env or script"
@@ -274,20 +279,22 @@ if test -z $TARGET; then
 	echo "ERROR: No binary PATH/<filename> provided, please set \$TARGET in your env with correct execution program name"
 	sleep 2
 	exit 1
-elif ! test -f "$TARGET" && test "x${FORCE}" != "xyes"; then
-		echo "ERROR: No binary/script found matching \"${TARGET}\", exiting..."
-		sleep 2
-		exit 1
+elif ! test -f "$TARGET"; then
+		echo "ERROR: No binary/script found matching \"${TARGET}\""
+		if test "x${FORCE}" == "xyes"; then
+			echo "WARNING: Force-mode active, running regardless missing target \"${TARGET}\" file."
+			touch $TARGET
+		else
+			echo -e "\tExiting gm2xpkg..."
+			sleep 2
+			exit 1
+		fi
 else
-	if test "x${FORCE}" == "xyes"; then
-		test -f "$TARGET" \
-		 && bash -c "echo "ERROR:\ Force\ mode\ configuration\ issue\ -\ found\ existing\ \\$TARGET=\"${TARGET}\"\ file,\ exiting..." && sleep 2 && killall gm2xpkg"\
-		 || touch $TARGET
-	fi
-	#TARGET_PATH_DIR="${TARGET%/*}"
-	TARGET_PATH="${TARGET}"
-	TARGET="${TARGET##*/}"
+	TARGET_EXIST="yes"
 fi
+#TARGET_PATH_DIR="${TARGET%/*}"
+TARGET_PATH="${TARGET}"
+TARGET="${TARGET##*/}"
 if test -z $VERSION; then
 	VERSION=$(date +%Y-%m-%d\_%H:%M)
 	echo "no release Version provided, setting it to curret time ${VERSION}"
@@ -457,7 +464,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	mkdir -p $RELEASEDIR
 	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
-	if test "x${FORCE}" != "xyes"; then
+	if test "x${FORCE}" != "xyes" || test "x${TARGET_EXIST}" == "xyes"; then
 		cp $TARGET_PATH $RELEASEDIR/
 	else
 		rm $TARGET_PATH
