@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.8
+VER=0.9
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -464,15 +464,13 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	mkdir -p $RELEASEDIR
 	# mkdir -p $ASSETSDIR
 	mkdir -p $OPKG_ASSETSDIR
+	mkdir -p $TARGET_INSTALL_DIR
+	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
 	if test "x${FORCE}" != "xyes" || test "x${TARGET_EXIST}" == "xyes"; then
-		cp $TARGET_PATH $RELEASEDIR/
+		cp $TARGET_PATH $TARGET_INSTALL_DIR/
 	else
 		rm $TARGET_PATH
 	fi
-	mkdir -p $TARGET_INSTALL_DIR
-	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
-	test "x${FORCE}" != "xyes"\
-	 && mv $RELEASEDIR/$TARGET $TARGET_INSTALL_DIR/
 	test -d $ASSETSDIR\
 	 && cp -r $ASSETSDIR/* $TARGET_INSTALL_DIR\
 	 || echo "WARNING: No assets directory found matching name \"${ASSETSDIR}/\""
