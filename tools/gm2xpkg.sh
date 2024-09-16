@@ -18,6 +18,7 @@ help_func() {
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
 	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in PWD
 	 \t -f, --force     force execution even without present target's binary or incompatible .cfg version
+	 \t -q, --quiet     don't output messages to stdout
 	 Instructions:
 	 \t 1. Put inside PWD:
 	 \t\t- ./<target_name> binary
@@ -134,7 +135,7 @@ test $# -ne 0 &&\
  PKGCFG="${!#}" || PKGCFG="pkg.cfg" # last argument used of [FILE] or use default ./pkg.cfg placement
 
 case "${PKGCFG}" in
-	-h|--help|-V|--ver|--version|-v|--verbose|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg|-f|--force)
+	-h|--help|-V|--ver|--version|-v|--verbose|-i|--ipk|-z|--zip|-p|--pkg|-c|--clean|-g|--gencfg|-f|--force|-q|--quiet)
 		PKGCFG="pkg.cfg"
 		;;
 	*)
@@ -213,6 +214,10 @@ do
 		-f | --force)
 			FORCE="yes"
 			echo -e "forcing EXECution commands"
+			shift
+			;;
+		-q | --quiet)
+			exec > /dev/null 2>&1
 			shift
 			;;
 		--)
