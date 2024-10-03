@@ -262,6 +262,21 @@ public:
 
 		return val;
 	}
+	std::string readFile(const std::string& path) {
+		std::ifstream file(path);
+		std::string content;
+		if (file.is_open()) {
+			std::getline(file, content);
+			file.close();
+		}
+		return content;
+	}
+	bool isUsbConnected() {
+		std::string state = readFile("/sys/class/udc/musb-hdrc.1.auto/state");
+		std::string suspended = readFile("/sys/devices/platform/usb_phy_generic.0.auto/subsystem/devices/1c13000.usb/musb-hdrc.1.auto/gadget/suspended");
+
+		return (state == "configured" && suspended == "0");
+	}
 
 	int setBacklight(int val, bool popup = false) {
 		val = GMenu2X::setBacklight(val, popup);
