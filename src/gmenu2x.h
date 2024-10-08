@@ -241,6 +241,7 @@ public:
 	virtual int setVolume(int val, bool popup = false);
 	virtual void setKbdLayout(int val) { };
 	virtual void setTefix(int val) { };
+	virtual bool isUsbConnected() { return false; };
 	virtual int getVolume() { return 0; };
 	virtual int getBacklight() { return -1; };
 	virtual int setBacklight(int val, bool popup = false);

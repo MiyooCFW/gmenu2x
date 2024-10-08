@@ -52,7 +52,9 @@ uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 //		PowerManager::instance->gmenu2x->setVolume(0);
 		PowerManager::instance->resetPowerTimer();
 		PowerManager::instance->gmenu2x->cls();
-		PowerManager::instance->gmenu2x->setCPU(PowerManager::instance->gmenu2x->confInt["cpuMin"]);
+		if (!PowerManager::instance->gmenu2x->isUsbConnected()) {
+			PowerManager::instance->gmenu2x->setCPU(PowerManager::instance->gmenu2x->confInt["cpuMin"]);
+			}
 		PowerManager::instance->suspendActive = true;
 		return interval;
 	}
