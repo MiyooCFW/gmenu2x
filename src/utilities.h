@@ -77,6 +77,7 @@ string real_path(const string &path);
 string dir_name(const string &path);
 string base_name(string path, bool strip_extension = false);
 string file_ext(const string &path, bool tolower = false);
+string file_read(const string &path);
 string lowercase(string s);
 string unique_filename(string path, string ext);
 string exe_path();

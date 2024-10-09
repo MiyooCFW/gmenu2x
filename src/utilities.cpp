@@ -30,6 +30,8 @@
 
 #include <algorithm>
 
+#include <fstream>
+
 #include "utilities.h"
 #include "debug.h"
 
@@ -316,6 +318,17 @@ bool file_copy(const string &src, const string &dst) {
 	fclose(fs);
 	fclose(fd);
 	return true;
+}
+
+string file_read(const string& path) {
+	if (!file_exists(path)) return 0;
+	ifstream file(path);
+	string content;
+	if (file.is_open()) {
+		getline(file, content);
+		file.close();
+	}
+	return content;
 }
 
 string unique_filename(string path, string ext) {

@@ -52,6 +52,8 @@
 #define MIYOO_BATTERY_FILE    "/mnt/.batterylow.conf"
 #define MIYOO_LID_CONF        "/sys/devices/platform/backlight/backlight/backlight/brightness"
 #define MIYOO_BATTERY         "/sys/class/power_supply/miyoo-battery/voltage_now"
+#define MIYOO_USB_STATE       "/sys/class/udc/musb-hdrc.1.auto/state"
+#define MIYOO_USB_SUSPEND     "/sys/devices/platform/usb_phy_generic.0.auto/subsystem/devices/1c13000.usb/musb-hdrc.1.auto/gadget/suspended"
 #define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
 #define MIYOO_TVOUT_FILE      "/mnt/tvout"
 #define MIYOO_SND_FILE        "/dev/miyoo_snd"
@@ -262,19 +264,10 @@ public:
 
 		return val;
 	}
-	std::string readFile(const std::string& path) {
-		std::ifstream file(path);
-		std::string content;
-		if (file.is_open()) {
-			std::getline(file, content);
-			file.close();
-		}
-		return content;
-	}
+	
 	bool isUsbConnected() {
-		std::string state = readFile("/sys/class/udc/musb-hdrc.1.auto/state");
-		std::string suspended = readFile("/sys/devices/platform/usb_phy_generic.0.auto/subsystem/devices/1c13000.usb/musb-hdrc.1.auto/gadget/suspended");
-
+		string state = file_read(MIYOO_USB_STATE);
+		string suspended = file_read(MIYOO_USB_SUSPEND);
 		return (state == "configured" && suspended == "0");
 	}
 
