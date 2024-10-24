@@ -1,0 +1,34 @@
+
+name: CI (Linux)
+
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+jobs:
+  build-native:
+    name: GMenu2X for PC (Linux)
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: install dependencies
+      run: |
+        sudo apt-get update \
+        && sudo apt-get install -y build-essential libsdl1.2-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libboost-all-dev libfreetype6-dev libbz2-dev libmpg123-dev
+    - name: build
+      run: make -j$(nproc) -f Makefile dist
+    - uses: actions/upload-artifact@v4
+      with:
+        name: GMenu2X (Linux)
+        path: |
+          dist/linux/gmenu2x
+          dist/linux/gmenu2x-debug
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
+    - uses: actions/upload-artifact@v4
+      with:
+        name: GMenu2X ZIP-Bundle (Linux)
+        path: |
+          dist/linux/
+          !dist/linux/gmenu2x-debug
+        if-no-files-found: error # 'error', 'warn', 'ignore'; defaults to `warn`
