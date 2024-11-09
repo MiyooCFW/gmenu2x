@@ -307,9 +307,9 @@ fi
 
 ## Generic
 HOMEPATH=${HOMEPATH:="/mnt"}
-RELEASEDIR=${RELEASEDIR:=package}
+RELEASEDIR=${RELEASEDIR:=$(mktemp -d)}
 ASSETSDIR=${ASSETSDIR:=assets}
-OPKG_ASSETSDIR=${OPKG_ASSETSDIR:=opkg_assets}
+OPKG_ASSETSDIR=${OPKG_ASSETSDIR:=$(mktemp -d)}
 LINK=${LINK:=$TARGET.lnk}
 ALIASES=${ALIASES:=aliases.txt}
 MANUAL=${MANUAL:=$TARGET.man.txt}
@@ -465,10 +465,10 @@ fi
 if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || test $IPK -eq 1 >/dev/null 2>&1; then
 	TARGET_INSTALL_DIR=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
-	rm -rf $RELEASEDIR
-	mkdir -p $RELEASEDIR
-	# mkdir -p $ASSETSDIR
-	mkdir -p $OPKG_ASSETSDIR
+	rm -rf $RELEASEDIR/*
+	#mkdir -p $RELEASEDIR
+	#mkdir -p $ASSETSDIR
+	#mkdir -p $OPKG_ASSETSDIR
 	mkdir -p $TARGET_INSTALL_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
 	if test "x${FORCE}" != "xyes" || test "x${TARGET_EXIST}" == "xyes"; then
