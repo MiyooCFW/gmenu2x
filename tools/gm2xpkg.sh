@@ -509,7 +509,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	if test -e $MANUAL; then
 		if file $MANUAL | grep -q "PNG image"; then
 			MANUAL_EXT=".man.png"
-		elif file $MANUAL | grep -q "ASCII text"; then
+		elif file $MANUAL | grep -q "text"; then
 			MANUAL_EXT=".man.txt"
 		else
 			MANUAL_EXT=""
