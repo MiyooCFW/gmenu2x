@@ -1,0 +1,32 @@
+GMenu2X 是为 MiyooCFW 开发的，并依据 GNU GPL 许可证 v2 发布。
+当前版本基于 pingflood 的 GMenuNX 分支。
+当前构建的源代码：https://github.com/MiyooCFW/gmenu2x
+
+控制说明
+----
+(Bittboy 的特定操作在圆括号中注明)
+
+* A: 确认 / 启动选中的链接 / 确认操作；
+* B: 返回 / 取消操作；
+* X: 在文件浏览器中返回上一级目录；
+* X-长按: 弹出日期和时间快速对话框；
+* X + Y: 切换默认字体；
+* Y: 打开手册/说明文件；
+* Y-长按: 重启 GMenu2X；
+* L1(TB), R1(TA): 在分组之间左右切换，或在列表中翻页；
+* L2, R2: 快速减少/增加选中的值；
+* START: 打开 GMenu2X 设置；
+* START-长按:  切换休眠模式；
+* SELECT: 弹出上下文菜单；
+* SELECT-长按: 禁用电视输出；
+* SELECT + L1(TB): 音量控制；
+* SELECT + R1(TA): 调整屏幕亮度；
+* SELECT + START: 截屏；
+* RESET: 弹出关机对话框；
+
+在设置中：
+
+* A, LEFT, RIGHT: 确认、选择或切换设置；
+* B: 返回或取消编辑并退出；
+* START: 保存编辑并退出；
+* SELECT: 清除或设置为默认值。
