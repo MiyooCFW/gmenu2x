@@ -60,7 +60,7 @@ void FileLister::browse() {
 			if (file[0] == '.' || (find(excludes.begin(), excludes.end(), file) != excludes.end()))
 				continue;
 
-			if (!((dptr[i]->d_type & DT_REG) || (dptr[i]->d_type & DT_DIR))) {
+			if (!((dptr[i]->d_type & DT_REG) || (dptr[i]->d_type & DT_DIR)) || (dptr[i]->d_type & DT_LNK)) {
 				string filepath = path + "/" + file;
 				if (stat(filepath.c_str(), &st) == -1) {
 					ERROR("Stat failed on '%s': '%s'", filepath.c_str(), strerror(errno));
