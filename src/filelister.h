@@ -35,7 +35,7 @@ public:
 	string path, filter;
 	FileLister(const string &startPath = "/", bool showDirectories = true, bool showFiles = true);
 	bool showDirectories = true, showFiles = true, allowDirUp = true;
-	void browse();
+	void browse(bool dirup = false);
 
 	uint32_t size();
 	uint32_t dirCount();
