@@ -360,8 +360,8 @@ void LinkApp::selector(int startSelection, const string &selectorDir) {
 	Selector bd(gmenu2x, this->getTitle(), this->getDescription(), this->getIconPath(), this);
 	bd.showDirectories = this->getSelectorBrowser();
 
-	if (selectorDir != "") bd.directoryEnter(selectorDir);
-	else bd.directoryEnter(this->getSelectorDir());
+	if (selectorDir != "") bd.directoryEnter(selectorDir,false);
+	else bd.directoryEnter(this->getSelectorDir(),false);
 
 	bd.setFilter(this->getSelectorFilter());
 

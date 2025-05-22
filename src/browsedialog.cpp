@@ -39,7 +39,7 @@ bool BrowseDialog::exec() {
 	if (path.empty() || !dir_exists(path))
 		setPath(gmenu2x->confStr["homePath"]);
 
-	directoryEnter(path);
+	directoryEnter(path,false);
 
 	string preview = getPreview(selected);
 
@@ -61,19 +61,19 @@ bool BrowseDialog::exec() {
 			buttons.push_back({"select", gmenu2x->tr["Menu"]});
 			buttons.push_back({"b", gmenu2x->tr["Cancel"]});
 
-		if (!showFiles && allowSelectDirectory)
-			buttons.push_back({"start", gmenu2x->tr["Select"]});
-		else if ((allowEnterDirectory && isDirectory(selected)) || !isDirectory(selected))
-			buttons.push_back({"a", gmenu2x->tr["Select"]});
+			if (!showFiles && allowSelectDirectory)
+				buttons.push_back({"start", gmenu2x->tr["Select"]});
+			else if ((allowEnterDirectory && isDirectory(selected)) || !isDirectory(selected))
+				buttons.push_back({"a", gmenu2x->tr["Select"]});
 
-		if (showDirectories && allowDirUp && path != "/")
-			buttons.push_back({"x", gmenu2x->tr["Folder up"]});
+			if (showDirectories && allowDirUp && path != "/")
+				buttons.push_back({"x", gmenu2x->tr["Folder up"]});
 
-		if (gmenu2x->confStr["previewMode"] == "Backdrop") {
-			if (!(preview.empty() || preview == "#"))
-				gmenu2x->setBackground(this->bg, preview);
-			else
-				gmenu2x->bg->blit(this->bg,0,0);
+			if (gmenu2x->confStr["previewMode"] == "Backdrop") {
+				if (!(preview.empty() || preview == "#"))
+					gmenu2x->setBackground(this->bg, preview);
+				else
+					gmenu2x->bg->blit(this->bg,0,0);
 			}
 		}
 
@@ -195,12 +195,16 @@ bool BrowseDialog::exec() {
 			if (browse_history.size() > 0) {
 				selected = browse_history.back();
 				browse_history.pop_back();
+				//INFO("directoryEnter: path=%s, filepath=%s", path.c_str(), getFilePath(selected).c_str());
 			}
-			directoryEnter(path + "/..");
+			directoryEnter(dir_name(path) + "/..", true);
 		} else if (gmenu2x->input[CONFIRM]) {
 			if (allowEnterDirectory && isDirectory(selected)) {
 				browse_history.push_back(selected);
-				directoryEnter(getFilePath(selected));
+				//INFO("directoryEnter: path=%s, filename=%s", path.c_str(), getFileName(selected).c_str());
+				if (path != "/") path += "/";
+				path += getFileName(selected);
+				directoryEnter(path,false);
 				selected = 0;
 				} else {
 					return true;
@@ -222,7 +226,7 @@ bool BrowseDialog::exec() {
 	}
 }
 
-void BrowseDialog::directoryEnter(const string &path) {
+void BrowseDialog::directoryEnter(const string &path, bool parentdir) {
 	gmenu2x->input.dropEvents(); // prevent passing input away
 	gmenu2x->powerManager->clearTimer();
 
@@ -233,9 +237,12 @@ void BrowseDialog::directoryEnter(const string &path) {
 	drawDialog(gmenu2x->s);
 
 	SDL_TimerID flipScreenTimer = SDL_AddTimer(500, GMenu2X::timerFlip, (void*)false);
-
-	setPath(path);
-	browse();
+	this->path = path;
+	INFO("directoryEnter_final: path=%s", path.c_str());
+	if (parentdir)
+		browse(true);
+	else
+		browse();
 	onChangeDir();
 
 	SDL_RemoveTimer(flipScreenTimer); flipScreenTimer = NULL;
@@ -287,7 +294,7 @@ void BrowseDialog::deleteFile() {
 	mb.setButton(CANCEL,  gmenu2x->tr["No"]);
 	if (mb.exec() != MANUAL) return;
 	if (!unlink(getFilePath(selected).c_str())) {
-		directoryEnter(path); // refresh
+		directoryEnter(path,false); // refresh
 		sync();
 	}
 }
@@ -295,17 +302,17 @@ void BrowseDialog::deleteFile() {
 void BrowseDialog::umountDir() {
 	string umount = "sync; umount -fl " + getFilePath(selected) + " && rm -r " + getFilePath(selected);
 	system(umount.c_str());
-	directoryEnter(path); // refresh
+	directoryEnter(path,false); // refresh
 }
 
 void BrowseDialog::exploreHome() {
 	selected = 0;
-	directoryEnter(CARD_ROOT);
+	directoryEnter(CARD_ROOT,false);
 }
 
 void BrowseDialog::exploreMedia() {
 	selected = 0;
-	directoryEnter("/mnt/roms");
+	directoryEnter("/mnt/roms",false);
 }
 
 void BrowseDialog::setWallpaper() {

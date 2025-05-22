@@ -257,9 +257,10 @@ string real_path(const string &path) {
 }
 
 string dir_name(const string &path) {
+	if (path == "/.." || path == "/." || path == "/") return "/";
 	string::size_type p = path.rfind("/");
 	if (p == path.size() - 1) p = path.rfind("/", p - 1);
-	return real_path("/" + path.substr(0, p));
+	return path.substr(0, p);
 }
 
 string base_name(string path, bool strip_extension) {

@@ -35,7 +35,7 @@ showDirectories(showDirectories), showFiles(showFiles) {
 	setPath(startPath);
 }
 
-void FileLister::browse() {
+void FileLister::browse(bool dirup) {
 	directories.clear();
 	files.clear();
 
@@ -48,6 +48,9 @@ void FileLister::browse() {
 		struct stat st;
 		struct dirent **dptr;
 
+		//string dirname = dir_name(path);
+		if (dirup) path = dir_name(path);
+		//INFO("browse() path=%s dirname=%s", path.c_str(), dirname.c_str());
 		int i = 0, n = scandir(path.c_str(), &dptr, NULL, alphasort);
 
 		if (n < 0) {
@@ -62,6 +65,7 @@ void FileLister::browse() {
 
 			if (!((dptr[i]->d_type & DT_REG) || (dptr[i]->d_type & DT_DIR)) || (dptr[i]->d_type & DT_LNK)) {
 				string filepath = path + "/" + file;
+				//INFO("browse() loop- filepath=%s, file=%s", filepath.c_str(), file.c_str());
 				if (stat(filepath.c_str(), &st) == -1) {
 					ERROR("Stat failed on '%s': '%s'", filepath.c_str(), strerror(errno));
 					continue;
