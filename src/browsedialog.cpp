@@ -264,8 +264,10 @@ void BrowseDialog::contextMenu() {
 	if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp")
 		options.push_back((MenuOption){gmenu2x->tr["Set as wallpaper"], MakeDelegate(this, &BrowseDialog::setWallpaper)});
 
+#ifndef NO_EXTRA_SD
 	if (path == "/roms" && getFile(selected) != ".." && isDirectory(selected))
 		options.push_back((MenuOption){gmenu2x->tr["Umount"], MakeDelegate(this, &BrowseDialog::umountDir)});
+#endif
 
 	if (path != CARD_ROOT)
 		options.push_back((MenuOption){gmenu2x->tr["Go to"] + " " + CARD_ROOT, MakeDelegate(this, &BrowseDialog::exploreHome)});
