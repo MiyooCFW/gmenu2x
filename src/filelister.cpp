@@ -102,6 +102,9 @@ void FileLister::browse(bool dirup) {
 void FileLister::setPath(const string &path) {
 	this->path = real_path(path);
 }
+void FileLister::goPath(const string &path) {
+	this->path = path;
+}
 void FileLister::setFilter(const string &filter) {
 	this->filter = filter;
 }

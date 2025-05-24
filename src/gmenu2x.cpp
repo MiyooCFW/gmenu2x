@@ -1681,7 +1681,7 @@ void GMenu2X::explorer() {
 	bd.showDirectories = true;
 	bd.showFiles = true;
 
-	if (confInt["saveSelection"]) bd.setPath(confStr["explorerLastDir"]);
+	if (confInt["saveSelection"]) bd.goPath(confStr["explorerLastDir"]);
 
 			string command = cmdclean(bd.getFilePath(bd.selected));
 			if (confInt["saveAutoStart"]) {

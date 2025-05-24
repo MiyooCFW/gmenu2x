@@ -48,6 +48,7 @@ public:
 	const string getFilePath(uint32_t i = 0);
 	const string &getPath() { return path; }
 	void setPath(const string &path);
+	void goPath(const string &path);
 	const string &getFilter() { return filter; }
 	void setFilter(const string &filter);
 	const vector<string> &getDirectories() { return directories; }
