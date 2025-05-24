@@ -237,7 +237,7 @@ void BrowseDialog::directoryEnter(const string &path, bool parentdir) {
 	drawDialog(gmenu2x->s);
 
 	SDL_TimerID flipScreenTimer = SDL_AddTimer(500, GMenu2X::timerFlip, (void*)false);
-	this->path = path;
+	goPath(path);
 	INFO("directoryEnter_final: path=%s", path.c_str());
 	if (parentdir)
 		browse(true);
