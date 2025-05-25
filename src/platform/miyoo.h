@@ -114,6 +114,7 @@ int oc_choices[] = {
 int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 
 int kbd, fb0, snd;
+char *cmd_testfs_p5 = NULL;
 int32_t tickBattery = 0;
 
 void setTVoff() {
@@ -211,7 +212,11 @@ private:
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
-		//system("mount -o remount,async /mnt");
+		cmd_testfs_p5 = "test \"$(lsblk -n --output=FSTYPE /dev/mmcblk0p5)\" != \"btrfs\"";
+		if (system(cmd_testfs_p5) == 0) {
+			system("mount -o remount,async /roms");
+			INFO("system cmd in hwInit succeeds, remounting in async /roms");
+		}
 		getKbdLayoutHW();
 		getTefixHW();
 		w = 320;
@@ -344,7 +349,11 @@ public:
 	}
 
 	string hwPreLinkLaunch() {
-		//system("mount -o remount,sync /mnt");
+		cmd_testfs_p5 = "test \"$(lsblk -n --output=FSTYPE /dev/mmcblk0p5)\" != \"btrfs\"";
+		if (system(cmd_testfs_p5) == 0) {
+			system("mount -o remount,sync /roms");
+			INFO("system cmd in hwPreLinkLaunch succeeds, remounting in sync /roms");
+		}
 		return "";
 	}
 };
