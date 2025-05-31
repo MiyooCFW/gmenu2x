@@ -47,8 +47,17 @@ void FontHelper::loadFont(const string &fontName, int fontSize) {
 	halfHeight = height / 2;
 }
 
-bool FontHelper::utf8Code(uint8_t c) {
-	return (c >= 194 && c <= 198) || c == 208 || c == 209;
+int FontHelper::utf8Code(uint8_t c) {
+	if ((c >= 194 && c <= 198) || c == 208 || c == 209) {
+		//INFO("B2=%u", c);
+		return 2;
+	} else if ((c >= 128 && c <= 207 && c != 63) || (c >= 226 && c <= 239)) {
+		//INFO("B3=%u", c);
+		return 3;
+	} else {
+		//INFO("B1=%u", c);
+		return 0;
+	}
 }
 
 FontHelper *FontHelper::setSize(const int size) {

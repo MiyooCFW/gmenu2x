@@ -116,9 +116,12 @@ void InputDialog::setKeyboard(int kb) {
 	kbLength = this->kb->at(0).length();
 
 	for (int x = 0, l = kbLength; x < l; x++) {
-		if (gmenu2x->font->utf8Code(this->kb->at(0)[x])) {
-			kbLength--;
-			x++;
+		uint8_t c = this->kb->at(0)[x];
+		int b = gmenu2x->font->utf8Code(c);
+		if (b) {
+			b--;
+			kbLength -= b;
+			x += b;
 		}
 	}
 
@@ -291,7 +294,13 @@ bool InputDialog::exec() {
 
 void InputDialog::backspace() {
 	// check for utf8 characters
-	input = input.substr(0, input.length() - (gmenu2x->font->utf8Code(input[input.length() - 2]) ? 2 : 1));
+	int utf8_bytes = 1;
+	uint8_t c = input[input.length() - 1];
+	int b = gmenu2x->font->utf8Code(c);
+	if (b) {
+		utf8_bytes = b;
+	}
+	input = input.substr(0, input.length() - utf8_bytes);
 }
 
 void InputDialog::space() {
@@ -299,13 +308,19 @@ void InputDialog::space() {
 }
 
 string InputDialog::currKey() {
-	bool utf8;
+	int utf8=0;
 	int xc=0;
+	int utf8_bytes = 1;
 	for (uint32_t x = 0; x < kb->at(selRow).length(); x++) {
-		utf8 = gmenu2x->font->utf8Code(kb->at(selRow)[x]);
-		if (xc == selCol)
-			return kb->at(selRow).substr(x, utf8 ? 2 : 1);
-		if (utf8) x++;
+		uint8_t c = kb->at(selRow)[x];
+		utf8 = gmenu2x->font->utf8Code(c);
+		if (xc == selCol) {
+			if (utf8) utf8_bytes = utf8;
+			return kb->at(selRow).substr(x, utf8_bytes);
+		}
+		if (utf8) {
+			x += utf8 -1;
+		}
 		xc++;
 	}
 	return "";
@@ -362,9 +377,11 @@ int InputDialog::drawVirtualKeyboard() {
 		for (uint32_t x = 0, xc = 0; x < line.length(); x++) {
 			string charX;
 			// utf8 characters
-			if (gmenu2x->font->utf8Code(line[x])) {
-				charX = line.substr(x,2);
-				x++;
+			uint8_t c = line[x];
+			int b = gmenu2x->font->utf8Code(c);
+			if (b) {
+					charX = line.substr(x,b);
+					x += b - 1;
 			} else {
 				charX = line[x];
 			}
