@@ -295,10 +295,16 @@ bool InputDialog::exec() {
 void InputDialog::backspace() {
 	// check for utf8 characters
 	int utf8_bytes = 1;
-	uint8_t c = input[input.length() - 1];
-	int b = gmenu2x->font->utf8Code(c);
-	if (b) {
-		utf8_bytes = b;
+	int b = 0;
+	uint8_t c = 0;
+	for (uint8_t x = 1; x <= 4; x++) {
+		c = input[input.length() - x];
+		b = gmenu2x->font->utf8Code(c);
+		if (x == 1 && b == 0) break;
+		else if (b && x > 1) {
+			utf8_bytes = b;
+			break;
+		}
 	}
 	input = input.substr(0, input.length() - utf8_bytes);
 }
@@ -380,8 +386,8 @@ int InputDialog::drawVirtualKeyboard() {
 			uint8_t c = line[x];
 			int b = gmenu2x->font->utf8Code(c);
 			if (b) {
-					charX = line.substr(x,b);
-					x += b - 1;
+				charX = line.substr(x,b);
+				x += b - 1;
 			} else {
 				charX = line[x];
 			}
