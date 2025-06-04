@@ -300,10 +300,14 @@ void InputDialog::backspace() {
 	for (uint8_t x = 1; x <= 4; x++) {
 		c = input[input.length() - x];
 		b = gmenu2x->font->utf8Code(c);
-		if (x == 1 && b == 0) break;
-		else if (b && x > 1) {
-			utf8_bytes = b;
-			break;
+		if (gmenu2x->font->utf8CodeLast(c)) {
+			continue;
+		} else {
+			if (x == 1 && b == 0) break;
+			else if (b && x > 1) {
+				utf8_bytes = b;
+				break;
+			}
 		}
 	}
 	input = input.substr(0, input.length() - utf8_bytes);

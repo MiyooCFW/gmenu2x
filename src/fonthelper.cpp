@@ -64,6 +64,10 @@ int FontHelper::utf8Code(uint8_t c) {
 	}
 }
 
+bool FontHelper::utf8CodeLast(uint8_t c) {
+	return (c >= 128 && c <= 191); // Last byte range should be common for all chars longer than 1-byte ASCII (0-127)
+}
+
 FontHelper *FontHelper::setSize(const int size) {
 	if (this->fontSize == size) return this;
 	TTF_CloseFont(font);

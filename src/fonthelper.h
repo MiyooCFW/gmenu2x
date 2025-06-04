@@ -24,6 +24,7 @@ public:
 	~FontHelper();
 
 	int utf8Code(uint8_t c);
+	bool utf8CodeLast(uint8_t c);
 
 	void free();
 
