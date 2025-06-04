@@ -48,12 +48,16 @@ void FontHelper::loadFont(const string &fontName, int fontSize) {
 }
 
 int FontHelper::utf8Code(uint8_t c) {
-	if ((c >= 194 && c <= 198) || c == 208 || c == 209) {
+	// Read only the first byte of Unicode UTF-8 char encoding
+	if (c >= 194 && c <= 223) { // U+0080 (0xC2 0x80) -> U+07FF (0xDF 0xBF)
 		//INFO("B2=%u", c);
 		return 2;
-	} else if ((c >= 128 && c <= 207 && c != 63) || (c >= 226 && c <= 239)) {
+	} else if (c >= 224 && c <= 239) { // U+0800 (0xE0 0xA0 0x80) -> U+FFFF (0xEF 0xBF 0xBF)
 		//INFO("B3=%u", c);
 		return 3;
+	} else if (c >= 240 && c <= 244) { // U+10000 (0xF0 0x90 0x80 0x80) -> U+10FFFF (0xF4 0x8F 0xBF 0xBF) LAST valid UNICODE point
+		// INFO("B4=%u", c);
+		return 4;
 	} else {
 		//INFO("B1=%u", c);
 		return 0;
