@@ -47,8 +47,25 @@ void FontHelper::loadFont(const string &fontName, int fontSize) {
 	halfHeight = height / 2;
 }
 
-bool FontHelper::utf8Code(uint8_t c) {
-	return (c >= 194 && c <= 198) || c == 208 || c == 209;
+int FontHelper::utf8Code(uint8_t c) {
+	// Read only the first byte of Unicode UTF-8 char encoding
+	if (c >= 194 && c <= 223) { // U+0080 (0xC2 0x80) -> U+07FF (0xDF 0xBF)
+		//INFO("B2=%u", c);
+		return 2;
+	} else if (c >= 224 && c <= 239) { // U+0800 (0xE0 0xA0 0x80) -> U+FFFF (0xEF 0xBF 0xBF)
+		//INFO("B3=%u", c);
+		return 3;
+	} else if (c >= 240 && c <= 244) { // U+10000 (0xF0 0x90 0x80 0x80) -> U+10FFFF (0xF4 0x8F 0xBF 0xBF) LAST valid UNICODE point
+		// INFO("B4=%u", c);
+		return 4;
+	} else {
+		//INFO("B1=%u", c);
+		return 0;
+	}
+}
+
+bool FontHelper::utf8CodeLast(uint8_t c) {
+	return (c >= 128 && c <= 191); // Last byte range should be common for all chars longer than 1-byte ASCII (0-127)
 }
 
 FontHelper *FontHelper::setSize(const int size) {

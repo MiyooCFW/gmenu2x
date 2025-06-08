@@ -23,7 +23,8 @@ public:
 	FontHelper(const string &fontName, int size, RGBAColor textColor = (RGBAColor){255,255,255}, RGBAColor outlineColor = (RGBAColor){5,5,5});
 	~FontHelper();
 
-	bool utf8Code(uint8_t c);
+	int utf8Code(uint8_t c);
+	bool utf8CodeLast(uint8_t c);
 
 	void free();
 
