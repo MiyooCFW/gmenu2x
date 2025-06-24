@@ -77,6 +77,21 @@ void Menu::readSections() {
 	addSection("settings");
 	addSection("applications");
 
+	/* To keep things simple, we will always create the applications section */
+	if (gmenu2x->hideSectionApplications)
+	{
+		auto itr = std::find(sections.begin(), sections.end(), "applications");
+		if (itr != sections.end())
+			sections.erase(itr);
+	}
+
+    if (gmenu2x->hideSectionGames)
+    {
+        auto itr = std::find(sections.begin(), sections.end(), "games");
+        if (itr != sections.end())
+            sections.erase(itr);
+    }
+
 	closedir(dirp);
 	sort(sections.begin(),sections.end(), case_less());
 }
