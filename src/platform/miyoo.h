@@ -2,6 +2,7 @@
 #define HW_MIYOO_H
 
 #include <sys/mman.h>
+#include <sys/mount.h>
 #include <bitset>
 
 // 	MiyooCFW 2.0 Key Codes. Apaczer, 2023
@@ -214,8 +215,8 @@ private:
 		// setenv("HOME", "/mnt", 1);
 		cmd_testfs_p5 = "test \"$(lsblk -n --output=FSTYPE /dev/mmcblk0p5)\" != \"btrfs\"";
 		if (system(cmd_testfs_p5) == 0) {
-			system("mount -o remount,async /roms");
-			INFO("system cmd in hwInit succeeds, remounting in async /roms");
+			if (mount("/roms", "/roms", NULL, MS_REMOUNT, NULL) != 0)
+				ERROR("remounting in default options /roms failed");
 		}
 		getKbdLayoutHW();
 		getTefixHW();
@@ -351,8 +352,8 @@ public:
 	string hwPreLinkLaunch() {
 		cmd_testfs_p5 = "test \"$(lsblk -n --output=FSTYPE /dev/mmcblk0p5)\" != \"btrfs\"";
 		if (system(cmd_testfs_p5) == 0) {
-			system("mount -o remount,sync /roms");
-			INFO("system cmd in hwPreLinkLaunch succeeds, remounting in sync /roms");
+			if (mount("/roms", "/roms", NULL, MS_REMOUNT | MS_SYNCHRONOUS, NULL) != 0)
+				ERROR("remounting in sync /roms failed");
 		}
 		return "";
 	}
