@@ -175,13 +175,6 @@ int main(int argc, char * argv[]) {
 	signal(SIGSEGV, &quit_all);
 	signal(SIGTERM, &quit_all);
 
-	bool autoStart = false;
-	for (int i = 0; i < argc; i++) {
-       		if (strcmp(argv[i],"--autostart")==0) {
-			INFO("Launching Autostart");
-			autoStart = true;
-		}
-	}
 	int fd = open("/dev/tty0", O_RDONLY);
 	if (fd > 0) {
 		ioctl(fd, VT_UNLOCKSWITCH, 1);
@@ -193,7 +186,7 @@ int main(int argc, char * argv[]) {
 	usleep(1000);
 
 	GMenu2X::instance = new GMenu2X_platform();
-	GMenu2X::instance->main(autoStart);
+	GMenu2X::instance->main();
 
 	return 0;
 }
@@ -300,7 +293,7 @@ void GMenu2X::quit_nosave() {
 	hwDeinit();
 }
 
-void GMenu2X::main(bool autoStart) {
+void GMenu2X::main() {
 	hwInit();
 
 	chdir(exe_path().c_str());

@@ -173,7 +173,7 @@ public:
 	~GMenu2X();
 	void quit();
 	void quit_nosave();
-	void main(bool autoStart);
+	void main();
 	void settings();
 	void settings_date();
 	void reinit(bool showDialog = false);
