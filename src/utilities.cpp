@@ -376,7 +376,7 @@ string disk_free(const char *path) {
 }
 
 const string get_date_time() {
-#if !defined(TARGET_LINUX)
+#if !defined(TARGET_LINUX) && !defined(TARGET_MIYOO)
 	system("hwclock --hctosys &");
 #endif
 
@@ -391,7 +391,9 @@ void sync_date_time(time_t t) {
 #if !defined(TARGET_LINUX)
 	struct timeval tv = { t, 0 };
 	settimeofday(&tv, NULL);
+#if !defined(TARGET_MIYOO)
 	system("hwclock --systohc &");
+#endif
 #endif
 }
 
