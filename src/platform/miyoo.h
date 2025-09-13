@@ -171,21 +171,15 @@ uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
 	return 0; // 0% :(
 }
 
-uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
-	tickBattery++;
-	if (tickBattery > 30) { // update battery level every 30 hwChecks
-		tickBattery = 0;
-		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
-	}
-	return interval;
+uint8_t getUDCStatus() {
+	string state = file_read(MIYOO_USB_STATE);
+	string suspended = file_read(MIYOO_USB_SUSPEND);
+	if (state == "configured" && suspended == "0") return UDC_CONNECT;
+	return UDC_REMOVE;
 }
 
 uint8_t getMMCStatus() {
 	return MMC_REMOVE;
-}
-
-uint8_t getUDCStatus() {
-	return UDC_REMOVE;
 }
 
 uint8_t getTVOutStatus() {
@@ -198,6 +192,24 @@ uint8_t getDevStatus() {
 
 uint8_t getVolumeMode(uint8_t vol) {
 	return VOLUME_MODE_NORMAL;
+}
+
+uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
+	tickBattery++;
+	if (tickBattery > 30) { // update battery level every 30 hwChecks
+		tickBattery = 0;
+		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
+	}
+
+	if (tickBattery > 1) {
+		udcStatus = getUDCStatus();
+		if (udcPrev != udcStatus) {
+			udcPrev = udcStatus;
+			InputManager::pushEvent(udcStatus);
+			return 2000;
+		}
+	}
+	return interval;
 }
 
 class GMenu2X_platform : public GMenu2X {
