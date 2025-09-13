@@ -1,8 +1,10 @@
 #ifndef HW_MIYOO_H
 #define HW_MIYOO_H
 
+#include <linux/magic.h>
 #include <sys/mman.h>
 #include <sys/mount.h>
+#include <sys/statfs.h>
 #include <bitset>
 
 // 	MiyooCFW 2.0 Key Codes. Apaczer, 2023
@@ -118,6 +120,8 @@ int kbd, fb0, snd;
 char *cmd_testfs_p5 = NULL;
 int32_t tickBattery = 0;
 
+struct statfs fs;
+
 void setTVoff() {
 	system("rm " MIYOO_TVOUT_FILE " ; sync ; reboot");
 }
@@ -213,11 +217,8 @@ private:
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
-		cmd_testfs_p5 = "test \"$(lsblk -n --output=FSTYPE /dev/mmcblk0p5)\" != \"btrfs\"";
-		if (system(cmd_testfs_p5) == 0) {
-			if (mount("/roms", "/roms", NULL, MS_REMOUNT, NULL) != 0)
-				ERROR("remounting in default options /roms failed");
-		}
+		if (mount("/roms", "/roms", NULL, MS_REMOUNT, NULL) != 0)
+			ERROR("remounting in default options /roms failed");
 		getKbdLayoutHW();
 		getTefixHW();
 		w = 320;
@@ -350,10 +351,15 @@ public:
 	}
 
 	string hwPreLinkLaunch() {
-		cmd_testfs_p5 = "test \"$(lsblk -n --output=FSTYPE /dev/mmcblk0p5)\" != \"btrfs\"";
-		if (system(cmd_testfs_p5) == 0) {
-			if (mount("/roms", "/roms", NULL, MS_REMOUNT | MS_SYNCHRONOUS, NULL) != 0)
-				ERROR("remounting in sync /roms failed");
+		if (statfs("/roms", &fs) != 0) {
+			ERROR("couldn't read FS type with statfs()");
+		} else {
+			if ((unsigned long)fs.f_type != BTRFS_SUPER_MAGIC) {
+				if (mount("/roms", "/roms", NULL, MS_REMOUNT | MS_SYNCHRONOUS, NULL) != 0)
+					ERROR("remounting in sync /roms failed");
+			} else {
+				INFO("detected BTRFS in /roms");
+			}
 		}
 		return "";
 	}
