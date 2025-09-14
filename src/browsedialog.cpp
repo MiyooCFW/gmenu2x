@@ -6,6 +6,7 @@
 #include "inputmanager.h"
 using namespace std;
 extern const char *CARD_ROOT;
+char ROMS_DIR[64];
 
 SDL_TimerID alphanum_timer = NULL;
 
@@ -268,6 +269,8 @@ void BrowseDialog::contextMenu() {
 
 	customOptions(options);
 
+	snprintf(ROMS_DIR, sizeof(ROMS_DIR), "%s/roms", CARD_ROOT);
+
 	if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp")
 		options.push_back((MenuOption){gmenu2x->tr["Set as wallpaper"], MakeDelegate(this, &BrowseDialog::setWallpaper)});
 
@@ -279,8 +282,8 @@ void BrowseDialog::contextMenu() {
 	if (path != CARD_ROOT)
 		options.push_back((MenuOption){gmenu2x->tr["Go to"] + " " + CARD_ROOT, MakeDelegate(this, &BrowseDialog::exploreHome)});
 
-	if (path != "/mnt/roms")
-		options.push_back((MenuOption){gmenu2x->tr["Go to"] + " /mnt/roms", MakeDelegate(this, &BrowseDialog::exploreMedia)});
+	if (path != ROMS_DIR)
+		options.push_back((MenuOption){gmenu2x->tr["Go to"] + " " + ROMS_DIR, MakeDelegate(this, &BrowseDialog::exploreMedia)});
 
 	if (isFile(selected))
 		options.push_back((MenuOption){gmenu2x->tr["Delete"], MakeDelegate(this, &BrowseDialog::deleteFile)});
@@ -312,7 +315,7 @@ void BrowseDialog::exploreHome() {
 
 void BrowseDialog::exploreMedia() {
 	selected = 0;
-	directoryEnter("/mnt/roms",false);
+	directoryEnter(ROMS_DIR,false);
 }
 
 void BrowseDialog::setWallpaper() {
