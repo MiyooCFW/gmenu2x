@@ -766,6 +766,9 @@ void GMenu2X::initMenu() {
 			menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenu2X"], "about.png");
 			menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
 			menu->addActionLink(i, tr["CPU Settings"], MakeDelegate(this, &GMenu2X::cpuSettings), tr["Config CPU clock"], "cpu.png");
+#if defined(HW_UDC)
+			menu->addActionLink(i, tr["USB Settings"], MakeDelegate(this, &GMenu2X::usbSettings), tr["Config USB mode"], "usb.png");
+#endif
 		}
 	}
 	menu->setSectionIndex(confInt["section"]);
@@ -824,14 +827,6 @@ void GMenu2X::settings() {
 	string prevDateTime = confStr["datetime"] = get_date_time();
 	sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date & time"], &confStr["datetime"]));
 	sd.addSetting(new MenuSettingDir(this, tr["Home path"],	tr["Set as home for launched links"], &confStr["homePath"]));
-
-#if defined(HW_UDC)
-	vector<string> usbMode;
-	usbMode.push_back("Ask");
-	usbMode.push_back("Storage");
-	usbMode.push_back("Charger");
-	sd.addSetting(new MenuSettingMultiString(this, tr["USB mode"], tr["Define default USB mode"], &confStr["usbMode"], &usbMode));
-#endif
 
 #if defined(HW_TVOUT)
 	vector<string> tvMode;
@@ -957,25 +952,50 @@ void GMenu2X::resetSettings() {
 }
 
 void GMenu2X::cpuSettings() {  
-SettingsDialog sd(this, ts, tr["CPU setup"], "skin:icons/cpu.png");
-sd.allowCancel = true;
-#if defined(MULTI_INT)
-sd.addSetting(new MenuSettingMultiInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MENU));
-sd.addSetting(new MenuSettingMultiInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], oc_choices, oc_choices_size, CPU_MAX, CPU_EDGE, CPU_MAX));
-sd.addSetting(new MenuSettingMultiInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], oc_choices, oc_choices_size, CPU_MIN, CPU_MIN, CPU_MAX));
-sd.addSetting(new MenuSettingMultiInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MAX));
-#else
-sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], 672, 480, 864, 48));
-sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], 864, 720, 1248, 48));
-sd.addSetting(new MenuSettingInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], 192, 48, 720, 48));
-sd.addSetting(new MenuSettingInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], 720, 480, 1248, 48));
-sd.addSetting(new MenuSettingInt(this, tr["Step for clock values"], tr["Set default step for CPU frequency"], &confInt["cpuStep"], 48, 48, 240, 48));
-#endif
-if (sd.exec() && sd.edited() && sd.save) {
+	SettingsDialog sd(this, ts, tr["CPU setup"], "skin:icons/cpu.png");
+	sd.allowCancel = true;
+	#if defined(MULTI_INT)
+	sd.addSetting(new MenuSettingMultiInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MENU));
+	sd.addSetting(new MenuSettingMultiInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], oc_choices, oc_choices_size, CPU_MAX, CPU_EDGE, CPU_MAX));
+	sd.addSetting(new MenuSettingMultiInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], oc_choices, oc_choices_size, CPU_MIN, CPU_MIN, CPU_MAX));
+	sd.addSetting(new MenuSettingMultiInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], oc_choices, oc_choices_size, CPU_MENU, CPU_MIN, CPU_MAX));
+	#else
+	sd.addSetting(new MenuSettingInt(this, tr["Default CPU clock"], tr["Set the default working CPU frequency"], &confInt["cpuMenu"], 672, 480, 864, 48));
+	sd.addSetting(new MenuSettingInt(this, tr["Maximum CPU clock"], tr["Maximum overclock for launching links"], &confInt["cpuMax"], 864, 720, 1248, 48));
+	sd.addSetting(new MenuSettingInt(this, tr["Minimum CPU clock"], tr["Minimum underclock used in Suspend mode"], &confInt["cpuMin"], 192, 48, 720, 48));
+	sd.addSetting(new MenuSettingInt(this, tr["Link CPU clock"], tr["Set LinkApp default CPU frequency"], &confInt["cpuLink"], 720, 480, 1248, 48));
+	sd.addSetting(new MenuSettingInt(this, tr["Step for clock values"], tr["Set default step for CPU frequency"], &confInt["cpuStep"], 48, 48, 240, 48));
+	#endif
+	if (sd.exec() && sd.edited() && sd.save) {
 		setCPU(confInt["cpuMenu"]);
- 		writeConfig();
- 	}
-  }
+		writeConfig();
+	}
+}
+
+#if defined(HW_UDC)
+void GMenu2X::usbSettings() {  
+	SettingsDialog sd(this, ts, tr["USB setup"], "skin:icons/usb.png");
+	sd.allowCancel = true;
+
+	vector<string> usbMode;
+	usbMode.push_back("Ask");
+	usbMode.push_back("Default");
+	usbMode.push_back("Storage");
+#if !defined(TARGET_MIYOO)
+	usbMode.push_back("Charger");
+#endif
+	usbMode.push_back("HID");
+	usbMode.push_back("Serial");
+	usbMode.push_back("Networking");
+	usbMode.push_back("Host");
+	sd.addSetting(new MenuSettingMultiString(this, tr["USB mode"], tr["Define default USB mode"], &confStr["usbMode"], &usbMode));
+
+	if (sd.exec() && sd.edited() && sd.save) {
+		udcDialog(UDC_CHANGE);
+		writeConfig();
+	}
+}
+#endif
 
 bool GMenu2X::readTmp() {
 	lastSelectorElement = -1;

@@ -238,6 +238,64 @@ private:
 		INFO("MIYOO");
 	}
 
+	void udcDialog(int udcStatus) {
+		if (udcStatus == UDC_REMOVE && udcStatus != UDC_CHANGE) {
+			INFO("USB disconnected...");
+			//system("");
+			return;
+		}
+
+		int option;
+		if (confStr["usbMode"] == "Storage") option = CONFIRM;
+		else if (confStr["usbMode"] == "HID") option = MODIFIER;
+		else if (confStr["usbMode"] == "Serial") option = MANUAL;
+		else if (confStr["usbMode"] == "Networking") option = MENU;
+		else if (confStr["usbMode"] == "Host") option = SETTINGS;
+		else if (confStr["usbMode"] == "Default") option = CANCEL;
+		else if (udcStatus != UDC_CHANGE) {
+			MessageBox mb(this, tr["USB mode change"]);
+			mb.setButton(CANCEL,  tr["Cancel"]);
+			mb.setButton(CONFIRM, tr["Storage"]);
+			mb.setButton(MODIFIER, tr["HID"]);
+			mb.setButton(MANUAL, tr["Serial"]);
+			mb.setButton(MENU, tr["NET"]);
+			//mb.setButton(SETTINGS,  tr["Host"]);
+			option = mb.exec();
+		}
+
+		if (option == CONFIRM) { // storage
+			INFO("Enabling MTP storage device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode mtp umtprd", NULL);
+			return;
+		} else if (option == MODIFIER) { // hid
+			INFO("Enabling HID device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode hid", NULL);
+			return;
+		} else if (option == MANUAL) { // serial
+			INFO("Enabling Serial Console on device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode serial", NULL);
+			return;
+		} else if (option == MENU) { // networking
+			INFO("Enabling USB Networking on device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode net", NULL);
+			return;
+		} else if (option == SETTINGS) { // host
+			INFO("Enabling host device");
+			MessageBox mb(this, tr["WARNING: in HOST mode there is no \nplug-in USB mode-change detection \nuse USB mode option in Settings menu."], "skin:icons/exit.png");
+			mb.setButton(CONFIRM, tr["Confirm"]);
+			mb.exec();
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode host", NULL);
+			return;
+		}
+		// CANCEL (default)
+		INFO("Continuing with default USB mode");
+	}
+
 	int getBacklight() {
 		int val = -1;
 		FILE *f = fopen(MIYOO_LID_CONF, "r");
