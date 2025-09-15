@@ -322,7 +322,7 @@ bool file_copy(const string &src, const string &dst) {
 }
 
 string file_read(const string& path) {
-	if (!file_exists(path)) return 0;
+	if (!file_exists(path)) return "";
 	ifstream file(path);
 	string content;
 	if (file.is_open()) {
