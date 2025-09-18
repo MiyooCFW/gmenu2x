@@ -202,6 +202,7 @@ public:
 	void about();
 	void viewLog();
 	void viewAutoStart();
+	void viewUSBStart();
 	void contextMenu();
 	void changeWallpaper();
 	void changeSelectorDir();

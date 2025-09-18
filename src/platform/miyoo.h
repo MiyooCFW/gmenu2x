@@ -239,7 +239,7 @@ private:
 	}
 
 	void udcDialog(int udcStatus) {
-		if (udcStatus == UDC_REMOVE && udcStatus != UDC_CHANGE) {
+		if (udcStatus == UDC_REMOVE && !(confInt["usbHost"])) {
 			INFO("USB disconnected...");
 			//system("");
 			return;
@@ -250,20 +250,21 @@ private:
 		else if (confStr["usbMode"] == "HID") option = MODIFIER;
 		else if (confStr["usbMode"] == "Serial") option = MANUAL;
 		else if (confStr["usbMode"] == "Networking") option = MENU;
-		else if (confStr["usbMode"] == "Host") option = SETTINGS;
 		else if (confStr["usbMode"] == "Default") option = CANCEL;
-		else if (udcStatus != UDC_CHANGE) {
+		else if (!(confInt["usbHost"])) {
+			// shouldn't see below prompt in host
 			MessageBox mb(this, tr["USB mode change"]);
 			mb.setButton(CANCEL,  tr["Cancel"]);
 			mb.setButton(CONFIRM, tr["Storage"]);
 			mb.setButton(MODIFIER, tr["HID"]);
 			mb.setButton(MANUAL, tr["Serial"]);
 			mb.setButton(MENU, tr["NET"]);
-			//mb.setButton(SETTINGS,  tr["Host"]);
 			option = mb.exec();
 		}
 
-		if (option == CONFIRM) { // storage
+		if (udcStatus == UDC_HOST) option = -1;
+
+		if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
 			INFO("Enabling MTP storage device");
 			quit();
 			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode mtp umtprd", NULL);
@@ -283,9 +284,9 @@ private:
 			quit();
 			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode net", NULL);
 			return;
-		} else if (option == SETTINGS) { // host
+		} else if (option == -1) { // host
 			INFO("Enabling host device");
-			MessageBox mb(this, tr["WARNING: in HOST mode there is no \nplug-in USB mode-change detection \nuse USB mode option in Settings menu."], "skin:icons/exit.png");
+			MessageBox mb(this, tr["WARNING: in HOST mode there is no \nplug-in detection,\nuse USB Settings menu to apply any change."], "skin:icons/exit.png");
 			mb.setButton(CONFIRM, tr["Confirm"]);
 			mb.exec();
 			quit();

@@ -481,6 +481,10 @@ void GMenu2X::main() {
 	numJoyPrev = numJoy = getDevStatus();
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
 
+	if (confInt["usbStart"]) {
+		viewUSBStart();
+	}
+
 	if (confInt["dialogAutoStart"] && confStr["lastCommand"] != "" && confStr["lastDirectory"] != "") {
 		viewAutoStart();
 	}
@@ -647,10 +651,12 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	} else if (input[UDC_CONNECT]) {
 		powerManager->setPowerTimeout(0);
 		batteryIcon = 6;
-		udcDialog(UDC_CONNECT);
+		if (!(confInt["usbHost"]))
+			udcDialog(UDC_CONNECT);
 
 	} else if (input[UDC_REMOVE]) {
-		udcDialog(UDC_REMOVE);
+		if (confInt["usbHost"])
+			udcDialog(UDC_REMOVE);
 		iconInet = NULL;
 		batteryIcon = getBatteryStatus(getBatteryLevel(), confInt["minBattery"], confInt["maxBattery"]);
 		powerManager->setPowerTimeout(confInt["powerTimeout"]);
@@ -987,12 +993,22 @@ void GMenu2X::usbSettings() {
 	usbMode.push_back("HID");
 	usbMode.push_back("Serial");
 	usbMode.push_back("Networking");
-	usbMode.push_back("Host");
-	sd.addSetting(new MenuSettingMultiString(this, tr["USB mode"], tr["Define default USB mode"], &confStr["usbMode"], &usbMode));
 
+	int prevUSBHost = confInt["usbHost"];
+
+	sd.addSetting(new MenuSettingBool(this, tr["USB Host"], tr["Enable USB Host mode"], &confInt["usbHost"]));
+	if (!(prevUSBHost))
+		sd.addSetting(new MenuSettingMultiString(this, tr["USB Slave mode"], tr["Define default USB mode"], &confStr["usbMode"], &usbMode));
+	sd.addSetting(new MenuSettingBool(this, tr["USB auto-start"], tr["Run select USB mode during startup"], &confInt["usbStart"]));
+	
 	if (sd.exec() && sd.edited() && sd.save) {
-		udcDialog(UDC_CHANGE);
 		writeConfig();
+		if (confInt["usbHost"] && !(prevUSBHost)) {
+			confStr["usbMode"] = "Ask";
+			udcDialog(UDC_HOST);
+		} else {
+			udcDialog();
+		}
 	}
 }
 #endif
@@ -1066,7 +1082,11 @@ void GMenu2X::readConfig() {
 #if !defined(HW_LIDVOL)
 	confInt["backlight"] = 50;
 	confInt["globalVolume"] = 50;
-#endif	
+#endif
+#if defined(HW_UDC)
+	confInt["usbHost"] = 0;
+	confInt["usbStart"] = 0;
+#endif
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;
 	confInt["cpuMin"] = CPU_MIN;
@@ -1626,6 +1646,29 @@ void GMenu2X::viewAutoStart() {
 #if !defined(TARGET_LINUX)
 				system("sync; mount -o remount,ro $HOME; poweroff");
 #endif
+				break;
+	}
+}
+
+void GMenu2X::viewUSBStart() {
+	string usbComm = "Slave";
+	if (confInt["usbHost"])
+		usbComm = "Host";
+	MessageBox mb(this, tr["Run setup for USB selected mode:"] + " " + usbComm);
+	mb.setButton(CONFIRM, tr["Yes"]);
+	mb.setButton(CANCEL,  tr["No"]);
+	mb.setButton(MODIFIER,  tr["Remove this dialog!"]);
+	int res = mb.exec();
+
+	switch (res) {
+			case CONFIRM:
+				if (confInt["usbHost"])
+					udcDialog(UDC_HOST);
+				udcDialog(UDC_CHANGE);
+			case MODIFIER:
+				confInt["usbStart"] = 0;
+				reinit_save();
+			case CANCEL:
 				break;
 	}
 }
