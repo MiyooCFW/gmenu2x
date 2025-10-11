@@ -481,10 +481,6 @@ void GMenu2X::main() {
 	numJoyPrev = numJoy = getDevStatus();
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
 
-	if (confInt["usbStart"]) {
-		viewUSBStart();
-	}
-
 	if (confInt["dialogAutoStart"] && confStr["lastCommand"] != "" && confStr["lastDirectory"] != "") {
 		viewAutoStart();
 	}
@@ -999,7 +995,6 @@ void GMenu2X::usbSettings() {
 	sd.addSetting(new MenuSettingBool(this, tr["USB Host"], tr["Enable USB Host mode"], &confInt["usbHost"]));
 	if (!(prevUSBHost))
 		sd.addSetting(new MenuSettingMultiString(this, tr["USB Slave mode"], tr["Define default USB mode"], &confStr["usbMode"], &usbMode));
-	sd.addSetting(new MenuSettingBool(this, tr["USB auto-start"], tr["Run select USB mode during startup"], &confInt["usbStart"]));
 	
 	if (sd.exec() && sd.edited() && sd.save) {
 		writeConfig();
@@ -1085,7 +1080,6 @@ void GMenu2X::readConfig() {
 #endif
 #if defined(HW_UDC)
 	confInt["usbHost"] = 0;
-	confInt["usbStart"] = 0;
 #endif
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;
@@ -1646,30 +1640,6 @@ void GMenu2X::viewAutoStart() {
 #if !defined(TARGET_LINUX)
 				system("sync; mount -o remount,ro $HOME; poweroff");
 #endif
-				break;
-	}
-}
-
-void GMenu2X::viewUSBStart() {
-	string usbComm = "Slave";
-	if (confInt["usbHost"])
-		usbComm = "Host";
-	MessageBox mb(this, tr["Run setup for USB selected mode:"] + " " + usbComm);
-	mb.setButton(CONFIRM, tr["Yes"]);
-	mb.setButton(CANCEL,  tr["No"]);
-	mb.setButton(MODIFIER,  tr["Remove this dialog!"]);
-	int res = mb.exec();
-
-	switch (res) {
-			case CONFIRM:
-				if (confInt["usbHost"])
-					udcDialog(UDC_HOST);
-				else 
-					udcDialog(UDC_CHANGE);
-			case MODIFIER:
-				confInt["usbStart"] = 0;
-				reinit_save();
-			case CANCEL:
 				break;
 	}
 }
