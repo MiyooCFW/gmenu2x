@@ -655,7 +655,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 			udcDialog(UDC_CONNECT);
 
 	} else if (input[UDC_REMOVE]) {
-		if (confInt["usbHost"])
+		if (!(confInt["usbHost"]))
 			udcDialog(UDC_REMOVE);
 		iconInet = NULL;
 		batteryIcon = getBatteryStatus(getBatteryLevel(), confInt["minBattery"], confInt["maxBattery"]);
@@ -1006,7 +1006,7 @@ void GMenu2X::usbSettings() {
 		if (confInt["usbHost"] && !(prevUSBHost)) {
 			confStr["usbMode"] = "Ask";
 			udcDialog(UDC_HOST);
-		} else {
+		} else if (!(confInt["usbHost"]) && prevUSBHost) {
 			udcDialog();
 		}
 	}
@@ -1664,7 +1664,8 @@ void GMenu2X::viewUSBStart() {
 			case CONFIRM:
 				if (confInt["usbHost"])
 					udcDialog(UDC_HOST);
-				udcDialog(UDC_CHANGE);
+				else 
+					udcDialog(UDC_CHANGE);
 			case MODIFIER:
 				confInt["usbStart"] = 0;
 				reinit_save();

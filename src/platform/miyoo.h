@@ -239,7 +239,7 @@ private:
 	}
 
 	void udcDialog(int udcStatus) {
-		if (udcStatus == UDC_REMOVE && !(confInt["usbHost"])) {
+		if (udcStatus == UDC_REMOVE) {
 			INFO("USB disconnected...");
 			//system("");
 			return;
