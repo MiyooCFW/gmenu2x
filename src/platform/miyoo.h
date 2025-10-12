@@ -251,8 +251,8 @@ private:
 		else if (confStr["usbMode"] == "Serial") option = MANUAL;
 		else if (confStr["usbMode"] == "Networking") option = MENU;
 		else if (confStr["usbMode"] == "Default") option = CANCEL;
-		else if (!(confInt["usbHost"])) {
-			// shouldn't see below prompt in host
+		else if (!(confInt["usbHost"]) && udcStatus != -1) {
+			// shouldn't see below prompt in host or in default
 			MessageBox mb(this, tr["USB mode change"]);
 			mb.setButton(CANCEL,  tr["Cancel"]);
 			mb.setButton(CONFIRM, tr["Storage"]);
@@ -286,9 +286,6 @@ private:
 			return;
 		} else if (option == -1) { // host
 			INFO("Enabling host device");
-			MessageBox mb(this, tr["WARNING: in HOST mode there is no \nplug-in detection,\nuse USB Settings menu to apply any change."], "skin:icons/exit.png");
-			mb.setButton(CONFIRM, tr["Confirm"]);
-			mb.exec();
 			quit();
 			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode host", NULL);
 			return;

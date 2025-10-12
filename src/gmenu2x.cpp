@@ -95,6 +95,7 @@ int TEFIX = -1;
 int TEFIX_MAX = -1;
 
 const char *CARD_ROOT = getenv("HOME");
+const char *SYS_USB_MODE = getenv("USB_MODE");
 
 int SLOW_GAP_TTS = 5;
 int SLOW_SPEED_TTS = 140;
@@ -480,6 +481,25 @@ void GMenu2X::main() {
 	udcStatus = getUDCStatus();
 	numJoyPrev = numJoy = getDevStatus();
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
+
+#if defined(HW_UDC)
+	string sysUSBmode = SYS_USB_MODE;
+	if (sysUSBmode == "mtp") sysUSBmode = "Storage";
+	else if (sysUSBmode == "hid") sysUSBmode = "HID";
+	else if (sysUSBmode == "serial") sysUSBmode = "Serial";
+	else if (sysUSBmode == "net") sysUSBmode = "Networking";
+	else if (sysUSBmode == "host") sysUSBmode = "Host";
+	else sysUSBmode = "Unknown";
+
+	if (confInt["usbHost"] && sysUSBmode != "Host") {
+		udcDialog(UDC_HOST);
+	} else if (confStr["usbMode"] != sysUSBmode &&
+		 confStr["usbMode"] != "Default" &&
+		 confStr["usbMode"] != "Ask" &&
+		 sysUSBmode != "Unknown") {
+	    udcDialog();
+	}
+#endif
 
 	if (confInt["dialogAutoStart"] && confStr["lastCommand"] != "" && confStr["lastDirectory"] != "") {
 		viewAutoStart();
@@ -1000,6 +1020,9 @@ void GMenu2X::usbSettings() {
 		writeConfig();
 		if (confInt["usbHost"] && !(prevUSBHost)) {
 			confStr["usbMode"] = "Ask";
+			MessageBox mb(this, tr["WARNING: in HOST mode there is no\nplug-in detection, use USB settings\n to apply any change."], "skin:icons/exit.png");
+			mb.setButton(CONFIRM, tr["Confirm"]);
+			mb.exec();
 			udcDialog(UDC_HOST);
 		} else if (!(confInt["usbHost"]) && prevUSBHost) {
 			udcDialog();
@@ -1079,6 +1102,7 @@ void GMenu2X::readConfig() {
 	confInt["globalVolume"] = 50;
 #endif
 #if defined(HW_UDC)
+	confStr["usbMode"] = "Ask";
 	confInt["usbHost"] = 0;
 #endif
 	confInt["cpuMenu"] = CPU_MENU;
@@ -1155,11 +1179,12 @@ void GMenu2X::writeConfig() {
 				(curr->first == "cpuMin" && curr->second.empty()) ||
 				(curr->first == "cpuLink" && curr->second.empty()) ||
 				(curr->first == "cpuStep" && curr->second.empty()) ||
-				(curr->first == "datetime" && curr->second.empty()) ||
+				(curr->first == "datetime" && curr->second == xstr(__BUILDTIME__)) ||
 				(curr->first == "homePath" && curr->second == CARD_ROOT) ||
 				(curr->first == "skin" && curr->second == "Default") ||
 				(curr->first == "previewMode" && curr->second == "Miniature") ||
 				(curr->first == "skinFont" && curr->second == "Custom") ||
+				(curr->first == "usbHost" && curr->second.empty()) ||
 				(curr->first == "usbMode" && curr->second == "Ask") ||
 				(curr->first == "tvMode" && curr->second == "Ask") ||
 				(curr->first == "lang" && curr->second.empty()) ||
