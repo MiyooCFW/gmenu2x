@@ -267,7 +267,7 @@ private:
 		if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
 			INFO("Enabling MTP storage device");
 			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode mtp umtprd", NULL);
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode mtp", NULL);
 			return;
 		} else if (option == MODIFIER) { // hid
 			INFO("Enabling HID device");
