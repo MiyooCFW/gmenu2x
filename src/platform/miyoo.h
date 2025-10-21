@@ -174,6 +174,19 @@ uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
 uint8_t getUDCStatus() {
 	string state = file_read(MIYOO_USB_STATE);
 	string suspended = file_read(MIYOO_USB_SUSPEND);
+
+	//INFO("SYS_USB_MODE=%s",SYS_USB_MODE);
+	if (SYS_USB_MODE != NULL) {
+		sysUSBmode = SYS_USB_MODE;
+	}
+	//INFO("sysUSBmode=%s",sysUSBmode);
+
+	if (sysUSBmode == "mtp") sysUSBmode = "Storage";
+	else if (sysUSBmode == "hid") sysUSBmode = "HID";
+	else if (sysUSBmode == "serial") sysUSBmode = "Serial";
+	else if (sysUSBmode == "net") sysUSBmode = "Networking";
+	else if (sysUSBmode == "host") sysUSBmode = "Host";
+
 	if (state == "configured" && suspended == "0") return UDC_CONNECT;
 	return UDC_REMOVE;
 }

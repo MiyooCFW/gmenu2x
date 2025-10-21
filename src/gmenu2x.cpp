@@ -95,7 +95,10 @@ int TEFIX = -1;
 int TEFIX_MAX = -1;
 
 const char *CARD_ROOT = getenv("HOME");
+#if defined(HW_UDC)
 const char *SYS_USB_MODE = getenv("USB_MODE");
+string sysUSBmode = "Unknown";
+#endif
 
 int SLOW_GAP_TTS = 5;
 int SLOW_SPEED_TTS = 140;
@@ -483,21 +486,14 @@ void GMenu2X::main() {
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
 
 #if defined(HW_UDC)
-	string sysUSBmode = SYS_USB_MODE;
-	if (sysUSBmode == "mtp") sysUSBmode = "Storage";
-	else if (sysUSBmode == "hid") sysUSBmode = "HID";
-	else if (sysUSBmode == "serial") sysUSBmode = "Serial";
-	else if (sysUSBmode == "net") sysUSBmode = "Networking";
-	else if (sysUSBmode == "host") sysUSBmode = "Host";
-	else sysUSBmode = "Unknown";
-
-	if (confInt["usbHost"] && sysUSBmode != "Host") {
-		udcDialog(UDC_HOST);
-	} else if (confStr["usbMode"] != sysUSBmode &&
-		 confStr["usbMode"] != "Default" &&
-		 confStr["usbMode"] != "Ask" &&
-		 sysUSBmode != "Unknown") {
-	    udcDialog();
+	if (sysUSBmode != "Unknown") {
+		if (confInt["usbHost"] && sysUSBmode != "Host") {
+			udcDialog(UDC_HOST);
+		} else if (confStr["usbMode"] != sysUSBmode &&
+			confStr["usbMode"] != "Default" &&
+			confStr["usbMode"] != "Ask") {
+			udcDialog();
+		}
 	}
 #endif
 
@@ -667,7 +663,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	} else if (input[UDC_CONNECT]) {
 		powerManager->setPowerTimeout(0);
 		batteryIcon = 6;
-		if (!(confInt["usbHost"]))
+		if (!(confInt["usbHost"]) && (confStr["usbMode"] != sysUSBmode))
 			udcDialog(UDC_CONNECT);
 
 	} else if (input[UDC_REMOVE]) {
