@@ -1007,6 +1007,7 @@ void GMenu2X::usbSettings() {
 	usbMode.push_back("Networking");
 
 	int prevUSBHost = confInt["usbHost"];
+	string prevUSBmode = confStr["usbMode"];
 
 	sd.addSetting(new MenuSettingBool(this, tr["USB Host"], tr["Enable USB Host mode"], &confInt["usbHost"]));
 	if (!(prevUSBHost))
@@ -1020,7 +1021,8 @@ void GMenu2X::usbSettings() {
 			mb.setButton(CONFIRM, tr["Confirm"]);
 			mb.exec();
 			udcDialog(UDC_HOST);
-		} else if (!(confInt["usbHost"]) && prevUSBHost) {
+		} else if (!(confInt["usbHost"]) && prevUSBHost ||
+					(prevUSBmode != confStr["usbMode"] && confStr["usbMode"] != "Ask" && confStr["usbMode"] != "Default")) {
 			udcDialog();
 		}
 	}
