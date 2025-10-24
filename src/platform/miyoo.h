@@ -171,21 +171,28 @@ uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
 	return 0; // 0% :(
 }
 
-uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
-	tickBattery++;
-	if (tickBattery > 30) { // update battery level every 30 hwChecks
-		tickBattery = 0;
-		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
+uint8_t getUDCStatus() {
+	string state = file_read(MIYOO_USB_STATE);
+	string suspended = file_read(MIYOO_USB_SUSPEND);
+
+	//INFO("SYS_USB_MODE=%s",SYS_USB_MODE);
+	if (SYS_USB_MODE != NULL) {
+		sysUSBmode = SYS_USB_MODE;
 	}
-	return interval;
+	//INFO("sysUSBmode=%s",sysUSBmode);
+
+	if (sysUSBmode == "mtp") sysUSBmode = "Storage";
+	else if (sysUSBmode == "hid") sysUSBmode = "HID";
+	else if (sysUSBmode == "serial") sysUSBmode = "Serial";
+	else if (sysUSBmode == "net") sysUSBmode = "Networking";
+	else if (sysUSBmode == "host") sysUSBmode = "Host";
+
+	if (state == "configured" && suspended == "0") return UDC_CONNECT;
+	return UDC_REMOVE;
 }
 
 uint8_t getMMCStatus() {
 	return MMC_REMOVE;
-}
-
-uint8_t getUDCStatus() {
-	return UDC_REMOVE;
 }
 
 uint8_t getTVOutStatus() {
@@ -198,6 +205,24 @@ uint8_t getDevStatus() {
 
 uint8_t getVolumeMode(uint8_t vol) {
 	return VOLUME_MODE_NORMAL;
+}
+
+uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
+	tickBattery++;
+	if (tickBattery > 30) { // update battery level every 30 hwChecks
+		tickBattery = 0;
+		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
+	}
+
+	if (tickBattery > 1) {
+		udcStatus = getUDCStatus();
+		if (udcPrev != udcStatus) {
+			udcPrev = udcStatus;
+			InputManager::pushEvent(udcStatus);
+			return 2000;
+		}
+	}
+	return interval;
 }
 
 class GMenu2X_platform : public GMenu2X {
@@ -224,6 +249,62 @@ private:
 		w = 320;
 		h = 240;
 		INFO("MIYOO");
+	}
+
+	void udcDialog(int udcStatus) {
+		if (udcStatus == UDC_REMOVE) {
+			INFO("USB disconnected...");
+			//system("");
+			return;
+		}
+
+		int option;
+		if (confStr["usbMode"] == "Storage") option = CONFIRM;
+		else if (confStr["usbMode"] == "HID") option = MODIFIER;
+		else if (confStr["usbMode"] == "Serial") option = MANUAL;
+		else if (confStr["usbMode"] == "Networking") option = MENU;
+		else if (confStr["usbMode"] == "Default") option = CANCEL;
+		else if (!(confInt["usbHost"]) && udcStatus != -1) {
+			// shouldn't see below prompt in host or in default
+			MessageBox mb(this, tr["USB mode change"]);
+			mb.setButton(CANCEL,  tr["Cancel"]);
+			mb.setButton(CONFIRM, tr["Storage"]);
+			mb.setButton(MODIFIER, tr["HID"]);
+			mb.setButton(MANUAL, tr["Serial"]);
+			mb.setButton(MENU, tr["NET"]);
+			option = mb.exec();
+		}
+
+		if (udcStatus == UDC_HOST) option = -1;
+
+		if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
+			INFO("Enabling MTP storage device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode mtp", NULL);
+			return;
+		} else if (option == MODIFIER) { // hid
+			INFO("Enabling HID device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode hid", NULL);
+			return;
+		} else if (option == MANUAL) { // serial
+			INFO("Enabling Serial Console on device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode serial", NULL);
+			return;
+		} else if (option == MENU) { // networking
+			INFO("Enabling USB Networking on device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode net", NULL);
+			return;
+		} else if (option == -1) { // host
+			INFO("Enabling host device");
+			quit();
+			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode host", NULL);
+			return;
+		}
+		// CANCEL (default)
+		INFO("Continuing with default USB mode");
 	}
 
 	int getBacklight() {

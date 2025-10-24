@@ -181,6 +181,9 @@ public:
 	void poweroffDialog();
 	void resetSettings();
 	void cpuSettings();
+#if defined(HW_UDC)
+	void usbSettings();
+#endif
 	void showManual();
 
 	void setSkin(string skin, bool clearSC = true);
