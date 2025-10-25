@@ -1017,7 +1017,7 @@ void GMenu2X::usbSettings() {
 		writeConfig();
 		if (confInt["usbHost"] && !(prevUSBHost)) {
 			confStr["usbMode"] = "Ask";
-			MessageBox mb(this, tr["WARNING: in HOST mode there is no\nplug-in detection, use USB settings\n to apply any change."], "skin:icons/exit.png");
+			MessageBox mb(this, tr["WARNING: in HOST mode there is no\nhot-plugging detection, use USB settings\nto apply any change."], "skin:icons/exit.png");
 			mb.setButton(CONFIRM, tr["Confirm"]);
 			mb.exec();
 			udcDialog(UDC_HOST);

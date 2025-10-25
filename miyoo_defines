@@ -7,3 +7,5 @@
 #define HW_LIDVOL
 #define IPK_SUPPORT
 #define MULTI_INT
+#define NO_EXTRA_SD
+#define HW_UDC

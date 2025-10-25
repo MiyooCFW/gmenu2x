@@ -1,6 +1,6 @@
 #!/bin/bash
 # Strips c++ source and header files and generates translate.txt
-## Usage: run from main repo directory ./tools/gen_translate.sh <name_defines>.txt
+## Usage: run from main repo directory ./tools/gen_translate.sh <name_defines.txt>
 ## WARNING: remember to commit your src changes BEFORE running this script, or they will be cleaned!!
 
 defines="$1" # "defines" need to be provided, "undefines" are auto-generated
@@ -8,7 +8,7 @@ platform="$2" # provide platform to be used for translations
 
 # Sanity checks
 if  (test -z $defines || test -z $platform); then
-	echo -e "\nUsage: run from main repo directory ./tools/gen_translate.sh <name_defines> <platform>\n\n"
+	echo -e "\nUsage: run from main repo directory ./tools/gen_translate.sh <name_defines.txt> <platform>\n\n"
 	sleep 1
 	exit
 elif test -z "$(cat "${defines}")"; then

@@ -1,5 +1,5 @@
 GMenu2X jest projektowany pod kątem MiyooCFW i publikowany na licencji GNU GPL v2. 
-To rozgałęznie jest oparte na kodzie źródłowym GMenuNX autorstwa pingflood'a.
+To rozgałęzienie jest oparte na kodzie źródłowym GMenuNX autorstwa pingflood'a.
 Kod źródłowy obecnego pliku binarnego: https://github.com/MiyooCFW/gmenu2x
 
 Sterowanie
@@ -29,5 +29,5 @@ W ustawieniach:
 * A, LEWO, PRAWO: Akceptuj, zaznacz albo przełącz ustawienie;
 * B: Cofnij albo Anuluj edycję lub powróć;
 * START: Zapisz zmiany i powróć;
-* SELECT: Wyczuść albo ustaw domyślną wartość.
+* SELECT: Wyczyść albo ustaw domyślną wartość.
 
