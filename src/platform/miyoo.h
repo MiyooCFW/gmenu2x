@@ -55,6 +55,7 @@
 #define MIYOO_BATTERY_FILE    "/mnt/.batterylow.conf"
 #define MIYOO_LID_CONF        "/sys/devices/platform/backlight/backlight/backlight/brightness"
 #define MIYOO_BATTERY         "/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now"
+#define MIYOO_BATTERY_STATUS  "/sys/class/power_supply/miyoo-battery/status"
 #define MIYOO_USB_STATE       "/sys/devices/platform/soc/1c13000.usb/musb-hdrc.1.auto/udc/musb-hdrc.1.auto/state"
 #define MIYOO_USB_SUSPEND     "/sys/devices/platform/soc/1c13000.usb/musb-hdrc.1.auto/gadget/suspended"
 #define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
@@ -117,6 +118,7 @@ int oc_choices[] = {
 int oc_choices_size = sizeof(oc_choices)/sizeof(int);
 
 int kbd, fb0, snd;
+string status, state, suspended;
 char *cmd_testfs_p5 = NULL;
 int32_t tickBattery = 0;
 
@@ -152,28 +154,10 @@ int getTefixHW() {
 	}
 }
 
-int32_t getBatteryLevel() {
-	int val = -1;
-	if (FILE *f = fopen(MIYOO_BATTERY, "r")) {
-		fscanf(f, "%i", &val);
-		fclose(f);
-	}
-	return val;
-}
-
-uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
-	if ((val > 4300) || (val < 0)) return 6; // >100% - max voltage 4320
-	if (val > 4100) return 5; // 100% - fully charged 4150
-	if (val > 3900) return 4; // 80%
-	if (val > 3800) return 3; // 60%
-	if (val > 3700) return 2; // 40%
-	if (val > 3520) return 1; // 20%
-	return 0; // 0% :(
-}
-
 uint8_t getUDCStatus() {
-	string state = file_read(MIYOO_USB_STATE);
-	string suspended = file_read(MIYOO_USB_SUSPEND);
+	status = file_read(MIYOO_BATTERY_STATUS);
+	state = file_read(MIYOO_USB_STATE);
+	suspended = file_read(MIYOO_USB_SUSPEND);
 
 	//INFO("SYS_USB_MODE=%s",SYS_USB_MODE);
 	if (SYS_USB_MODE != NULL) {
@@ -188,7 +172,27 @@ uint8_t getUDCStatus() {
 	else if (sysUSBmode == "host") sysUSBmode = "Host";
 
 	if (state == "configured" && suspended == "0") return UDC_CONNECT;
+	if (status == "Charging") return UDC_CHARGE;
 	return UDC_REMOVE;
+}
+
+int32_t getBatteryLevel() {
+	int val = -1;
+	if (FILE *f = fopen(MIYOO_BATTERY, "r")) {
+		fscanf(f, "%i", &val);
+		fclose(f);
+	}
+	return val;
+}
+
+uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
+	if ((val > 4300) || (val < 0) || (getUDCStatus() == UDC_CHARGE)) return 6; // >100% - max voltage 4320
+	if (val > 4100) return 5; // 100% - fully charged 4150
+	if (val > 3900) return 4; // 80%
+	if (val > 3800) return 3; // 60%
+	if (val > 3700) return 2; // 40%
+	if (val > 3520) return 1; // 20%
+	return 0; // 0% :(
 }
 
 uint8_t getMMCStatus() {
