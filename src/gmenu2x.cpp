@@ -99,6 +99,10 @@ const char *CARD_ROOT = getenv("HOME");
 const char *SYS_USB_MODE = getenv("USB_MODE");
 string sysUSBmode = "Unknown";
 #endif
+#if defined(HW_TVOUT)
+const char *SYS_TVOUT = getenv("TVOUT");
+string sysTVout = "Unknown";
+#endif
 
 int SLOW_GAP_TTS = 5;
 int SLOW_SPEED_TTS = 140;
@@ -485,6 +489,15 @@ void GMenu2X::main() {
 	numJoyPrev = numJoy = getDevStatus();
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
 
+#if defined(HW_TVOUT)
+	if (sysTVout != "Unknown") {
+		if (tvOutStatus == TV_REMOVE && sysTVout != "OFF") {
+			tvOutDialog(TV_OFF);
+		} else if (tvOutStatus == TV_CONNECT && sysTVout != "ON" && confStr["tvMode"] != "Ask") {
+			tvOutDialog();
+		}
+	}
+#endif
 #if defined(HW_UDC)
 	if (sysUSBmode != "Unknown") {
 		if (confInt["usbHost"] && sysUSBmode != "Host") {
@@ -626,6 +639,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 		if (SDL_GetTicks() - button_hold > 1000) {
 			wasActive = 0;
+			quit();
 			setTVoff();
 		} else if (input[SETTINGS]) {
 			wasActive = SCREENSHOT;
@@ -791,6 +805,9 @@ void GMenu2X::initMenu() {
 #if defined(HW_UDC)
 			menu->addActionLink(i, tr["USB Settings"], MakeDelegate(this, &GMenu2X::usbSettings), tr["Config USB mode"], "usb.png");
 #endif
+#if defined(HW_TVOUT)
+			menu->addActionLink(i, tr["TV Settings"], MakeDelegate(this, &GMenu2X::tvSettings), tr["Config TV mode"], "tv.png");
+#endif
 		}
 	}
 	menu->setSectionIndex(confInt["section"]);
@@ -849,15 +866,6 @@ void GMenu2X::settings() {
 	string prevDateTime = confStr["datetime"] = get_date_time();
 	sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date & time"], &confStr["datetime"]));
 	sd.addSetting(new MenuSettingDir(this, tr["Home path"],	tr["Set as home for launched links"], &confStr["homePath"]));
-
-#if defined(HW_TVOUT)
-	vector<string> tvMode;
-	tvMode.push_back("Ask");
-	tvMode.push_back("NTSC");
-	tvMode.push_back("PAL");
-	tvMode.push_back("OFF");
-	sd.addSetting(new MenuSettingMultiString(this, tr["TV mode"], tr["Define default TV mode"], &confStr["tvMode"], &tvMode));
-#endif
 
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Suspend timeout"], tr["Seconds until suspend the device when inactive"], &confInt["backlightTimeout"], 30, 0, 300))->setOff(9));
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 60))->setOff(0));
@@ -1033,6 +1041,30 @@ void GMenu2X::usbSettings() {
 }
 #endif
 
+#if defined(HW_TVOUT)
+void GMenu2X::tvSettings() {  
+	SettingsDialog sd(this, ts, tr["TV setup"], "skin:icons/tv.png");
+	sd.allowCancel = true;
+
+	vector<string> tvMode;
+	tvMode.push_back("Ask");
+	tvMode.push_back("NTSC");
+	tvMode.push_back("PAL");
+	tvMode.push_back("OFF");
+
+	string prevTVmode = confStr["tvMode"];
+
+	sd.addSetting(new MenuSettingMultiString(this, tr["TV mode"], tr["Define default TV mode"], &confStr["tvMode"], &tvMode));
+
+	if (sd.exec() && sd.edited() && sd.save) {
+		writeConfig();
+		if (prevTVmode != confStr["tvMode"] && confStr["tvMode"] != "Ask") {
+			tvOutDialog();
+		}
+	}
+}
+#endif
+
 bool GMenu2X::readTmp() {
 	lastSelectorElement = -1;
 	ifstream tmp("/tmp/gmenu2x.tmp", ios_base::in);
@@ -1106,6 +1138,9 @@ void GMenu2X::readConfig() {
 #if defined(HW_UDC)
 	confStr["usbMode"] = "Ask";
 	confInt["usbHost"] = 0;
+#endif
+#if defined(HW_TVOUT)
+	confStr["tvMode"] = "Ask";
 #endif
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;

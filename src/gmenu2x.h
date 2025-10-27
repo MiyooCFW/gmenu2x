@@ -79,9 +79,9 @@ enum bd {
 };
 
 enum tvout {
-	TV_OFF,
-	TV_PAL,
 	TV_NTSC,
+	TV_PAL,
+	TV_OFF
 };
 
 using std::string;
@@ -183,6 +183,9 @@ public:
 	void cpuSettings();
 #if defined(HW_UDC)
 	void usbSettings();
+#endif
+#if defined(HW_TVOUT)
+	void tvSettings();
 #endif
 	void showManual();
 
