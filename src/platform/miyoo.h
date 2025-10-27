@@ -33,6 +33,7 @@
 #define MIYOO_VIR_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_SND_SET_VOLUME  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_SND_GET_VOLUME  _IOWR(0x101, 0, unsigned long)
+#define MIYOO_SND_JACK_STATUS  _IOWR(0x102, 0, unsigned long)
 #define MIYOO_KBD_GET_HOTKEY  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_KBD_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_KBD_LOCK_KEY    _IOWR(0x102, 0, unsigned long) //unused
@@ -200,6 +201,16 @@ uint8_t getMMCStatus() {
 }
 
 uint8_t getTVOutStatus() {
+	int status = 0;
+	snd = open(MIYOO_SND_FILE, O_RDWR);
+	if (snd > 0) {
+		ioctl(snd, MIYOO_SND_JACK_STATUS, &status);
+		close(snd);
+	} else {
+		WARNING("Could not open " MIYOO_SND_FILE);
+	}
+	//INFO("TV status=%i", status);
+	if (status)	return TV_CONNECT;
 	return TV_REMOVE;
 }
 
@@ -223,6 +234,12 @@ uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
 		if (udcPrev != udcStatus) {
 			udcPrev = udcStatus;
 			InputManager::pushEvent(udcStatus);
+			return 2000;
+		}
+		tvOutStatus = getTVOutStatus();
+		if (tvOutPrev != tvOutStatus) {
+			tvOutPrev = tvOutStatus;
+			InputManager::pushEvent(tvOutStatus);
 			return 2000;
 		}
 	}
@@ -253,6 +270,43 @@ private:
 		w = 320;
 		h = 240;
 		INFO("MIYOO");
+	}
+
+	void tvOutDialog(int16_t mode) {
+			//if (!file_exists("/proc/jz/tvout")) return;
+
+			if (mode < 0) {
+				int option;
+
+				mode = TV_OFF;
+
+				// if (confStr["tvMode"] == "NTSC") option = CONFIRM;
+				// else if (confStr["tvMode"] == "PAL") option = MANUAL;
+				// else if (confStr["tvMode"] == "OFF") option = CANCEL;
+				// else {
+					MessageBox mb(this, tr["TV-out connected. Enable?"], "skin:icons/tv.png");
+					mb.setButton(CONFIRM, tr["NTSC"]);
+					mb.setButton(MANUAL,  tr["PAL"]);
+					mb.setButton(CANCEL,  tr["OFF"]);
+					option = mb.exec();
+				// }
+
+				switch (option) {
+					case CONFIRM:
+						mode = TV_NTSC;
+						break;
+					case MANUAL:
+						mode = TV_PAL;
+						break;
+				}
+			}
+
+			// if (mode != getTVOut()) {
+			// 	setTVOut(mode);
+			// 	setBacklight(confInt["backlight"]);
+			// 	writeTmp();
+			// 	exit(0);
+			// }
 	}
 
 	void udcDialog(int udcStatus) {
