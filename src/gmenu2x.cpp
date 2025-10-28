@@ -550,14 +550,14 @@ void GMenu2X::main() {
 bool GMenu2X::inputCommonActions(bool &inputAction) {
 	if (powerManager->suspendActive) {
 		// SUSPEND ACTIVE
-		while (!(input[POWER] || input[SETTINGS] || input[UDC_CONNECT] || input[UDC_REMOVE] || input[MMC_INSERT] || input[MMC_REMOVE])) {
+		while (!(input[POWER] || input[SETTINGS] || input[UDC_CONNECT] || input[UDC_CHARGE] || input[UDC_REMOVE] || input[MMC_INSERT] || input[MMC_REMOVE])) {
 			input.update();
 		}
 
 		powerManager->doSuspend(0);
 		input[WAKE_UP] = true;
 
-		if (!(input[UDC_REMOVE] || input[UDC_CONNECT] || input[MMC_INSERT] || input[MMC_REMOVE])) {
+		if (!(input[UDC_REMOVE] || input[UDC_CONNECT] || input[UDC_CHARGE] || input[MMC_INSERT] || input[MMC_REMOVE])) {
 			return true;
 		}
 	}
@@ -665,6 +665,10 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		batteryIcon = 6;
 		if (!(confInt["usbHost"]) && (confStr["usbMode"] != sysUSBmode))
 			udcDialog(UDC_CONNECT);
+	
+	} else if (input[UDC_CHARGE]) {
+		powerManager->setPowerTimeout(0);
+		batteryIcon = 6;
 
 	} else if (input[UDC_REMOVE]) {
 		if (!(confInt["usbHost"]))
