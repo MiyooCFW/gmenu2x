@@ -114,6 +114,7 @@ Info about GMenu2X=
 Insert a name for the new section=
 Insert a new name for this section=
 Installing skin=
+is=
 Keyboard Layout=
 Keyboard layout=
 Language=
