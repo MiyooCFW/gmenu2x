@@ -492,7 +492,7 @@ void GMenu2X::main() {
 #if defined(HW_TVOUT)
 	if (sysTVout != "Unknown") {
 		if (tvOutStatus == TV_REMOVE && sysTVout != "OFF") {
-			tvOutDialog(TV_OFF);
+			setTVOut(TV_OFF);
 		} else if (tvOutStatus == TV_CONNECT && sysTVout != "ON" && confStr["tvMode"] != "Ask") {
 			tvOutDialog();
 		}
@@ -639,8 +639,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 		if (SDL_GetTicks() - button_hold > 1000) {
 			wasActive = 0;
-			quit();
-			setTVoff();
+			setTVOut(TV_OFF);
 		} else if (input[SETTINGS]) {
 			wasActive = SCREENSHOT;
 		} else if (input[BACKLIGHT_HOTKEY]) {

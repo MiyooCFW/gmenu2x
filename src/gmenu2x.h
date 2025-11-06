@@ -79,9 +79,9 @@ enum bd {
 };
 
 enum tvout {
-	TV_NTSC,
+	TV_OFF,
 	TV_PAL,
-	TV_OFF
+	TV_NTSC,
 };
 
 using std::string;

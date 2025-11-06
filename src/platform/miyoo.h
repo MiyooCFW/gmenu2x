@@ -61,7 +61,6 @@
 #define MIYOO_USB_STATE       "/sys/devices/platform/soc/1c13000.usb/musb-hdrc.1.auto/udc/musb-hdrc.1.auto/state"
 #define MIYOO_USB_SUSPEND     "/sys/devices/platform/soc/1c13000.usb/musb-hdrc.1.auto/gadget/suspended"
 #define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
-#define MIYOO_TVOUT_FILE      "/mnt/tvout"
 #define MIYOO_TVMODE_FILE     "/mnt/.tvmode"
 #define MIYOO_SND_FILE        "/dev/miyoo_snd"
 #define MIYOO_FB0_FILE        "/dev/miyoo_fb0"
@@ -126,10 +125,6 @@ char *cmd_testfs_p5 = NULL;
 int32_t tickBattery = 0;
 
 struct statfs fs;
-
-void setTVoff() {
-	system("rm " MIYOO_TVOUT_FILE " " MIYOO_TVMODE_FILE " ; sync ; reboot");
-}
 
 int getKbdLayoutHW() {
 	kbd = open(MIYOO_KBD_FILE, O_RDWR);
@@ -203,8 +198,6 @@ uint16_t getTVOutMode() {
 	if (FILE *f = fopen(MIYOO_TVMODE_FILE, "r")) {
 		fscanf(f, "%i", &val);
 		fclose(f);
-	} else if (file_exists(MIYOO_TVOUT_FILE)) {
-		val = TV_NTSC;
 	}
 	return val;
 }
@@ -291,8 +284,6 @@ private:
 	}
 
 	void tvOutDialog(int16_t mode) {
-			//if (file_exists(MIYOO_TVOUT_FILE)) return;
-
 			if (mode < 0) {
 				int option;
 
@@ -302,7 +293,7 @@ private:
 				else if (confStr["tvMode"] == "PAL") option = MANUAL;
 				else if (confStr["tvMode"] == "OFF") option = CANCEL;
 				else {
-					MessageBox mb(this, tr["TV-out\Headphones connected. Enable TV?"], "skin:icons/tv.png");
+					MessageBox mb(this, tr["JACK-output detected, Enable TV?"], "skin:icons/tv.png");
 					mb.setButton(CONFIRM, tr["TV-NTSC"]);
 					mb.setButton(MANUAL,  tr["TV-PAL"]);
 					mb.setButton(CANCEL,  tr["Cancel"]);
@@ -321,7 +312,6 @@ private:
 			}
 
 			if (mode != getTVOutMode()) {
-				quit();
 			 	setTVOut(mode);
 			 	//setBacklight(confInt["backlight"]);
 			 	writeTmp();
@@ -442,7 +432,7 @@ public:
 		int lid = val / 10;
 		if (lid > 10) lid = 10;
 		char buf[128] = {0};
-		if (FILE *f = fopen(MIYOO_TVOUT_FILE, "r")) {
+		if (getTVOutMode() != TV_OFF && getTVOutStatus() != TV_REMOVE) {
 			return 0;
 		} else if (lid != 0) {
 			sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
@@ -480,15 +470,12 @@ public:
 	}
 
 	void setTVOut(unsigned int mode) {
-		if (mode == TV_OFF) {
-			setTVoff();
-		} else {
-			if (FILE *f = fopen(MIYOO_TVMODE_FILE, "w")) {
-				fprintf(f, "%i", mode); // fputs(val, f);
-				fclose(f);
-			}
-			system("touch " MIYOO_TVOUT_FILE " ; sync ; reboot");
+		quit();
+		if (FILE *f = fopen(MIYOO_TVMODE_FILE, "w")) {
+			fprintf(f, "%i", mode); // fputs(val, f);
+			fclose(f);
 		}
+		system("sync; mount -o remount,ro $HOME; reboot");
 	}
 
 	void setCPU(uint32_t mhz) {
