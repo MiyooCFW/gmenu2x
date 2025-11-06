@@ -491,11 +491,12 @@ void GMenu2X::main() {
 
 #if defined(HW_TVOUT)
 	if (sysTVout != "Unknown") {
-		if (tvOutStatus == TV_REMOVE && sysTVout != "OFF") {
-			setTVOut(TV_OFF);
-		} else if (tvOutStatus == TV_CONNECT && sysTVout != "ON" && confStr["tvMode"] != "Ask") {
+		if (confInt["tvOutForce"] && (confStr["tvMode"] == "NTSC" || confStr["tvMode"] == "PAL"))
 			tvOutDialog();
-		}
+		else if (tvOutStatus == TV_REMOVE && sysTVout != "OFF")
+			setTVOut(TV_OFF);
+		else if (tvOutStatus == TV_CONNECT && sysTVout != "ON" && confStr["tvMode"] != "Ask")
+			tvOutDialog();
 	}
 #endif
 #if defined(HW_UDC)
@@ -639,6 +640,8 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 		if (SDL_GetTicks() - button_hold > 1000) {
 			wasActive = 0;
+			confInt["tvOutForce"] = 0;
+			confStr["tvMode"] = "Ask";
 			setTVOut(TV_OFF);
 		} else if (input[SETTINGS]) {
 			wasActive = SCREENSHOT;
@@ -691,10 +694,12 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		powerManager->setPowerTimeout(confInt["powerTimeout"]);
 
 	} else if (input[TV_CONNECT]) {
-		tvOutDialog();
+		if (!(confInt["tvOutForce"]))
+			tvOutDialog();
 
 	} else if (input[TV_REMOVE]) {
-		tvOutDialog(TV_OFF);
+		if (!(confInt["tvOutForce"]))
+			tvOutDialog(TV_OFF);
 
 	} else if (input[JOYSTICK_CONNECT]) {
 		input.initJoysticks(true);
@@ -1046,19 +1051,33 @@ void GMenu2X::tvSettings() {
 	sd.allowCancel = true;
 
 	vector<string> tvMode;
-	tvMode.push_back("Ask");
+	if (!(confInt["tvOutForce"]))
+		tvMode.push_back("Ask");
 	tvMode.push_back("NTSC");
 	tvMode.push_back("PAL");
-	tvMode.push_back("OFF");
+	if (!(confInt["tvOutForce"]))
+		tvMode.push_back("OFF");
 
+	int prevTVforce = confInt["tvOutForce"];
 	string prevTVmode = confStr["tvMode"];
 
+	sd.addSetting(new MenuSettingBool(this, tr["Force TVout"], tr["Force TV output to display"], &confInt["tvOutForce"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["TV mode"], tr["Define default TV mode"], &confStr["tvMode"], &tvMode));
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		writeConfig();
-		if (prevTVmode != confStr["tvMode"] && confStr["tvMode"] != "Ask") {
+		if (confInt["tvOutForce"] && !(prevTVforce)) {
+			if (confStr["tvMode"] != "PAL")
+				confStr["tvMode"] = "NTSC";
+			MessageBox mb(this, tr["WARNING: Forcing TV output disables \nhot-plugging detection, use TV settings\nor hotkeys to apply any change."], "skin:icons/exit.png");
+			mb.setButton(CONFIRM, tr["Confirm"]);
+			mb.exec();
 			tvOutDialog();
+		} else if (prevTVmode != confStr["tvMode"] && confInt["tvOutForce"]) {
+			tvOutDialog();
+		} else if (!(confInt["tvOutForce"]) && prevTVforce) {
+			confStr["tvMode"] = "Ask";
+			setTVOut(TV_OFF);
 		}
 	}
 }
@@ -1140,6 +1159,7 @@ void GMenu2X::readConfig() {
 #endif
 #if defined(HW_TVOUT)
 	confStr["tvMode"] = "Ask";
+	confInt["tvOutForce"] = 0;
 #endif
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;

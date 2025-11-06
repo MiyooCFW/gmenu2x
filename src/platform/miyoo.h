@@ -313,9 +313,6 @@ private:
 
 			if (mode != getTVOutMode()) {
 			 	setTVOut(mode);
-			 	//setBacklight(confInt["backlight"]);
-			 	writeTmp();
-			 	exit(0);
 			}
 	}
 
@@ -432,7 +429,7 @@ public:
 		int lid = val / 10;
 		if (lid > 10) lid = 10;
 		char buf[128] = {0};
-		if (getTVOutMode() != TV_OFF && getTVOutStatus() != TV_REMOVE) {
+		if (getTVOutMode() != TV_OFF && getTVOutStatus() != TV_REMOVE || confInt["tvOutForce"]) {
 			return 0;
 		} else if (lid != 0) {
 			sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
@@ -470,6 +467,8 @@ public:
 	}
 
 	void setTVOut(unsigned int mode) {
+		setBacklight(confInt["backlight"]);
+		writeTmp();
 		quit();
 		if (FILE *f = fopen(MIYOO_TVMODE_FILE, "w")) {
 			fprintf(f, "%i", mode); // fputs(val, f);
