@@ -9,3 +9,4 @@
 #define MULTI_INT
 #define NO_EXTRA_SD
 #define HW_UDC
+#define HW_TVOUT

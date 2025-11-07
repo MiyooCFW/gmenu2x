@@ -1061,7 +1061,7 @@ void GMenu2X::tvSettings() {
 	int prevTVforce = confInt["tvOutForce"];
 	string prevTVmode = confStr["tvMode"];
 
-	sd.addSetting(new MenuSettingBool(this, tr["Force TVout"], tr["Force TV output to display"], &confInt["tvOutForce"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Force TVout"], tr["Force display via TV output"], &confInt["tvOutForce"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["TV mode"], tr["Define default TV mode"], &confStr["tvMode"], &tvMode));
 
 	if (sd.exec() && sd.edited() && sd.save) {
@@ -1069,7 +1069,7 @@ void GMenu2X::tvSettings() {
 		if (confInt["tvOutForce"] && !(prevTVforce)) {
 			if (confStr["tvMode"] != "PAL")
 				confStr["tvMode"] = "NTSC";
-			MessageBox mb(this, tr["WARNING: Forcing TV output disables \nhot-plugging detection, use TV settings\nor hotkeys to apply any change."], "skin:icons/exit.png");
+			MessageBox mb(this, tr["WARNING: Forcing TV output disables\nhot-plugging detection, use TV settings\nor hotkeys to apply any change."], "skin:icons/exit.png");
 			mb.setButton(CONFIRM, tr["Confirm"]);
 			mb.exec();
 			tvOutDialog();
