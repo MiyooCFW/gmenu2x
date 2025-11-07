@@ -184,6 +184,9 @@ public:
 #if defined(HW_UDC)
 	void usbSettings();
 #endif
+#if defined(HW_TVOUT)
+	void tvSettings();
+#endif
 	void showManual();
 
 	void setSkin(string skin, bool clearSC = true);
