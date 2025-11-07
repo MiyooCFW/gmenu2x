@@ -33,6 +33,8 @@
 #define MIYOO_VIR_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_SND_SET_VOLUME  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_SND_GET_VOLUME  _IOWR(0x101, 0, unsigned long)
+#define MIYOO_SND_JACK_STATUS _IOWR(0x102, 0, unsigned long)
+#define MIYOO_TV_JACK_STATUS  _IOWR(0x103, 0, unsigned long)
 #define MIYOO_KBD_GET_HOTKEY  _IOWR(0x100, 0, unsigned long)
 #define MIYOO_KBD_SET_VER     _IOWR(0x101, 0, unsigned long)
 #define MIYOO_KBD_LOCK_KEY    _IOWR(0x102, 0, unsigned long) //unused
@@ -59,7 +61,7 @@
 #define MIYOO_USB_STATE       "/sys/devices/platform/soc/1c13000.usb/musb-hdrc.1.auto/udc/musb-hdrc.1.auto/state"
 #define MIYOO_USB_SUSPEND     "/sys/devices/platform/soc/1c13000.usb/musb-hdrc.1.auto/gadget/suspended"
 #define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
-#define MIYOO_TVOUT_FILE      "/mnt/tvout"
+#define MIYOO_TVMODE_FILE     "/mnt/.tvmode"
 #define MIYOO_SND_FILE        "/dev/miyoo_snd"
 #define MIYOO_FB0_FILE        "/dev/miyoo_fb0"
 #define MIYOO_KBD_FILE        "/dev/miyoo_kbd"
@@ -123,10 +125,6 @@ char *cmd_testfs_p5 = NULL;
 int32_t tickBattery = 0;
 
 struct statfs fs;
-
-void setTVoff() {
-	system("rm " MIYOO_TVOUT_FILE " ; sync ; reboot");
-}
 
 int getKbdLayoutHW() {
 	kbd = open(MIYOO_KBD_FILE, O_RDWR);
@@ -195,11 +193,35 @@ uint8_t getBatteryStatus(int32_t val, int32_t min, int32_t max) {
 	return 0; // 0% :(
 }
 
+uint16_t getTVOutMode() {
+	int val = TV_OFF;
+	if (FILE *f = fopen(MIYOO_TVMODE_FILE, "r")) {
+		fscanf(f, "%i", &val);
+		fclose(f);
+	}
+	return val;
+}
+
 uint8_t getMMCStatus() {
 	return MMC_REMOVE;
 }
 
 uint8_t getTVOutStatus() {
+	int status = 0;
+
+	if (SYS_TVOUT != NULL) {
+		sysTVout = SYS_TVOUT;
+	}
+
+	snd = open(MIYOO_SND_FILE, O_RDWR);
+	if (snd > 0) {
+		ioctl(snd, MIYOO_TV_JACK_STATUS, &status);
+		close(snd);
+	} else {
+		WARNING("Could not open " MIYOO_SND_FILE);
+	}
+	//INFO("TV status=%i", status);
+	if (status)	return TV_CONNECT;
 	return TV_REMOVE;
 }
 
@@ -223,6 +245,12 @@ uint32_t hwCheck(unsigned int interval = 0, void *param = NULL) {
 		if (udcPrev != udcStatus) {
 			udcPrev = udcStatus;
 			InputManager::pushEvent(udcStatus);
+			return 2000;
+		}
+		tvOutStatus = getTVOutStatus();
+		if (tvOutPrev != tvOutStatus) {
+			tvOutPrev = tvOutStatus;
+			InputManager::pushEvent(tvOutStatus);
 			return 2000;
 		}
 	}
@@ -253,6 +281,39 @@ private:
 		w = 320;
 		h = 240;
 		INFO("MIYOO");
+	}
+
+	void tvOutDialog(int16_t mode) {
+			if (mode < 0) {
+				int option;
+
+				mode = TV_OFF;
+
+				if (confStr["tvMode"] == "NTSC") option = CONFIRM;
+				else if (confStr["tvMode"] == "PAL") option = MANUAL;
+				else if (confStr["tvMode"] == "OFF") option = CANCEL;
+				else {
+					MessageBox mb(this, tr["JACK-output detected, Enable TV?"], "skin:icons/tv.png");
+					mb.setButton(CONFIRM, tr["TV-NTSC"]);
+					mb.setButton(MANUAL,  tr["TV-PAL"]);
+					mb.setButton(CANCEL,  tr["Cancel"]);
+					option = mb.exec();
+				}
+
+				switch (option) {
+					case CONFIRM:
+						mode = TV_NTSC;
+						break;
+					case MANUAL:
+						mode = TV_PAL;
+						break;
+						
+				}
+			}
+
+			if (mode != getTVOutMode()) {
+			 	setTVOut(mode);
+			}
 	}
 
 	void udcDialog(int udcStatus) {
@@ -368,7 +429,7 @@ public:
 		int lid = val / 10;
 		if (lid > 10) lid = 10;
 		char buf[128] = {0};
-		if (FILE *f = fopen(MIYOO_TVOUT_FILE, "r")) {
+		if (getTVOutMode() != TV_OFF && getTVOutStatus() != TV_REMOVE || confInt["tvOutForce"]) {
 			return 0;
 		} else if (lid != 0) {
 			sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
@@ -403,6 +464,17 @@ public:
 			WARNING("Could not open " MIYOO_FB0_FILE);
 			val = -1;
 		}
+	}
+
+	void setTVOut(unsigned int mode) {
+		setBacklight(confInt["backlight"]);
+		writeTmp();
+		quit();
+		if (FILE *f = fopen(MIYOO_TVMODE_FILE, "w")) {
+			fprintf(f, "%i", mode); // fputs(val, f);
+			fclose(f);
+		}
+		system("sync; mount -o remount,ro $HOME; reboot");
 	}
 
 	void setCPU(uint32_t mhz) {
