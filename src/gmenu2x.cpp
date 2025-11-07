@@ -564,7 +564,7 @@ void GMenu2X::main() {
 bool GMenu2X::inputCommonActions(bool &inputAction) {
 	if (powerManager->suspendActive) {
 		// SUSPEND ACTIVE
-		while (!(input[POWER] || input[SETTINGS] || input[UDC_CONNECT] || input[UDC_CHARGE] || input[UDC_REMOVE] || input[MMC_INSERT] || input[MMC_REMOVE])) {
+		while (!(input[POWER] || input[MENU] || input[SETTINGS] || input[UDC_CONNECT] || input[UDC_CHARGE] || input[UDC_REMOVE] || input[MMC_INSERT] || input[MMC_REMOVE])) {
 			input.update();
 		}
 
