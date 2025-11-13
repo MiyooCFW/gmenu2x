@@ -118,6 +118,7 @@ Info about GMenu2X=
 Insert a name for the new section=
 Insert a new name for this section=
 Installing skin=
+is=
 JACK-output detected, Enable TV?=
 Keyboard Layout=
 Keyboard layout=

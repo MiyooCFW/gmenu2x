@@ -254,7 +254,7 @@ int MessageBox::exec() {
 		for (uint32_t i = 0; i < buttonText.size(); i++) {
 			if (buttonText[i] != "") {
 				if (button[i] == "a") button[i] = "[[eI]]"; //espeak doesn't recognize if it's a letter or article so let us use Phoneme Input for "A" letter
-				strButtons += " " + button[i] + " is " + buttonText[i];
+				strButtons += " " + button[i] + " " + gmenu2x->tr["is"] + " " + buttonText[i];
 			}
 		}
 		string strMessage = text;
