@@ -251,6 +251,7 @@ public:
 	virtual int getVolume() { return 0; };
 	virtual int getBacklight() { return -1; };
 	virtual int setBacklight(int val, bool popup = false);
+	virtual void shutdownOS(bool remount = true, bool poweroff = true) { exit(0); } ;
 	virtual string hwPreLinkLaunch() { return ""; };
 	virtual void enableTerminal() { };
 	virtual void setGamma(int value) { };

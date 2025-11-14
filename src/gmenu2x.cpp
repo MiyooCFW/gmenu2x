@@ -68,7 +68,7 @@ using std::ofstream;
 using std::stringstream;
 using namespace fastdelegate;
 
-#define sync() sync(); system("sync &");
+#define sync() sync(); //system("sync &");
 
 enum vol_mode_t {
 	VOLUME_MODE_MUTE, VOLUME_MODE_PHONES, VOLUME_MODE_NORMAL
@@ -1718,9 +1718,8 @@ void GMenu2X::viewAutoStart() {
 				reinit_save();
 			case MANUAL:
 				quit();
-#if !defined(TARGET_LINUX)
-				system("sync; mount -o remount,ro $HOME; poweroff");
-#endif
+				//system("sync; mount -o remount,ro $HOME; poweroff");
+				shutdownOS();
 				break;
 	}
 }
@@ -1921,9 +1920,8 @@ void GMenu2X::poweroffDialog() {
 			mb.exec();
 		//	setVolume(0);
 			quit();
-#if !defined(TARGET_LINUX)
-			system("sync; mount -o remount,ro $HOME; poweroff");
-#endif
+			//system("sync; mount -o remount,ro $HOME; poweroff");
+			shutdownOS();
 			break;
 		}
 		case SECTION_NEXT: {
@@ -1932,9 +1930,8 @@ void GMenu2X::poweroffDialog() {
 			mb.exec();
 		//	setVolume(0);
 			quit();
-#if !defined(TARGET_LINUX)
-			system("sync; mount -o remount,ro $HOME; reboot");
-#endif
+			//system("sync; mount -o remount,ro $HOME; reboot");
+			shutdownOS(true,false);
 			break;
 		}
 	}
