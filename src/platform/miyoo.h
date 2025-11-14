@@ -5,6 +5,7 @@
 #include <sys/mman.h>
 #include <sys/mount.h>
 #include <sys/statfs.h>
+#include <sys/reboot.h>
 #include <bitset>
 
 // 	MiyooCFW 2.0 Key Codes. Apaczer, 2023
@@ -409,8 +410,12 @@ public:
 			ioctl(snd, MIYOO_SND_SET_VOLUME, vol);
 			close(snd);
 		}
-		sprintf(buf, "echo %i > " MIYOO_VOL_FILE, vol);
-		system(buf);		
+		// sprintf(buf, "echo %i > " MIYOO_VOL_FILE, vol);
+		// system(buf);
+		if (FILE *f = fopen(MIYOO_VOL_FILE, "w")){
+			fprintf(f, "%i", vol);
+			fclose(f);
+		}
 		
 		volumeMode = getVolumeMode(val);
 
@@ -428,14 +433,20 @@ public:
 		int lid = val / 10;
 		if (lid > 10) lid = 10;
 		char buf[128] = {0};
-		if (getTVOutMode() != TV_OFF && getTVOutStatus() != TV_REMOVE || confInt["tvOutForce"]) {
+		if (getTVOutMode() != TV_OFF && getTVOutStatus() != TV_REMOVE || confInt["tvOutForce"])
 			return 0;
-		} else if (lid != 0) {
-			sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
-		} else {
-			sprintf(buf, "echo %i > " MIYOO_LID_CONF, lid);
+		//sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
+		//system(buf);
+		if (lid != 0) {
+			if (FILE *f1 = fopen(MIYOO_LID_FILE, "w")){
+				fprintf(f1, "%i", lid);
+				fclose(f1);
+			}
 		}
-		system(buf);
+		if (FILE *f2 = fopen(MIYOO_LID_CONF, "w")){
+			fprintf(f2, "%i", lid);
+			fclose(f2);
+		}
 		return val;
 	}
 
@@ -465,6 +476,14 @@ public:
 		}
 	}
 
+	void shutdownOS(bool remount = true, bool poweroff = true) {
+		sync();
+		if (remount && mount("/mnt", "/mnt", NULL, MS_REMOUNT | MS_RDONLY, NULL) != 0) {
+			ERROR("remounting /mnt in RO failed");
+		}
+		reboot(poweroff ? RB_POWER_OFF : RB_AUTOBOOT);
+	}
+
 	void setTVOut(unsigned int mode) {
 		setBacklight(confInt["backlight"]);
 		writeTmp();
@@ -473,7 +492,8 @@ public:
 			fprintf(f, "%i", mode); // fputs(val, f);
 			fclose(f);
 		}
-		system("sync; mount -o remount,ro $HOME; reboot");
+		//system("sync; mount -o remount,ro $HOME; reboot");
+		shutdownOS(true, false);
 	}
 
 	void setCPU(uint32_t mhz) {
