@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <fstream>
 
@@ -445,12 +446,14 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		gmenu2x->writeConfig();
 	}
 
-	if (gmenu2x->confInt["saveAutoStart"]) {
+	int prevSaveASval = gmenu2x->confInt["saveAutoStart"];
+	if (prevSaveASval) {
 		gmenu2x->confInt["lastCPU"] = clock;
 		gmenu2x->confInt["lastKeyboardLayout"] = layout;
 		gmenu2x->confInt["lastTefix"] = tefix;
 		gmenu2x->confStr["lastCommand"] = command.c_str();
 		gmenu2x->confStr["lastDirectory"] = dir_name(exec).c_str();
+		gmenu2x->confInt["saveAutoStart"] = 0;
 		gmenu2x->writeConfig();
 	}
 	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
@@ -492,24 +495,24 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	if (getTerminal()) gmenu2x->enableTerminal();
 
 	// execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, environ);
-	if (gmenu2x->confInt["saveAutoStart"]) {
-		string prevCmd = command.c_str();
-		string tmppath = exe_path() + "/gmenu2x.conf";
-		string writeDateCmd = "; sed -i \"/datetime=/c\\datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"\" ";
-#if defined(TARGET_LINUX)
-		string exitCmd = "; exit" ;
-#else
-		string exitCmd = "; sync; mount -o remount,ro $HOME; poweroff";
-#endif
-		string launchCmd = prevCmd + writeDateCmd + tmppath + exitCmd;
-		execlp("/bin/sh", "/bin/sh", "-c", launchCmd.c_str(),  NULL);
-	} else {
+	pid_t son = fork();
+	if (!son) {
 		execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
+		ERROR("execlp of shell cmd \"%s\" failed", command.c_str());
 	}
-	//if execution continues then something went wrong and as we already called SDL_Quit we cannot continue
-	//try relaunching gmenu2x
-	chdir(exe_path().c_str());
-	execlp("./gmenu2x", "./gmenu2x", NULL);
+	int status;
+	waitpid(son, &status, 0);
+	INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
+	
+	if (prevSaveASval) {
+		gmenu2x->confStr["datetime"] = get_date_time();
+		gmenu2x->writeConfig();
+		gmenu2x->shutdownOS();
+	} else {
+		//we already called SDL_Quit try relaunching gmenu2x
+		chdir(exe_path().c_str());
+		execlp("./gmenu2x", "./gmenu2x", NULL);
+	}
 }
 
 void LinkApp::setExec(const string &exec) {

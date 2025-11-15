@@ -26,6 +26,7 @@
 #include <signal.h>
 
 #include <sys/ioctl.h>
+#include <sys/wait.h>
 
 #include <linux/vt.h>
 #include <linux/kd.h>
@@ -200,8 +201,7 @@ int main(int argc, char * argv[]) {
 }
 
 GMenu2X::~GMenu2X() {
-	get_date_time(); // update sw clock
-	confStr["datetime"] = get_date_time();
+	confStr["datetime"] = get_date_time(); // update sw clock
 	
 	writeConfig();
 	
@@ -266,7 +266,6 @@ void GMenu2X::quit() {
 	s->flip(); s->flip(); s->flip(); // flush buffers
 
 	powerManager->clearTimer();
-	get_date_time(); // update sw clock
 	confStr["datetime"] = get_date_time();
 //#if defined(HW_LIDVOL)
 // 	setBacklight(getBacklight());
@@ -525,15 +524,17 @@ void GMenu2X::main() {
 		chdir(confStr["lastDirectory"].c_str());
 		quit();
 		string prevCmd = confStr["lastCommand"].c_str();
-		string writeDateCmd = "; sed -i \"/datetime=/c\\datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"\" ";
-		string tmppath = exe_path() + "/gmenu2x.conf";
-#if defined(TARGET_LINUX)
-		string exitCmd = "; exit" ;
-#else
-		string exitCmd = "; sync; mount -o remount,ro $HOME; poweroff";
-#endif
-		string launchCmd = prevCmd + writeDateCmd + tmppath + exitCmd;
-		execlp("/bin/sh", "/bin/sh", "-c", launchCmd.c_str(),  NULL);
+		pid_t son = fork();
+		if (!son) {
+			execlp("/bin/sh", "/bin/sh", "-c", prevCmd.c_str(),  NULL);
+			ERROR("execlp of shell cmd \"%s\" failed", prevCmd.c_str());
+		}
+		int status;
+		waitpid(son, &status, 0);
+		INFO("Last launched app \"%s\" exited with status=%i", prevCmd.c_str(), status);
+		confStr["datetime"] = get_date_time();
+		writeConfig();
+		shutdownOS();
 	}
 	currBackdrop = confStr["wallpaper"];
 	confStr["wallpaper"] = setBackground(s, currBackdrop);
