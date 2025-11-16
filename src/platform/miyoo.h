@@ -293,7 +293,7 @@ private:
 				else if (confStr["tvMode"] == "PAL") option = MANUAL;
 				else if (confStr["tvMode"] == "OFF") option = CANCEL;
 				else {
-					MessageBox mb(this, tr["JACK-output detected, Enable TV?"], "skin:icons/tv.png");
+					MessageBox mb(this, tr["JACK connection detected.\nEnable TV-output?"], "skin:icons/tv.png");
 					mb.setButton(CONFIRM, tr["TV-NTSC"]);
 					mb.setButton(MANUAL,  tr["TV-PAL"]);
 					mb.setButton(CANCEL,  tr["Cancel"]);
