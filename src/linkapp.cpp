@@ -447,16 +447,6 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		gmenu2x->writeConfig();
 	}
 
-	int prevSaveASval = gmenu2x->confInt["saveAutoStart"];
-	if (prevSaveASval) {
-		gmenu2x->confInt["lastCPU"] = clock;
-		gmenu2x->confInt["lastKeyboardLayout"] = layout;
-		gmenu2x->confInt["lastTefix"] = tefix;
-		gmenu2x->confStr["lastCommand"] = command.c_str();
-		gmenu2x->confStr["lastDirectory"] = dir_name(exec).c_str();
-		gmenu2x->confInt["saveAutoStart"] = 0;
-		gmenu2x->writeConfig();
-	}
 	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
 	if (getKbdLayout() != gmenu2x->confInt["keyboardLayoutMenu"]) gmenu2x->setKbdLayout(getKbdLayout());
 	if (getTefix() != gmenu2x->confInt["tefixMenu"]) gmenu2x->setTefix(getTefix());
@@ -505,7 +495,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	waitpid(son, &status, 0);
 	INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
 	
-	if (prevSaveASval) {
+	if (gmenu2x->confInt["saveAutoStart"]) {
 		gmenu2x->confStr["datetime"] = get_date_time();
 		gmenu2x->writeConfig();
 		gmenu2x->shutdownOS();
