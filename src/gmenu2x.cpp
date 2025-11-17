@@ -95,14 +95,15 @@ int LAYOUT_VERSION_MAX = 0;
 int TEFIX = -1;
 int TEFIX_MAX = -1;
 
+string sysUSBmode = "Unknown";
+string sysTVout = "Unknown";
+
 const char *CARD_ROOT = getenv("HOME");
 #if defined(HW_UDC)
 const char *SYS_USB_MODE = getenv("USB_MODE");
-string sysUSBmode = "Unknown";
 #endif
 #if defined(HW_TVOUT)
 const char *SYS_TVOUT = getenv("TVOUT");
-string sysTVout = "Unknown";
 #endif
 
 int SLOW_GAP_TTS = 5;
@@ -490,6 +491,8 @@ void GMenu2X::main() {
 	numJoyPrev = numJoy = getDevStatus();
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
 
+	readTmp();
+
 #if defined(HW_TVOUT)
 	if (sysTVout != "Unknown") {
 		if (confInt["tvOutForce"] && (confStr["tvMode"] == "NTSC" || confStr["tvMode"] == "PAL"))
@@ -520,7 +523,7 @@ void GMenu2X::main() {
 	confStr["wallpaper"] = setBackground(s, currBackdrop);
 	bg = new Surface(s);
 	
-	if (readTmp() && confInt["outputLogs"]) {
+	if (confInt["outputLogs"]) {
 		viewLog();
 	}
 	
@@ -1082,6 +1085,7 @@ bool GMenu2X::readTmp() {
 		// else if (name == "TVOut") TVOut = atoi(value.c_str());
 		else if (name == "tvOutPrev") tvOutPrev = atoi(value.c_str());
 		else if (name == "udcPrev") udcPrev = atoi(value.c_str());
+		else if (name == "sysUSBmode") sysUSBmode = value;
 		else if (name == "currBackdrop") currBackdrop = value;
 		else if (name == "explorerLastDir") confStr["explorerLastDir"] = value;
 	}
@@ -1101,6 +1105,7 @@ void GMenu2X::writeTmp(int selelem, const string &selectordir) {
 		tmp << "udcPrev=" << udcPrev << endl;
 		tmp << "tvOutPrev=" << tvOutPrev << endl;
 		// tmp << "TVOut=" << TVOut << endl;
+		tmp << "sysUSBmode=" << sysUSBmode << endl;
 		tmp << "currBackdrop=" << currBackdrop << endl;
 		if (!confStr["explorerLastDir"].empty()) tmp << "explorerLastDir=" << confStr["explorerLastDir"] << endl;
 		tmp.close();

@@ -105,6 +105,9 @@ extern int LAYOUT_VERSION_MAX;
 extern int TEFIX;
 extern int TEFIX_MAX;
 
+extern string sysUSBmode;
+extern string sysTVout;
+
 extern int SLOW_GAP_TTS;
 extern int SLOW_SPEED_TTS;
 extern int MEDIUM_GAP_TTS;

@@ -158,7 +158,7 @@ uint8_t getUDCStatus() {
 	suspended = file_read(MIYOO_USB_SUSPEND);
 
 	//INFO("SYS_USB_MODE=%s",SYS_USB_MODE);
-	if (SYS_USB_MODE != NULL) {
+	if (SYS_USB_MODE != NULL && sysUSBmode == "Unknown") {
 		sysUSBmode = SYS_USB_MODE;
 	}
 	//INFO("sysUSBmode=%s",sysUSBmode);
@@ -323,7 +323,7 @@ private:
 			return;
 		}
 
-		int option;
+		int option = CANCEL;
 		if (confStr["usbMode"] == "Storage") option = CONFIRM;
 		else if (confStr["usbMode"] == "HID") option = MODIFIER;
 		else if (confStr["usbMode"] == "Serial") option = MANUAL;
@@ -341,35 +341,43 @@ private:
 		}
 
 		if (udcStatus == UDC_HOST) option = -1;
+		
 
-		if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
-			INFO("Enabling MTP storage device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode mtp", NULL);
-			return;
-		} else if (option == MODIFIER) { // hid
-			INFO("Enabling HID device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode hid", NULL);
-			return;
-		} else if (option == MANUAL) { // serial
-			INFO("Enabling Serial Console on device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode serial", NULL);
-			return;
-		} else if (option == MENU) { // networking
-			INFO("Enabling USB Networking on device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode net", NULL);
-			return;
-		} else if (option == -1) { // host
-			INFO("Enabling host device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode host", NULL);
-			return;
+		if (option == CANCEL) {
+			INFO("Continuing with default USB mode");
+		} else {
+			string usbcommand = "";
+			MessageBox mb(this, tr["Loading"]);
+			mb.setAutoHide(1);
+			mb.setBgAlpha(0);
+			mb.exec();
+			input.update(false);
+			if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
+				INFO("Enabling MTP storage device");
+				usbcommand = "mtp";
+			} else if (option == MODIFIER) { // hid
+				INFO("Enabling HID device");
+				usbcommand = "hid";
+			} else if (option == MANUAL) { // serial
+				INFO("Enabling Serial Console on device");
+				usbcommand = "serial";
+			} else if (option == MENU) { // networking
+				INFO("Enabling USB Networking on device");
+				usbcommand = "net";
+			} else { // host
+				// if (option == -1)
+				INFO("Enabling host device");
+				usbcommand = "host";
+			}
+			pid_t son = fork();
+			if (!son) {
+				execlp("/bin/sh", "/bin/sh", "-c", ("exec /usr/bin/usb-mode " + usbcommand).c_str(), NULL);
+			}
+			wait(NULL);
+			sysUSBmode = usbcommand;
+			writeTmp();
 		}
-		// CANCEL (default)
-		INFO("Continuing with default USB mode");
+		return;
 	}
 
 	int getBacklight() {
