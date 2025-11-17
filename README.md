@@ -32,6 +32,7 @@ make -f Makefile.miyoo
 make -f Makefile.miyoo dist
 ```
 you can find both outputs in `./dist/miyoo/` directory.
+
 ### PC (Linux):
 This is primarily useful for development/testing. 
 First, install the dependencies. This should work for Debian/Ubuntu systems, use the appropriate package manager for other systems:
@@ -166,3 +167,7 @@ You can pass useful variables (which can be treated as arguments for cmd) before
 	* Selector Filter: Filter extensions to be shown in the selector. Separate multiple extensions with commas.
 	* Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
 * The name of the file of rom and preview have to be exactly the same. Supported image types are .png or .jpg;
+
+## Debugging apps
+
+GMenu2X provide option to run debugger (if present in `/usr/bin/gdb`) on non-stripped apps with debug flags, that is if you run it directly from explorer's selector. 
