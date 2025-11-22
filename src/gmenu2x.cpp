@@ -202,10 +202,7 @@ int main(int argc, char * argv[]) {
 }
 
 GMenu2X::~GMenu2X() {
-	confStr["datetime"] = get_date_time(); // update sw clock
-	
-	writeConfig();
-	
+	//only occurs when closing gmenu2x ps with sig call
 	quit();
 	delete menu;
 	delete s;
@@ -1859,7 +1856,6 @@ void GMenu2X::poweroffDialog() {
 	mb.setButton(CONFIRM, tr["Poweroff"]);
 	mb.setButton(CANCEL,  tr["Cancel"]);
 	int res = mb.exec();
-	writeConfig();
 	switch (res) {
 		case CONFIRM: {
 			MessageBox mb(this, tr["Poweroff"]);

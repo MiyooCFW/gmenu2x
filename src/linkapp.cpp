@@ -443,9 +443,9 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 
 	if (params != "") command += " " + params;
 
-	if (gmenu2x->confInt["saveSelection"] && (gmenu2x->confInt["section"] != gmenu2x->menu->selSectionIndex() || gmenu2x->confInt["link"] != gmenu2x->menu->selLinkIndex())) {
-		gmenu2x->writeConfig();
-	}
+	// if (gmenu2x->confInt["saveSelection"] && (gmenu2x->confInt["section"] != gmenu2x->menu->selSectionIndex() || gmenu2x->confInt["link"] != gmenu2x->menu->selLinkIndex())) {
+	// 	gmenu2x->writeConfig();
+	// }
 
 	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
 	if (getKbdLayout() != gmenu2x->confInt["keyboardLayoutMenu"]) gmenu2x->setKbdLayout(getKbdLayout());
