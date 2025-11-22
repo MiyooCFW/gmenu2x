@@ -263,33 +263,16 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 	//freopen("/dev/tty", "w", stdout); // activate stdout
 }
 
-void GMenu2X::quit() {
+void GMenu2X::quit(bool save) {
 	s->flip(); s->flip(); s->flip(); // flush buffers
 
 	powerManager->clearTimer();
-	confStr["datetime"] = get_date_time();
-//#if defined(HW_LIDVOL)
-// 	setBacklight(getBacklight());
-// 	setVolume(getVolume());
-//#endif	
-	writeConfig();
+	if (save) {
+		confStr["datetime"] = get_date_time();
+		writeConfig();
+	}
 
 	if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
-
-	s->free();
-
-	font->free();
-	titlefont->free();
-
-	fflush(NULL);
-	SDL_Quit();
-	hwDeinit();
-}
-
-void GMenu2X::quit_nosave() {
-	s->flip(); s->flip(); s->flip(); // flush buffers
-
-	powerManager->clearTimer();
 
 	s->free();
 
@@ -475,7 +458,7 @@ void GMenu2X::main() {
 			// Reset settings for viewAutoStart()
 			confInt["saveAutoStart"] = 0;
 			confInt["dialogAutoStart"] = 0;
-			reinit_save();
+			reinit(false, true);
 		}
 	}
 
@@ -1695,10 +1678,10 @@ void GMenu2X::viewAutoStart() {
 			case CANCEL:
 				confInt["saveAutoStart"] = 0;
 				confInt["dialogAutoStart"] = 0;
-				reinit_save();
+				reinit(false, true);
 			case MODIFIER:
 				confInt["dialogAutoStart"] = 0;
-				reinit_save();
+				reinit(false, true);
 			case MANUAL:
 				quit();
 				//system("sync; mount -o remount,ro $HOME; poweroff");
@@ -1848,23 +1831,16 @@ bool GMenu2X::saveScreenshot(string path) {
 	return SDL_SaveBMP(s->raw, path.c_str()) == 0;
 }
 
-void GMenu2X::reinit(bool showDialog) {
+void GMenu2X::reinit(bool showDialog, bool quitSave) {
 	if (showDialog) {
+		//showDialog is never true in code - WIP
 		MessageBox mb(this, tr["GMenu2X will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
 		mb.setButton(CONFIRM, tr["Restart"]);
 		mb.setButton(CANCEL,  tr["Cancel"]);
 		if (mb.exec() == CANCEL) return;
 	}
 
-	quit_nosave();
-	WARNING("Re-launching gmenu2x");
-	chdir(exe_path().c_str());
-	execlp("./gmenu2x", "./gmenu2x", NULL);
-}
-
-void GMenu2X::reinit_save() {
-
-	quit();
+	quit(quitSave);
 	WARNING("Re-launching gmenu2x");
 	chdir(exe_path().c_str());
 	execlp("./gmenu2x", "./gmenu2x", NULL);

@@ -174,13 +174,11 @@ public:
 	string currBackdrop;
 
 	~GMenu2X();
-	void quit();
-	void quit_nosave();
+	void quit(bool save = true);
 	void main();
 	void settings();
 	void settings_date();
-	void reinit(bool showDialog = false);
-	void reinit_save();
+	void reinit(bool showDialog = false, bool quitSave = false);
 	void poweroffDialog();
 	void resetSettings();
 	void cpuSettings();
