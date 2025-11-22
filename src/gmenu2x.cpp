@@ -2367,7 +2367,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 int GMenu2X::drawButton(Button *btn, int x, int y) {
 	if (y < 0) y = this->h + y;
 	btn->setPosition(x, y);
-	btn->paint();
+	return btn->paint();
 }
 
 int GMenu2X::drawButton(Surface *s, const string &btn, const string &text, int x, int y) {
