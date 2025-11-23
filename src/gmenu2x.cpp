@@ -855,13 +855,16 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		if (confInt["saveAutoStart"]) confInt["dialogAutoStart"] = 1;
-		writeConfig();
+		if (confInt["saveAutoStart"]) {
+			confInt["dialogAutoStart"] = 1;
+			confInt["saveSelection"] = 1;
+		}
 		if (lang == "English") lang = "";
 		if (confStr["lang"] != lang) {
 			confStr["lang"] = lang;
 			tr.setLang(lang);
 		}
+		writeConfig();
 	}
 
 	setBacklight(confInt["backlight"], false);
