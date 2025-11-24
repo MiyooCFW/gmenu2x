@@ -443,9 +443,9 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 
 	if (params != "") command += " " + params;
 
-	// if (gmenu2x->confInt["saveSelection"] && (gmenu2x->confInt["section"] != gmenu2x->menu->selSectionIndex() || gmenu2x->confInt["link"] != gmenu2x->menu->selLinkIndex())) {
-	// 	gmenu2x->writeConfig();
-	// }
+	if (gmenu2x->confInt["saveSelection"] && (gmenu2x->confInt["section"] != gmenu2x->menu->selSectionIndex() || gmenu2x->confInt["link"] != gmenu2x->menu->selLinkIndex())) {
+		gmenu2x->writeConfig();
+	}
 
 	if (getCPU() != gmenu2x->confInt["cpuMenu"]) gmenu2x->setCPU(getCPU());
 	if (getKbdLayout() != gmenu2x->confInt["keyboardLayoutMenu"]) gmenu2x->setKbdLayout(getKbdLayout());
@@ -481,7 +481,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		command = "HOME=" + params + " " + command;
 	}
 
-	gmenu2x->quit();
+	gmenu2x->quit(false);
 
 	if (getTerminal()) gmenu2x->enableTerminal();
 
@@ -502,7 +502,7 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	} else {
 		//we already called SDL_Quit try relaunching gmenu2x
 		chdir(exe_path().c_str());
-		execlp("./gmenu2x", "./gmenu2x", NULL);
+		execlp("./gmenu2x", "./gmenu2x", NULL); // can't use gmenu2x->reinit() since we've called quit()
 	}
 }
 

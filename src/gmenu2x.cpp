@@ -1790,9 +1790,7 @@ void GMenu2X::explorer() {
 			TerminalDialog td(this, tr["Zip content"], bd.getFileName(bd.selected), "skin:icons/terminal.png");
 			td.exec("unzip -l " + cmdclean(bd.getFilePath(bd.selected)));
 		} else {
-			if (confInt["saveSelection"] && (confInt["section"] != menu->selSectionIndex() || confInt["link"] != menu->selLinkIndex())) {
-				writeConfig();
-			}
+			// TODO: This does not save last selectorelem & selectordir in writeTmp() cuz section && link=0
 
 			string command = cmdclean(bd.getFilePath(bd.selected));
 			string params = "";
