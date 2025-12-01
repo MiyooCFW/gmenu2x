@@ -1872,7 +1872,7 @@ void GMenu2X::poweroffDialog() {
 		//	setVolume(0);
 			quit();
 			//system("sync; mount -o remount,ro $HOME; reboot");
-			shutdownOS(true,false);
+			shutdownOS(false);
 			break;
 		}
 	}

@@ -71,6 +71,6 @@ uint32_t PowerManager::doSuspend(uint32_t interval, void *param) {
 
 uint32_t PowerManager::doPowerOff(uint32_t interval, void *param) {
 	//system("sync; poweroff");
-	PowerManager::instance->gmenu2x->shutdownOS(false, true);
+	PowerManager::instance->gmenu2x->shutdownOS(true);
 	return interval;
 };

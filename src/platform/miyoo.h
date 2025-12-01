@@ -5,6 +5,7 @@
 #include <sys/mman.h>
 #include <sys/mount.h>
 #include <sys/statfs.h>
+#include <sys/swap.h>
 #include <sys/reboot.h>
 #include <bitset>
 
@@ -42,6 +43,7 @@
 #define MIYOO_LAY_SET_VER     _IOWR(0x103, 0, unsigned long)
 #define MIYOO_KBD_GET_VER     _IOWR(0x104, 0, unsigned long)
 #define MIYOO_LAY_GET_VER     _IOWR(0x105, 0, unsigned long)
+#define MIYOO_KBD_SET_HOTKEY  _IOWR(0x106, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
 #define MIYOO_FB0_SET_MODE    _IOWR(0x101, 0, unsigned long)
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
@@ -51,6 +53,8 @@
 #define MIYOO_FB0_SET_TEFIX   _IOWR(0x106, 0, unsigned long)
 #define MIYOO_FB0_GET_TEFIX   _IOWR(0x107, 0, unsigned long)
 
+#define MIYOO_HOME_DIR        "/mnt"
+#define MIYOO_ROMS_DIR        "/roms"
 #define MIYOO_FBP_FILE        "/mnt/.fpbp.conf"
 #define MIYOO_LID_FILE        "/mnt/.backlight.conf"
 #define MIYOO_VOL_FILE        "/mnt/.volume.conf"
@@ -66,6 +70,7 @@
 #define MIYOO_FB0_FILE        "/dev/miyoo_fb0"
 #define MIYOO_KBD_FILE        "/dev/miyoo_kbd"
 #define MIYOO_VIR_FILE        "/dev/miyoo_vir"
+#define MIYOO_SWAP_FILE       "/dev/mmcblk0p3"
 #define TTS_ENGINE            "espeak"
 
 #define MULTI_INT
@@ -274,8 +279,8 @@ private:
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
-		if (mount("/roms", "/roms", NULL, MS_REMOUNT, NULL) != 0)
-			ERROR("remounting in default options /roms failed");
+		if (mount(MIYOO_ROMS_DIR, MIYOO_ROMS_DIR, NULL, MS_REMOUNT, NULL) != 0)
+			ERROR("remounting in default options " MIYOO_ROMS_DIR " failed");
 		getKbdLayoutHW();
 		getTefixHW();
 		w = 320;
@@ -484,11 +489,15 @@ public:
 		}
 	}
 
-	void shutdownOS(bool remount = true, bool poweroff = true) {
+	void shutdownOS(bool poweroff = true) {
 		sync();
-		if (remount && mount("/mnt", "/mnt", NULL, MS_REMOUNT | MS_RDONLY, NULL) != 0) {
-			ERROR("remounting /mnt in RO failed");
-		}
+		//inittab shutdown actions are ignored when using reboot(), thus DIY as follow
+		swapoff(MIYOO_SWAP_FILE);
+		if (mount(MIYOO_HOME_DIR, MIYOO_HOME_DIR, NULL, MS_REMOUNT | MS_RDONLY, NULL) != 0)
+			ERROR("remounting " MIYOO_HOME_DIR " in RO failed");
+		if (mount(MIYOO_ROMS_DIR, MIYOO_ROMS_DIR, NULL, MS_REMOUNT | MS_RDONLY, NULL) != 0)
+			ERROR("remounting " MIYOO_ROMS_DIR " in RO failed");
+
 		reboot(poweroff ? RB_POWER_OFF : RB_AUTOBOOT);
 	}
 
@@ -501,7 +510,7 @@ public:
 			fclose(f);
 		}
 		//system("sync; mount -o remount,ro $HOME; reboot");
-		shutdownOS(true, false);
+		shutdownOS(false);
 	}
 
 	void setCPU(uint32_t mhz) {
@@ -535,14 +544,14 @@ public:
 	}
 
 	string hwPreLinkLaunch() {
-		if (statfs("/roms", &fs) != 0) {
+		if (statfs(MIYOO_ROMS_DIR, &fs) != 0) {
 			ERROR("couldn't read FS type with statfs()");
 		} else {
 			if ((unsigned long)fs.f_type != BTRFS_SUPER_MAGIC) {
-				if (mount("/roms", "/roms", NULL, MS_REMOUNT | MS_SYNCHRONOUS, NULL) != 0)
-					ERROR("remounting in sync /roms failed");
+				if (mount(MIYOO_ROMS_DIR, MIYOO_ROMS_DIR, NULL, MS_REMOUNT | MS_SYNCHRONOUS, NULL) != 0)
+					ERROR("remounting in sync" MIYOO_ROMS_DIR " failed");
 			} else {
-				INFO("detected BTRFS in /roms");
+				INFO("detected BTRFS in " MIYOO_ROMS_DIR);
 			}
 		}
 		return "";
