@@ -87,6 +87,7 @@ void sync_date_time(time_t t);
 void init_date_time();
 void build_date_time();
 void set_date_time(const char* timestamp);
+void write_date_file(const string &path);
 
 bool file_copy(const string &src, const string &dst);
 

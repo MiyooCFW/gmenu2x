@@ -492,6 +492,7 @@ public:
 	}
 
 	void shutdownOS(bool poweroff = true) {
+		//write_date_file(MIYOO_DATE_FILE);
 		sync();
 		//inittab shutdown actions are ignored when using reboot(), thus DIY as follow
 		swapoff(MIYOO_SWAP_FILE);
