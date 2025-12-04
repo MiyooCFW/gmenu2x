@@ -1860,7 +1860,7 @@ void GMenu2X::poweroffDialog() {
 			mb.setAutoHide(1);
 			mb.exec();
 		//	setVolume(0);
-			quit();
+			quit(false);
 			//system("sync; mount -o remount,ro $HOME; poweroff");
 			shutdownOS();
 			break;
@@ -1870,7 +1870,7 @@ void GMenu2X::poweroffDialog() {
 			mb.setAutoHide(1);
 			mb.exec();
 		//	setVolume(0);
-			quit();
+			quit(false);
 			//system("sync; mount -o remount,ro $HOME; reboot");
 			shutdownOS(false);
 			break;

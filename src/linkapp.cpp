@@ -496,8 +496,8 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 	INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
 	
 	if (gmenu2x->confInt["saveAutoStart"]) {
-		gmenu2x->confStr["datetime"] = get_date_time();
-		gmenu2x->writeConfig();
+		// gmenu2x->confStr["datetime"] = get_date_time();
+		// gmenu2x->writeConfig();
 		gmenu2x->shutdownOS();
 	} else {
 		//we already called SDL_Quit try relaunching gmenu2x

@@ -492,7 +492,7 @@ public:
 	}
 
 	void shutdownOS(bool poweroff = true) {
-		//write_date_file(MIYOO_DATE_FILE);
+		write_date_file(MIYOO_DATE_FILE);
 		sync();
 		//inittab shutdown actions are ignored when using reboot(), thus DIY as follow
 		swapoff(MIYOO_SWAP_FILE);
@@ -507,7 +507,7 @@ public:
 	void setTVOut(unsigned int mode) {
 		setBacklight(confInt["backlight"]);
 		writeTmp();
-		quit();
+		quit(false);
 		if (FILE *f = fopen(MIYOO_TVMODE_FILE, "w")) {
 			fprintf(f, "%i", mode); // fputs(val, f);
 			fclose(f);
