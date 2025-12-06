@@ -415,7 +415,7 @@ void GMenu2X::main() {
 		} else if (!confInt["dialogAutoStart"]) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto disable AutoStart"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'X' now quickly\nto disable AutoStart"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();
@@ -446,13 +446,13 @@ void GMenu2X::main() {
 	input.update(false);
 
 	if (input[MANUAL]) {
-		if (!(confInt["saveAutoStart"]) || confInt["dialogAutoStart"]) {
-			// Reset GMenu2X settings
-			string tmppath = exe_path() + "/gmenu2x.conf";
-			unlink(tmppath.c_str());
-			reinit();
-		} else {
-			// Reset settings for viewAutoStart()
+		// Reset GMenu2X settings
+		string tmppath = exe_path() + "/gmenu2x.conf";
+		unlink(tmppath.c_str());
+		reinit();
+	} else if (input[MODIFIER]) {
+		if (confInt["saveAutoStart"] && !(confInt["dialogAutoStart"])) {
+		// Reset settings for viewAutoStart()
 			confInt["saveAutoStart"] = 0;
 			confInt["dialogAutoStart"] = 0;
 			reinit(false, true);
