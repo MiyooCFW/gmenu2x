@@ -1115,7 +1115,11 @@ void GMenu2X::readConfig() {
 	confInt["tefixMax"] = TEFIX_MAX;
 	confStr["bgscale"] = "Crop";
 	confStr["skinFont"] = "Custom";
+#if defined(TARGET_LINUX)
+	confInt["backlightTimeout"] = 0; // TODO: inconsistent interval tracking for doSuspend in PC build
+#else
 	confInt["backlightTimeout"] = 30;
+#endif
 	confInt["powerTimeout"] = 0;
 #if !defined(HW_LIDVOL)
 	confInt["backlight"] = 50;
