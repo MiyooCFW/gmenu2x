@@ -59,8 +59,10 @@ bool BrowseDialog::exec() {
 			string sel(1, c);
 			buttons.push_back({"skin:imgs/manual.png", strreplace("#ABCDEFGHIJKLMNOPQRSTUVWXYZ", sel, " < " + sel + " > ")});
 		} else {
-			buttons.push_back({"select", gmenu2x->tr["Menu"]});
-			buttons.push_back({"b", gmenu2x->tr["Cancel"]});
+			if (!(gmenu2x->confInt["saveAutoStart"])) {
+				buttons.push_back({"select", gmenu2x->tr["Menu"]});
+				buttons.push_back({"b", gmenu2x->tr["Cancel"]});
+			}
 
 			if (!showFiles && allowSelectDirectory)
 				buttons.push_back({"start", gmenu2x->tr["Select"]});
@@ -213,14 +215,14 @@ bool BrowseDialog::exec() {
 		} else if (gmenu2x->input[SETTINGS] && allowSelectDirectory) {
 			return true;
 		} else if (gmenu2x->input[CANCEL] || gmenu2x->input[SETTINGS]) {
-			if (!((gmenu2x->confStr["previewMode"] != "Backdrop") && !(preview.empty() || preview == "#")))
-				return false; // close only if preview is empty.
+			if (!((gmenu2x->confStr["previewMode"] != "Backdrop") && !(preview.empty() || preview == "#") || gmenu2x->confInt["saveAutoStart"]))
+				return false; // close only if preview is empty or not running AutoStart.
 			preview = "";
 		} else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER]) {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			selected = (rand() % fileCount()) + dirCount();
 			preview = getPreview(selected);
-		} else if (gmenu2x->input[MENU]) {
+		} else if (gmenu2x->input[MENU] && !(gmenu2x->confInt["saveAutoStart"])) {
 			contextMenu();
 			preview = getPreview(selected);
 		}
