@@ -1243,6 +1243,7 @@ void GMenu2X::writeConfig() {
 				curr->first == "sectionBackdrops" ||
 				curr->first == "sectionLabel" ||
 				curr->first == "linkLabel" ||
+				curr->first == "linkDescriptionLabel" ||
 				curr->first == "showLinkIcon" ||
 
 				// defaults
@@ -1303,6 +1304,7 @@ void GMenu2X::writeSkinConfig() {
 			(curr->first == "searchBackdrops" && curr->second == SBAK_OFF) ||
 			(curr->first == "sectionBackdrops" && curr->second == 0) ||
 			(curr->first == "linkLabel" && curr->second == 1) ||
+			(curr->first == "linkDescriptionLabel" && curr->second == 1) ||
 			(curr->first == "showLinkIcon" && curr->second == 1) ||
 			(curr->first == "showDialogIcon" && curr->second == 1) ||
 
@@ -1339,6 +1341,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	skinConfInt["searchBackdrops"] = SBAK_OFF;
 	skinConfInt["sectionBackdrops"] = 0;
 	skinConfInt["linkLabel"] = 1;
+	skinConfInt["linkDescriptionLabel"] = 1;
 	skinConfInt["showLinkIcon"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
 
@@ -1545,6 +1548,7 @@ void GMenu2X::skinMenu() {
 		sd.addSetting(new MenuSettingInt(this, tr["Menu rows"], tr["Number of rows of links in main menu"], &skinConfInt["linkRows"], 4, 1, 8));
 		sd.addSetting(new MenuSettingBool(this, tr["Show link icon"], tr["Show link icon in main menu"], &skinConfInt["showLinkIcon"]));
 		sd.addSetting(new MenuSettingBool(this, tr["Link label"], tr["Show link labels in main menu"], &skinConfInt["linkLabel"]));
+		sd.addSetting(new MenuSettingBool(this, tr["Link description label"], tr["Show description label in menu list view"], &skinConfInt["linkDescriptionLabel"]));
 		sd.addSetting(new MenuSettingBool(this, tr["Section label"], tr["Show the active section label in main menu"], &skinConfInt["sectionLabel"]));
 		sd.exec();
 
