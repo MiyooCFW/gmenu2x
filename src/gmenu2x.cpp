@@ -26,6 +26,7 @@
 #include <signal.h>
 
 #include <sys/ioctl.h>
+#include <sys/wait.h>
 
 #include <linux/vt.h>
 #include <linux/kd.h>
@@ -68,7 +69,7 @@ using std::ofstream;
 using std::stringstream;
 using namespace fastdelegate;
 
-#define sync() sync(); system("sync &");
+#define sync() sync(); //system("sync &");
 
 enum vol_mode_t {
 	VOLUME_MODE_MUTE, VOLUME_MODE_PHONES, VOLUME_MODE_NORMAL
@@ -94,14 +95,15 @@ int LAYOUT_VERSION_MAX = 0;
 int TEFIX = -1;
 int TEFIX_MAX = -1;
 
+string sysUSBmode = "Unknown";
+string sysTVout = "Unknown";
+
 const char *CARD_ROOT = getenv("HOME");
 #if defined(HW_UDC)
 const char *SYS_USB_MODE = getenv("USB_MODE");
-string sysUSBmode = "Unknown";
 #endif
 #if defined(HW_TVOUT)
 const char *SYS_TVOUT = getenv("TVOUT");
-string sysTVout = "Unknown";
 #endif
 
 int SLOW_GAP_TTS = 5;
@@ -200,11 +202,7 @@ int main(int argc, char * argv[]) {
 }
 
 GMenu2X::~GMenu2X() {
-	get_date_time(); // update sw clock
-	confStr["datetime"] = get_date_time();
-	
-	writeConfig();
-	
+	//only occurs when closing gmenu2x ps with sig call
 	quit();
 	delete menu;
 	delete s;
@@ -262,34 +260,16 @@ void GMenu2X::allyTTS(const char* text, int gap, int speed, bool wait) {
 	//freopen("/dev/tty", "w", stdout); // activate stdout
 }
 
-void GMenu2X::quit() {
+void GMenu2X::quit(bool save) {
 	s->flip(); s->flip(); s->flip(); // flush buffers
 
 	powerManager->clearTimer();
-	get_date_time(); // update sw clock
-	confStr["datetime"] = get_date_time();
-//#if defined(HW_LIDVOL)
-// 	setBacklight(getBacklight());
-// 	setVolume(getVolume());
-//#endif	
-	writeConfig();
+	if (save) {
+		confStr["datetime"] = get_date_time();
+		writeConfig();
+	}
 
 	if (confInt["enableTTS"]) system("killall " TTS_ENGINE);
-
-	s->free();
-
-	font->free();
-	titlefont->free();
-
-	fflush(NULL);
-	SDL_Quit();
-	hwDeinit();
-}
-
-void GMenu2X::quit_nosave() {
-	s->flip(); s->flip(); s->flip(); // flush buffers
-
-	powerManager->clearTimer();
 
 	s->free();
 
@@ -360,80 +340,82 @@ void GMenu2X::main() {
 	int randomInt = rand() % 10; // Generate a random val={0..x} to print "Hint" msg occasionally
 	// Hint messages
 	//while (true) {
-	if (confInt["showHints"] == 1) {
-		if (confInt["enableTTS"] == 1 && (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "")) {
-			switch (randomInt) {
-				case 0: case 1: case 2: {
-				string readHint = tr["Hint: To read a selected value or Link's description press X"];
-				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
-				break;
+	if (confInt["showHints"]) {
+		if (!(confInt["saveAutoStart"])) {
+			if (confInt["enableTTS"]) {
+				switch (randomInt) {
+					case 0: case 1: case 2: {
+					string readHint = tr["Hint: To read a selected value or Link's description press X"];
+					allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+					break;
+					}
+					case 3: case 4: case 5: {
+					string readHint = tr["Hint: You can skip reading a message, by pressing START"];
+					allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+					break;
+					}
+					default: {
+					allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
+					break;
+					}
 				}
-				case 3: case 4: case 5: {
-				string readHint = tr["Hint: You can skip reading a message, by pressing START"];
-				allyTTS(readHint.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
-				break;
-				}
-				default: {
-				allyTTS(tr["Loading"].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 1);
-				break;
-				}
-			}
-		} else if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "") {
-			switch (randomInt) {
-				case 0: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto reset gmenu2x.cfg"]);
-				mb.setAutoHide(1000);
-				mb.setBgAlpha(0);
-				mb.exec();
-				break;
-				}
-				case 1: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'X' to change Date & Time"]);
-				mb.setAutoHide(1000);
-				mb.setBgAlpha(0);
-				mb.exec();		
-				break;
-				}
-				case 2: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'SELECT' to disable TV-output"]);
-				mb.setAutoHide(1000);
-				mb.setBgAlpha(0);
-				mb.exec();		
-				break;
-				}
-				case 3: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'START' to enter Suspend Mode"]);
-				mb.setAutoHide(1000);
-				mb.setBgAlpha(0);
-				mb.exec();		
-				break;
-				}
-				case 4: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!?\nSee settings"]);
-				mb.setAutoHide(1000);
-				mb.setBgAlpha(0);
-				mb.exec();		
-				break;
-				}
-				case 5: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'Y' to restart GMenu2X"]);
-				mb.setAutoHide(1000);
-				mb.setBgAlpha(0);
-				mb.exec();		
-				break;
-				}
-				default: {
-				MessageBox mb(this, tr["Loading"]);
-				mb.setAutoHide(1);
-				mb.setBgAlpha(0);
-				mb.exec();
-				break;
+			} else {
+				switch (randomInt) {
+					case 0: {
+					MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto reset gmenu2x.cfg"]);
+					mb.setAutoHide(1000);
+					mb.setBgAlpha(0);
+					mb.exec();
+					break;
+					}
+					case 1: {
+					MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'X' to change Date & Time"]);
+					mb.setAutoHide(1000);
+					mb.setBgAlpha(0);
+					mb.exec();		
+					break;
+					}
+					case 2: {
+					MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'SELECT' to disable TV-output"]);
+					mb.setAutoHide(1000);
+					mb.setBgAlpha(0);
+					mb.exec();		
+					break;
+					}
+					case 3: {
+					MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'START' to enter Suspend Mode"]);
+					mb.setAutoHide(1000);
+					mb.setBgAlpha(0);
+					mb.exec();		
+					break;
+					}
+					case 4: {
+					MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: You can AutoStart any game/app!?\nSee settings"]);
+					mb.setAutoHide(1000);
+					mb.setBgAlpha(0);
+					mb.exec();		
+					break;
+					}
+					case 5: {
+					MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Hold 'Y' to restart GMenu2X"]);
+					mb.setAutoHide(1000);
+					mb.setBgAlpha(0);
+					mb.exec();		
+					break;
+					}
+					default: {
+					MessageBox mb(this, tr["Loading"]);
+					mb.setAutoHide(1);
+					mb.setBgAlpha(0);
+					mb.exec();
+					break;
+					}
 				}
 			}
 		} else if (!confInt["dialogAutoStart"]) {
 			switch (randomInt) {
 				case 0: case 1: case 2: {
-				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'Y' now quickly\nto disable AutoStart"]);
+				MessageBox mb(this, tr["Loading."]+"\n"+tr["Hint: Press 'X' now quickly\nto disable AutoStart"]);
 				mb.setAutoHide(1000);
 				mb.setBgAlpha(0);
 				mb.exec();
@@ -448,6 +430,7 @@ void GMenu2X::main() {
 				}
 			}
 		} else {
+			// this may be necessary if smb want to run quick reset settings
 			MessageBox mb(this, tr["Loading"]);
 			mb.setAutoHide(1);
 			mb.setBgAlpha(0);
@@ -461,19 +444,18 @@ void GMenu2X::main() {
 	}
 	//SDL_Delay(1000);reinit();}
 	input.update(false);
-	if (confStr["lastCommand"] == "" || confStr["lastDirectory"] == "" || confInt["dialogAutoStart"]) {
-		if (input[MANUAL]) { // Reset GMenu2X settings
-			string tmppath = exe_path() + "/gmenu2x.conf";
-			unlink(tmppath.c_str());
-			reinit();
-		}
-	} else {
-		if (input[MANUAL]) { // Reset settings for viewAutoStart()
-				confInt["saveAutoStart"] = 0;
-				confInt["dialogAutoStart"] = 0;
-				confStr["lastDirectory"] = "";
-				confStr["lastCommand"] = "";
-			reinit_save();
+
+	if (input[MANUAL]) {
+		// Reset GMenu2X settings
+		string tmppath = exe_path() + "/gmenu2x.conf";
+		unlink(tmppath.c_str());
+		reinit();
+	} else if (input[MODIFIER]) {
+		if (confInt["saveAutoStart"] && !(confInt["dialogAutoStart"])) {
+		// Reset settings for viewAutoStart()
+			confInt["saveAutoStart"] = 0;
+			confInt["dialogAutoStart"] = 0;
+			reinit(false, true);
 		}
 	}
 
@@ -488,6 +470,8 @@ void GMenu2X::main() {
 	udcStatus = getUDCStatus();
 	numJoyPrev = numJoy = getDevStatus();
 	volumeModePrev = volumeMode = getVolumeMode(confInt["globalVolume"]);
+
+	readTmp();
 
 #if defined(HW_TVOUT)
 	if (sysTVout != "Unknown") {
@@ -511,35 +495,15 @@ void GMenu2X::main() {
 	}
 #endif
 
-	if (confInt["dialogAutoStart"] && confStr["lastCommand"] != "" && confStr["lastDirectory"] != "") {
+	if (confInt["dialogAutoStart"] && confInt["saveAutoStart"]) {
 		viewAutoStart();
 	}
 
-	if (confStr["lastCommand"] != "" && confStr["lastDirectory"] != "")  {
-		INFO("Starting autostart()");
-		INFO("conf %s %s",confStr["lastDirectory"].c_str(),confStr["lastCommand"].c_str());
-		INFO("autostart %s %s",confStr["lastDirectory"],confStr["lastCommand"]);
-		setCPU(confInt["lastCPU"]);
-		setKbdLayout(confInt["lastKeyboardLayout"]);
-		setTefix(confInt["lastTefix"]);
-		chdir(confStr["lastDirectory"].c_str());
-		quit();
-		string prevCmd = confStr["lastCommand"].c_str();
-		string writeDateCmd = "; sed -i \"/datetime=/c\\datetime=\\\"$(date +\\%\\F\\ %H:%M)\\\"\" ";
-		string tmppath = exe_path() + "/gmenu2x.conf";
-#if defined(TARGET_LINUX)
-		string exitCmd = "; exit" ;
-#else
-		string exitCmd = "; sync; mount -o remount,ro $HOME; poweroff";
-#endif
-		string launchCmd = prevCmd + writeDateCmd + tmppath + exitCmd;
-		execlp("/bin/sh", "/bin/sh", "-c", launchCmd.c_str(),  NULL);
-	}
 	currBackdrop = confStr["wallpaper"];
 	confStr["wallpaper"] = setBackground(s, currBackdrop);
 	bg = new Surface(s);
 	
-	if (readTmp() && confInt["outputLogs"]) {
+	if (confInt["outputLogs"]) {
 		viewLog();
 	}
 	
@@ -558,7 +522,10 @@ void GMenu2X::main() {
 		menu->selLinkApp()->selector(lastSelectorElement, lastSelectorDir);
 	}
 
-	menu->exec();
+	if (confInt["saveAutoStart"])
+		menu->selLink()->run();
+	else
+		menu->exec();
 }
 
 bool GMenu2X::inputCommonActions(bool &inputAction) {
@@ -885,12 +852,16 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		writeConfig();
+		if (confInt["saveAutoStart"]) {
+			confInt["dialogAutoStart"] = 1;
+			confInt["saveSelection"] = 1;
+		}
 		if (lang == "English") lang = "";
 		if (confStr["lang"] != lang) {
 			confStr["lang"] = lang;
 			tr.setLang(lang);
 		}
+		writeConfig();
 	}
 
 	setBacklight(confInt["backlight"], false);
@@ -909,11 +880,6 @@ void GMenu2X::settings() {
 	
 	powerManager->setSuspendTimeout(confInt["backlightTimeout"]);
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
-
-	if (sd.exec() && sd.edited() && sd.save) {
-		if (confInt["saveAutoStart"]) confInt["dialogAutoStart"] = 1;
-		reinit_save();
-	}
 }
 
 void GMenu2X::resetSettings() {
@@ -1102,6 +1068,7 @@ bool GMenu2X::readTmp() {
 		// else if (name == "TVOut") TVOut = atoi(value.c_str());
 		else if (name == "tvOutPrev") tvOutPrev = atoi(value.c_str());
 		else if (name == "udcPrev") udcPrev = atoi(value.c_str());
+		else if (name == "sysUSBmode") sysUSBmode = value;
 		else if (name == "currBackdrop") currBackdrop = value;
 		else if (name == "explorerLastDir") confStr["explorerLastDir"] = value;
 	}
@@ -1121,6 +1088,7 @@ void GMenu2X::writeTmp(int selelem, const string &selectordir) {
 		tmp << "udcPrev=" << udcPrev << endl;
 		tmp << "tvOutPrev=" << tvOutPrev << endl;
 		// tmp << "TVOut=" << TVOut << endl;
+		tmp << "sysUSBmode=" << sysUSBmode << endl;
 		tmp << "currBackdrop=" << currBackdrop << endl;
 		if (!confStr["explorerLastDir"].empty()) tmp << "explorerLastDir=" << confStr["explorerLastDir"] << endl;
 		tmp.close();
@@ -1147,7 +1115,11 @@ void GMenu2X::readConfig() {
 	confInt["tefixMax"] = TEFIX_MAX;
 	confStr["bgscale"] = "Crop";
 	confStr["skinFont"] = "Custom";
+#if defined(TARGET_LINUX)
+	confInt["backlightTimeout"] = 0; // TODO: inconsistent interval tracking for doSuspend in PC build
+#else
 	confInt["backlightTimeout"] = 30;
+#endif
 	confInt["powerTimeout"] = 0;
 #if !defined(HW_LIDVOL)
 	confInt["backlight"] = 50;
@@ -1710,17 +1682,14 @@ void GMenu2X::viewAutoStart() {
 			case CANCEL:
 				confInt["saveAutoStart"] = 0;
 				confInt["dialogAutoStart"] = 0;
-				confStr["lastDirectory"] = "";
-				confStr["lastCommand"] = "";
-				reinit_save();
+				reinit(false, true);
 			case MODIFIER:
 				confInt["dialogAutoStart"] = 0;
-				reinit_save();
+				reinit(false, true);
 			case MANUAL:
 				quit();
-#if !defined(TARGET_LINUX)
-				system("sync; mount -o remount,ro $HOME; poweroff");
-#endif
+				//system("sync; mount -o remount,ro $HOME; poweroff");
+				shutdownOS();
 				break;
 	}
 }
@@ -1790,15 +1759,7 @@ void GMenu2X::explorer() {
 	bd.showFiles = true;
 
 	if (confInt["saveSelection"]) bd.goPath(confStr["explorerLastDir"]);
-
-			string command = cmdclean(bd.getFilePath(bd.selected));
-			if (confInt["saveAutoStart"]) {
-				confInt["lastCPU"] = confInt["cpuMenu"];
-				confInt["lastKeyboardLayout"] = confInt["keyboardLayoutMenu"];
-				confStr["lastCommand"] = command.c_str();
-				confStr["lastDirectory"] = bd.getFilePath().c_str();
-				writeConfig();
-			}
+		string command = cmdclean(bd.getFilePath(bd.selected));
 	while (bd.exec()) {
 		string ext = bd.getExt(bd.selected);
 		if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".bmp") {
@@ -1833,19 +1794,10 @@ void GMenu2X::explorer() {
 			TerminalDialog td(this, tr["Zip content"], bd.getFileName(bd.selected), "skin:icons/terminal.png");
 			td.exec("unzip -l " + cmdclean(bd.getFilePath(bd.selected)));
 		} else {
-			if (confInt["saveSelection"] && (confInt["section"] != menu->selSectionIndex() || confInt["link"] != menu->selLinkIndex())) {
-				writeConfig();
-			}
+			// TODO: This does not save last selectorelem & selectordir in writeTmp() cuz section && link=0
 
 			string command = cmdclean(bd.getFilePath(bd.selected));
 			string params = "";
-			if (confInt["saveAutoStart"]) {
-				confInt["lastCPU"] = confInt["cpuMenu"];
-				confInt["lastKeyboardLayout"] = confInt["keyboardLayoutMenu"];
-				confStr["lastCommand"] = command.c_str();
-				confStr["lastDirectory"] = bd.getFilePath().c_str();
-				writeConfig();
-			}
 
 			if (confInt["outputLogs"]) {
 				if (file_exists("/usr/bin/gdb")) {
@@ -1859,7 +1811,7 @@ void GMenu2X::explorer() {
 			link->setExec(command);
 			link->setParams(params);
 			link->setIcon("skin:icons/terminal.png");
-			link->setTitle(bd.getFile(bd.selected));
+			link->setTitle(bd.getFile(bd.selected));			
 			link->launch();
 			return;
 		}
@@ -1881,23 +1833,16 @@ bool GMenu2X::saveScreenshot(string path) {
 	return SDL_SaveBMP(s->raw, path.c_str()) == 0;
 }
 
-void GMenu2X::reinit(bool showDialog) {
+void GMenu2X::reinit(bool showDialog, bool quitSave) {
 	if (showDialog) {
+		//showDialog is never true in code - WIP
 		MessageBox mb(this, tr["GMenu2X will restart to apply"]+"\n"+tr["the settings. Continue?"], "skin:icons/exit.png");
 		mb.setButton(CONFIRM, tr["Restart"]);
 		mb.setButton(CANCEL,  tr["Cancel"]);
 		if (mb.exec() == CANCEL) return;
 	}
 
-	quit_nosave();
-	WARNING("Re-launching gmenu2x");
-	chdir(exe_path().c_str());
-	execlp("./gmenu2x", "./gmenu2x", NULL);
-}
-
-void GMenu2X::reinit_save() {
-
-	quit();
+	quit(quitSave);
 	WARNING("Re-launching gmenu2x");
 	chdir(exe_path().c_str());
 	execlp("./gmenu2x", "./gmenu2x", NULL);
@@ -1913,17 +1858,15 @@ void GMenu2X::poweroffDialog() {
 	mb.setButton(CONFIRM, tr["Poweroff"]);
 	mb.setButton(CANCEL,  tr["Cancel"]);
 	int res = mb.exec();
-	writeConfig();
 	switch (res) {
 		case CONFIRM: {
 			MessageBox mb(this, tr["Poweroff"]);
 			mb.setAutoHide(1);
 			mb.exec();
 		//	setVolume(0);
-			quit();
-#if !defined(TARGET_LINUX)
-			system("sync; mount -o remount,ro $HOME; poweroff");
-#endif
+			quit(false);
+			//system("sync; mount -o remount,ro $HOME; poweroff");
+			shutdownOS();
 			break;
 		}
 		case SECTION_NEXT: {
@@ -1931,10 +1874,9 @@ void GMenu2X::poweroffDialog() {
 			mb.setAutoHide(1);
 			mb.exec();
 		//	setVolume(0);
-			quit();
-#if !defined(TARGET_LINUX)
-			system("sync; mount -o remount,ro $HOME; reboot");
-#endif
+			quit(false);
+			//system("sync; mount -o remount,ro $HOME; reboot");
+			shutdownOS(false);
 			break;
 		}
 	}
@@ -2426,7 +2368,7 @@ int GMenu2X::setBacklight(int val, bool popup) {
 int GMenu2X::drawButton(Button *btn, int x, int y) {
 	if (y < 0) y = this->h + y;
 	btn->setPosition(x, y);
-	btn->paint();
+	return btn->paint();
 }
 
 int GMenu2X::drawButton(Surface *s, const string &btn, const string &text, int x, int y) {

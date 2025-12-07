@@ -105,6 +105,9 @@ extern int LAYOUT_VERSION_MAX;
 extern int TEFIX;
 extern int TEFIX_MAX;
 
+extern string sysUSBmode;
+extern string sysTVout;
+
 extern int SLOW_GAP_TTS;
 extern int SLOW_SPEED_TTS;
 extern int MEDIUM_GAP_TTS;
@@ -171,13 +174,11 @@ public:
 	string currBackdrop;
 
 	~GMenu2X();
-	void quit();
-	void quit_nosave();
+	void quit(bool save = true);
 	void main();
 	void settings();
 	void settings_date();
-	void reinit(bool showDialog = false);
-	void reinit_save();
+	void reinit(bool showDialog = false, bool quitSave = false);
 	void poweroffDialog();
 	void resetSettings();
 	void cpuSettings();
@@ -251,6 +252,7 @@ public:
 	virtual int getVolume() { return 0; };
 	virtual int getBacklight() { return -1; };
 	virtual int setBacklight(int val, bool popup = false);
+	virtual void shutdownOS(bool poweroff = true) { exit(0); } ;
 	virtual string hwPreLinkLaunch() { return ""; };
 	virtual void enableTerminal() { };
 	virtual void setGamma(int value) { };

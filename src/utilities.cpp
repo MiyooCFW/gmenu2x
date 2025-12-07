@@ -387,6 +387,15 @@ const string get_date_time() {
 	return buf;
 }
 
+void write_date_file(const string &path) {
+	string date = get_date_time();
+	ofstream cfg(path.c_str());
+	if (cfg.is_open()) {
+		cfg << date;
+		cfg.close();
+	}
+}
+
 void sync_date_time(time_t t) {
 #if !defined(TARGET_LINUX)
 	struct timeval tv = { t, 0 };

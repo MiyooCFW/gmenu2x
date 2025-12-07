@@ -32,6 +32,7 @@ make -f Makefile.miyoo
 make -f Makefile.miyoo dist
 ```
 you can find both outputs in `./dist/miyoo/` directory.
+
 ### PC (Linux):
 This is primarily useful for development/testing. 
 First, install the dependencies. This should work for Debian/Ubuntu systems, use the appropriate package manager for other systems:
@@ -143,7 +144,7 @@ In settings:
 * Every time you launch a device you will be welcomed with AutoStart selection menu.
 * Next previously launched app will start with all the settings you provide it with from GMenu2X linkapp config.
 * When you disable AutoStart msgbox there are only 2 ways to turn OFF this feature:
-	* press "Y" at startup during GMenu2X loading screen
+	* press "X" at startup during GMenu2X loading screen
 	* discard `dialogAutoStart=1` line in gmenu2x.conf file
 	* remove gmenu2x.conf file entirely
 
@@ -166,3 +167,7 @@ You can pass useful variables (which can be treated as arguments for cmd) before
 	* Selector Filter: Filter extensions to be shown in the selector. Separate multiple extensions with commas.
 	* Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
 * The name of the file of rom and preview have to be exactly the same. Supported image types are .png or .jpg;
+
+## Debugging apps
+
+GMenu2X provide option to run debugger (if present in `/usr/bin/gdb`) on non-stripped apps with debug flags, that is if you run it directly from explorer's selector. 

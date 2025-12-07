@@ -5,6 +5,8 @@
 #include <sys/mman.h>
 #include <sys/mount.h>
 #include <sys/statfs.h>
+#include <sys/swap.h>
+#include <sys/reboot.h>
 #include <bitset>
 
 // 	MiyooCFW 2.0 Key Codes. Apaczer, 2023
@@ -41,6 +43,7 @@
 #define MIYOO_LAY_SET_VER     _IOWR(0x103, 0, unsigned long)
 #define MIYOO_KBD_GET_VER     _IOWR(0x104, 0, unsigned long)
 #define MIYOO_LAY_GET_VER     _IOWR(0x105, 0, unsigned long)
+#define MIYOO_KBD_SET_HOTKEY  _IOWR(0x106, 0, unsigned long)
 #define MIYOO_FB0_PUT_OSD     _IOWR(0x100, 0, unsigned long)
 #define MIYOO_FB0_SET_MODE    _IOWR(0x101, 0, unsigned long)
 #define MIYOO_FB0_GET_VER     _IOWR(0x102, 0, unsigned long)
@@ -50,22 +53,26 @@
 #define MIYOO_FB0_SET_TEFIX   _IOWR(0x106, 0, unsigned long)
 #define MIYOO_FB0_GET_TEFIX   _IOWR(0x107, 0, unsigned long)
 
+#define MIYOO_HOME_DIR        "/mnt"
+#define MIYOO_ROMS_DIR        "/roms"
 #define MIYOO_FBP_FILE        "/mnt/.fpbp.conf"
 #define MIYOO_LID_FILE        "/mnt/.backlight.conf"
 #define MIYOO_VOL_FILE        "/mnt/.volume.conf"
 #define MIYOO_BUTTON_FILE     "/mnt/.buttons.conf"
 #define MIYOO_BATTERY_FILE    "/mnt/.batterylow.conf"
+#define MIYOO_DATE_FILE       "/mnt/.date.conf"
+#define MIYOO_TVMODE_FILE     "/mnt/.tvmode"
+#define MIYOO_OPTIONS_FILE    "/boot/options.cfg"
 #define MIYOO_LID_CONF        "/sys/devices/platform/backlight/backlight/backlight/brightness"
 #define MIYOO_BATTERY         "/sys/devices/platform/soc/1c23400.battery/power_supply/miyoo-battery/voltage_now"
 #define MIYOO_BATTERY_STATUS  "/sys/class/power_supply/miyoo-battery/status"
 #define MIYOO_USB_STATE       "/sys/devices/platform/soc/1c13000.usb/musb-hdrc.1.auto/udc/musb-hdrc.1.auto/state"
 #define MIYOO_USB_SUSPEND     "/sys/devices/platform/soc/1c13000.usb/musb-hdrc.1.auto/gadget/suspended"
-#define MIYOO_OPTIONS_FILE    "/mnt/options.cfg"
-#define MIYOO_TVMODE_FILE     "/mnt/.tvmode"
 #define MIYOO_SND_FILE        "/dev/miyoo_snd"
 #define MIYOO_FB0_FILE        "/dev/miyoo_fb0"
 #define MIYOO_KBD_FILE        "/dev/miyoo_kbd"
 #define MIYOO_VIR_FILE        "/dev/miyoo_vir"
+#define MIYOO_SWAP_FILE       "/dev/mmcblk0p3"
 #define TTS_ENGINE            "espeak"
 
 #define MULTI_INT
@@ -158,7 +165,7 @@ uint8_t getUDCStatus() {
 	suspended = file_read(MIYOO_USB_SUSPEND);
 
 	//INFO("SYS_USB_MODE=%s",SYS_USB_MODE);
-	if (SYS_USB_MODE != NULL) {
+	if (SYS_USB_MODE != NULL && sysUSBmode == "Unknown") {
 		sysUSBmode = SYS_USB_MODE;
 	}
 	//INFO("sysUSBmode=%s",sysUSBmode);
@@ -274,8 +281,8 @@ private:
 
 		batteryIcon = getBatteryStatus(getBatteryLevel(), 0, 0);
 		// setenv("HOME", "/mnt", 1);
-		if (mount("/roms", "/roms", NULL, MS_REMOUNT, NULL) != 0)
-			ERROR("remounting in default options /roms failed");
+		if (mount(MIYOO_ROMS_DIR, MIYOO_ROMS_DIR, NULL, MS_REMOUNT, NULL) != 0)
+			ERROR("remounting in default options " MIYOO_ROMS_DIR " failed");
 		getKbdLayoutHW();
 		getTefixHW();
 		w = 320;
@@ -323,7 +330,7 @@ private:
 			return;
 		}
 
-		int option;
+		int option = CANCEL;
 		if (confStr["usbMode"] == "Storage") option = CONFIRM;
 		else if (confStr["usbMode"] == "HID") option = MODIFIER;
 		else if (confStr["usbMode"] == "Serial") option = MANUAL;
@@ -341,35 +348,43 @@ private:
 		}
 
 		if (udcStatus == UDC_HOST) option = -1;
+		
 
-		if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
-			INFO("Enabling MTP storage device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode mtp", NULL);
-			return;
-		} else if (option == MODIFIER) { // hid
-			INFO("Enabling HID device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode hid", NULL);
-			return;
-		} else if (option == MANUAL) { // serial
-			INFO("Enabling Serial Console on device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode serial", NULL);
-			return;
-		} else if (option == MENU) { // networking
-			INFO("Enabling USB Networking on device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode net", NULL);
-			return;
-		} else if (option == -1) { // host
-			INFO("Enabling host device");
-			quit();
-			execlp("/bin/sh", "/bin/sh", "-c", "exec /usr/bin/usb-mode host", NULL);
-			return;
+		if (option == CANCEL) {
+			INFO("Continuing with default USB mode");
+		} else {
+			string usbcommand = "";
+			MessageBox mb(this, tr["Loading"]);
+			mb.setAutoHide(1);
+			mb.setBgAlpha(0);
+			mb.exec();
+			input.update(false);
+			if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
+				INFO("Enabling MTP storage device");
+				usbcommand = "mtp";
+			} else if (option == MODIFIER) { // hid
+				INFO("Enabling HID device");
+				usbcommand = "hid";
+			} else if (option == MANUAL) { // serial
+				INFO("Enabling Serial Console on device");
+				usbcommand = "serial";
+			} else if (option == MENU) { // networking
+				INFO("Enabling USB Networking on device");
+				usbcommand = "net";
+			} else { // host
+				// if (option == -1)
+				INFO("Enabling host device");
+				usbcommand = "host";
+			}
+			pid_t son = fork();
+			if (!son) {
+				execlp("/bin/sh", "/bin/sh", "-c", ("exec /usr/bin/usb-mode " + usbcommand).c_str(), NULL);
+			}
+			wait(NULL);
+			sysUSBmode = usbcommand;
+			writeTmp();
 		}
-		// CANCEL (default)
-		INFO("Continuing with default USB mode");
+		return;
 	}
 
 	int getBacklight() {
@@ -410,8 +425,12 @@ public:
 			ioctl(snd, MIYOO_SND_SET_VOLUME, vol);
 			close(snd);
 		}
-		sprintf(buf, "echo %i > " MIYOO_VOL_FILE, vol);
-		system(buf);		
+		// sprintf(buf, "echo %i > " MIYOO_VOL_FILE, vol);
+		// system(buf);
+		if (FILE *f = fopen(MIYOO_VOL_FILE, "w")){
+			fprintf(f, "%i", vol);
+			fclose(f);
+		}
 		
 		volumeMode = getVolumeMode(val);
 
@@ -429,14 +448,20 @@ public:
 		int lid = val / 10;
 		if (lid > 10) lid = 10;
 		char buf[128] = {0};
-		if (getTVOutMode() != TV_OFF && getTVOutStatus() != TV_REMOVE || confInt["tvOutForce"]) {
+		if (getTVOutMode() != TV_OFF && getTVOutStatus() != TV_REMOVE || confInt["tvOutForce"])
 			return 0;
-		} else if (lid != 0) {
-			sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
-		} else {
-			sprintf(buf, "echo %i > " MIYOO_LID_CONF, lid);
+		//sprintf(buf, "echo %i > " MIYOO_LID_FILE " && echo %i > " MIYOO_LID_CONF, lid, lid);
+		//system(buf);
+		if (lid != 0) {
+			if (FILE *f1 = fopen(MIYOO_LID_FILE, "w")){
+				fprintf(f1, "%i", lid);
+				fclose(f1);
+			}
 		}
-		system(buf);
+		if (FILE *f2 = fopen(MIYOO_LID_CONF, "w")){
+			fprintf(f2, "%i", lid);
+			fclose(f2);
+		}
 		return val;
 	}
 
@@ -466,15 +491,29 @@ public:
 		}
 	}
 
+	void shutdownOS(bool poweroff = true) {
+		write_date_file(MIYOO_DATE_FILE);
+		sync();
+		//inittab shutdown actions are ignored when using reboot(), thus DIY as follow
+		swapoff(MIYOO_SWAP_FILE);
+		if (mount(MIYOO_HOME_DIR, MIYOO_HOME_DIR, NULL, MS_REMOUNT | MS_RDONLY, NULL) != 0)
+			ERROR("remounting " MIYOO_HOME_DIR " in RO failed");
+		if (mount(MIYOO_ROMS_DIR, MIYOO_ROMS_DIR, NULL, MS_REMOUNT | MS_RDONLY, NULL) != 0)
+			ERROR("remounting " MIYOO_ROMS_DIR " in RO failed");
+
+		reboot(poweroff ? RB_POWER_OFF : RB_AUTOBOOT);
+	}
+
 	void setTVOut(unsigned int mode) {
 		setBacklight(confInt["backlight"]);
 		writeTmp();
-		quit();
+		quit(false);
 		if (FILE *f = fopen(MIYOO_TVMODE_FILE, "w")) {
 			fprintf(f, "%i", mode); // fputs(val, f);
 			fclose(f);
 		}
-		system("sync; mount -o remount,ro $HOME; reboot");
+		//system("sync; mount -o remount,ro $HOME; reboot");
+		shutdownOS(false);
 	}
 
 	void setCPU(uint32_t mhz) {
@@ -508,14 +547,14 @@ public:
 	}
 
 	string hwPreLinkLaunch() {
-		if (statfs("/roms", &fs) != 0) {
+		if (statfs(MIYOO_ROMS_DIR, &fs) != 0) {
 			ERROR("couldn't read FS type with statfs()");
 		} else {
 			if ((unsigned long)fs.f_type != BTRFS_SUPER_MAGIC) {
-				if (mount("/roms", "/roms", NULL, MS_REMOUNT | MS_SYNCHRONOUS, NULL) != 0)
-					ERROR("remounting in sync /roms failed");
+				if (mount(MIYOO_ROMS_DIR, MIYOO_ROMS_DIR, NULL, MS_REMOUNT | MS_SYNCHRONOUS, NULL) != 0)
+					ERROR("remounting in sync" MIYOO_ROMS_DIR " failed");
 			} else {
-				INFO("detected BTRFS in /roms");
+				INFO("detected BTRFS in " MIYOO_ROMS_DIR);
 			}
 		}
 		return "";
