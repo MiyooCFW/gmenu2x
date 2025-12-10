@@ -281,9 +281,6 @@ void LinkApp::setGamma(int gamma) {
 #endif
 
 bool LinkApp::targetExists() {
-#if defined(TARGET_LINUX)
-	return true; //For displaying elements during testing on pc
-#endif
 	string target = exec;
 	if (!exec.empty() && exec[0] != '/' && !homedir.empty())
 		target = homedir + "/" + exec;
