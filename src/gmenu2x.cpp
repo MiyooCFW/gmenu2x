@@ -847,6 +847,8 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Hints"], tr["Show \"Hint\" messages"], &confInt["showHints"]));
+	int prevShowHidden = confInt["showHidden"];
+	sd.addSetting(new MenuSettingBool(this, tr["Show hidden"], tr["Show hidden files, sections & links"], &confInt["showHidden"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Text To Speech"], tr["Use TTS engine to read menu out loud"], &confInt["enableTTS"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
@@ -880,6 +882,9 @@ void GMenu2X::settings() {
 	
 	powerManager->setSuspendTimeout(confInt["backlightTimeout"]);
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
+
+	if (prevShowHidden != confInt["showHidden"])
+		reinit();
 }
 
 void GMenu2X::resetSettings() {
@@ -1105,6 +1110,7 @@ void GMenu2X::readConfig() {
 	confInt["saveSelection"] = 1;
 	confInt["dialogAutoStart"] = 1;
 	confInt["enableTTS"] = 0;
+	confInt["showHidden"] = 0;
 	confInt["showHints"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
 	confInt["skinBackdrops"] = 1;

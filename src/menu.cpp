@@ -62,9 +62,10 @@ void Menu::readSections() {
 	links.clear();
 
 	while ((dptr = readdir(dirp))) {
-		if (dptr->d_name[0] == '.') {
+		if ((!(gmenu2x->confInt["showHidden"])) && dptr->d_name[0] == '.')
+			continue; 
+		else if (strlen(dptr->d_name) == 1 && dptr->d_name[0] == '.' || strlen(dptr->d_name) == 2 && dptr->d_name[0] == '.' && dptr->d_name[1] == '.')
 			continue;
-		}
 
 		string filepath = (string)"sections/" + dptr->d_name;
 		if (dir_exists(filepath)) {
@@ -101,13 +102,13 @@ void Menu::readLinks() {
 		}
 
 		while ((dptr = readdir(dirp))) {
-			if (dptr->d_name[0] == '.') {
+			if ((!(gmenu2x->confInt["showHidden"])) && dptr->d_name[0] == '.')
 				continue;
-			}
+			else if (strlen(dptr->d_name) == 1 && dptr->d_name[0] == '.' || strlen(dptr->d_name) == 2 && dptr->d_name[0] == '.' && dptr->d_name[1] == '.')
+				continue;
 			string filepath = sectionPath(i) + dptr->d_name;
-			if (filepath.substr(filepath.size() - 5, 5) == "-opkg") {
+			if (filepath.substr(filepath.size() - 5, 5) == "-opkg")
 				continue;
-			}
 
 			linkfiles.push_back(filepath);
 		}
