@@ -172,6 +172,8 @@ public:
 	Menu *menu;
 	bool f200 = true; //gp2x type // touchscreen
 	string currBackdrop;
+	bool hideSectionApplications = false;
+	bool hideSectionGames = false;
 
 	~GMenu2X();
 	void quit(bool save = true);
