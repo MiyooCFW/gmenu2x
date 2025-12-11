@@ -74,8 +74,10 @@ void Menu::readSections() {
 		}
 	}
 
-	addSection("settings");
-	addSection("applications");
+	if (!(dir_exists("sections/settings") || dir_exists("sections/.settings")))
+		addSection("settings");
+	if (!(dir_exists("sections/applications") || dir_exists("sections/.applications")))	
+		addSection("applications");
 
 	closedir(dirp);
 	sort(sections.begin(),sections.end(), case_less());
