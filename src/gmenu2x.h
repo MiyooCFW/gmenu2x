@@ -181,6 +181,7 @@ public:
 	void reinit(bool showDialog = false, bool quitSave = false);
 	void poweroffDialog();
 	void resetSettings();
+	void hideActionLinks();
 	void cpuSettings();
 #if defined(HW_UDC)
 	void usbSettings();
