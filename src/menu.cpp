@@ -172,15 +172,15 @@ const string &Menu::selSection() {
 	return sections[iSection];
 }
 
-const string Menu::selSectionName() {
+const string Menu::selSectionName(bool realname) {
 	string sectionname = sections[iSection];
 	string::size_type pos = sectionname.find(".");
 
-	if (sectionname == "applications") {
+	if (sectionname == "applications" && realname) {
 		return "apps";
 	}
 
-	if (sectionname == "emulators") {
+	if (sectionname == "emulators" && realname) {
 		return "emus";
 	}
 
@@ -309,6 +309,21 @@ void Menu::deleteSelectedLink() {
 	}
 
 	gmenu2x->sc.del(iconpath);
+}
+
+void Menu::hideSelectedLink() {
+	string oldLinkTitle = selLink()->getTitle();
+	string newFileName = "sections/" +  selSectionName(false) + "/" + "." + oldLinkTitle;
+	INFO("Hiding link '%s'", oldLinkTitle.c_str());
+
+	if (selLinkApp() != NULL) {
+		rename(selLinkApp()->getFile().c_str(), newFileName.c_str());
+		selLinkApp()->renameFile(newFileName);
+		selLinkApp()->setTitle("." + oldLinkTitle);
+		selLinkApp()->save();
+		sync();
+		gmenu2x->reinit();
+	}
 }
 
 void Menu::deleteSelectedSection() {
@@ -446,6 +461,17 @@ void Menu::renameSection(int index, const string &name) {
 
 	if (oldsection != newsection && rename(oldsection.c_str(), newsection.c_str()) == 0) {
 		sections[index] = name;
+	}
+
+}
+
+void Menu::hideSection(int index) {
+	// section directory doesn't exists
+	string oldsection = "sections/" + selSection();
+	string newsection = "sections/." + selSection();
+
+	if (oldsection != newsection && rename(oldsection.c_str(), newsection.c_str()) == 0) {
+		sections[index] = "." + selSection();
 	}
 
 }
