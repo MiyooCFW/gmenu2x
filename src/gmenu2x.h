@@ -223,9 +223,11 @@ public:
 	void addLink();
 	void editLink();
 	void deleteLink();
+	void hideLink();
 	void addSection();
 	void renameSection();
 	void deleteSection();
+	void hideSection();
 
 	void allyTTS(const char* text);
 	void allyTTS(const char* file, int gap, int speed);

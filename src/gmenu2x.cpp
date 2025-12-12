@@ -746,7 +746,7 @@ void GMenu2X::initMenu() {
 
 	for (uint32_t i = 0; i < menu->getSections().size(); i++) {
 		// Add virtual links in the applications section
-		if (menu->getSections()[i] == "applications") {
+		if (menu->getSections()[i] == "applications" || menu->getSections()[i] == ".applications") {
 			menu->addActionLink(i, tr["Explorer"], MakeDelegate(this, &GMenu2X::explorer), tr["Browse files and launch apps"], "explorer.png");
 
 #if defined(HW_EXT_SD)
@@ -754,7 +754,7 @@ void GMenu2X::initMenu() {
 #endif
 		}
 		// Add virtual links in the setting section
-		else if (menu->getSections()[i] == "settings") {
+		else if (menu->getSections()[i] == "settings" || menu->getSections()[i] == ".settings") {
 			menu->addActionLink(i, tr["Settings"], MakeDelegate(this, &GMenu2X::settings), tr["Configure system"], "configure.png");
 			menu->addActionLink(i, tr["Skin"], MakeDelegate(this, &GMenu2X::skinMenu), tr["Appearance & skin settings"], "skin.png");
 #if defined(TARGET_GP2X)
@@ -1907,12 +1907,14 @@ void GMenu2X::contextMenu() {
 	if (menu->selLinkApp() != NULL) {
 		options.push_back((MenuOption){tr["Edit"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::editLink)});
 		options.push_back((MenuOption){tr["Delete"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::deleteLink)});
+		options.push_back((MenuOption){tr["Hide"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::hideLink)});
 	}
 
 	options.push_back((MenuOption){tr["Add link"], 			MakeDelegate(this, &GMenu2X::addLink)});
 	options.push_back((MenuOption){tr["Add section"],		MakeDelegate(this, &GMenu2X::addSection)});
 	options.push_back((MenuOption){tr["Rename section"],	MakeDelegate(this, &GMenu2X::renameSection)});
 	options.push_back((MenuOption){tr["Delete section"],	MakeDelegate(this, &GMenu2X::deleteSection)});
+	options.push_back((MenuOption){tr["Hide section"],		MakeDelegate(this, &GMenu2X::hideSection)});
 
 #if defined(OPK_SUPPORT)
 	options.push_back((MenuOption){tr["Update OPK links"],	MakeDelegate(this, &GMenu2X::opkScanner)});
@@ -2174,6 +2176,23 @@ void GMenu2X::deleteLink() {
 	}
 }
 
+void GMenu2X::hideLink() {
+	int package_type = 0;
+	MessageBox mb(this, tr["Hide"] + " " + menu->selLink()->getTitle() + "\n" + tr["Are you sure?"], menu->selLink()->getIconPath());
+	string package = menu->selLinkApp()->getExec();
+
+	mb.setButton(MANUAL, tr["Hide link"]);
+	mb.setButton(CANCEL, tr["No"]);
+
+	switch (mb.exec()) {
+		case MANUAL:
+			menu->hideSelectedLink();
+			break;
+		default:
+			return;
+	}
+}
+
 void GMenu2X::addSection() {
 	InputDialog id(this, /*ts,*/ tr["Insert a name for the new section"], "", tr["Add section"], "skin:icons/section.png");
 	if (id.exec()) {
@@ -2209,6 +2228,15 @@ void GMenu2X::deleteSection() {
 		sync();
 	}
 	ledOff();
+}
+
+void GMenu2X::hideSection() {
+	MessageBox mb(this, tr["Hide section"] + " '" +  menu->selSectionName() + "'\n" + tr["Are you sure?"], menu->getSectionIcon());
+	mb.setButton(MANUAL, tr["Yes"]);
+	mb.setButton(CANCEL,  tr["No"]);
+	if (mb.exec() != MANUAL) return;
+	menu->hideSection(menu->selSectionIndex());
+	reinit();
 }
 
 #if defined(OPK_SUPPORT)
