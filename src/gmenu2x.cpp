@@ -1944,10 +1944,15 @@ void GMenu2X::umountSdDialog() {
 void GMenu2X::contextMenu() {
 	vector<MenuOption> options;
 	if (menu->selLinkApp() != NULL) {
-		options.push_back((MenuOption){tr["Edit"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::editLink)});
-		options.push_back((MenuOption){tr["Delete"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::deleteLink)});
-		options.push_back((MenuOption){tr["Hide"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::hideLink)});
-		options.push_back((MenuOption){tr["Unhide"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::unhideLink)});
+		string linkTitle = menu->selLink()->getTitle();
+		string linkName = base_name(menu->selLinkApp()->getFile());
+		options.push_back((MenuOption){tr["Edit"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::editLink)});
+		options.push_back((MenuOption){tr["Delete"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::deleteLink)});
+		//INFO("selfilename=%s", base_name(menu->selLinkApp()->getFile()).c_str());
+		if (linkName[0] != '.')
+			options.push_back((MenuOption){tr["Hide"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::hideLink)});
+		else 
+			options.push_back((MenuOption){tr["Unhide"] + " " +linkTitle, MakeDelegate(this, &GMenu2X::unhideLink)});
 	}
 
 	options.push_back((MenuOption){tr["Add link"], 			MakeDelegate(this, &GMenu2X::addLink)});
@@ -2217,9 +2222,7 @@ void GMenu2X::deleteLink() {
 }
 
 void GMenu2X::hideLink() {
-	int package_type = 0;
 	MessageBox mb(this, tr["Hide"] + " " + menu->selLink()->getTitle() + "\n" + tr["Are you sure?"], menu->selLink()->getIconPath());
-	string package = menu->selLinkApp()->getExec();
 
 	mb.setButton(MANUAL, tr["Hide link"]);
 	mb.setButton(CANCEL, tr["No"]);
@@ -2234,9 +2237,7 @@ void GMenu2X::hideLink() {
 }
 
 void GMenu2X::unhideLink() {
-	int package_type = 0;
 	MessageBox mb(this, tr["Unhide"] + " " + menu->selLink()->getTitle() + "\n" + tr["Are you sure?"], menu->selLink()->getIconPath());
-	string package = menu->selLinkApp()->getExec();
 
 	mb.setButton(MANUAL, tr["Unhide link"]);
 	mb.setButton(CANCEL, tr["No"]);

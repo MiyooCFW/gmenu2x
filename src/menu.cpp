@@ -315,13 +315,15 @@ void Menu::deleteSelectedLink() {
 
 void Menu::hideSelectedLink() {
 	string oldLinkTitle = selLink()->getTitle();
-	string newFileName = "sections/" +  selSectionName(false) + "/" + "." + oldLinkTitle;
+	string newLinkTitle = "." + selLink()->getTitle();
+	string newLinkName = "." + base_name(selLinkApp()->getFile());
+	string newFileName = "sections/" +  selSectionName(false) + "/" + newLinkName;
 	INFO("Hiding link '%s'", oldLinkTitle.c_str());
 
 	if (selLinkApp() != NULL) {
 		rename(selLinkApp()->getFile().c_str(), newFileName.c_str());
 		selLinkApp()->renameFile(newFileName);
-		selLinkApp()->setTitle("." + oldLinkTitle);
+		selLinkApp()->setTitle(newLinkTitle);
 		selLinkApp()->save();
 		sync();
 		gmenu2x->reinit();
@@ -331,7 +333,8 @@ void Menu::hideSelectedLink() {
 void Menu::unhideSelectedLink() {
 	string oldLinkTitle = selLink()->getTitle();
 	string newLinkTitle = unhide(selLink()->getTitle());
-	string newFileName = "sections/" +  selSectionName(false) + "/" + newLinkTitle;
+	string newLinkName = unhide(base_name(selLinkApp()->getFile()));
+	string newFileName = "sections/" +  selSectionName(false) + "/" + newLinkName;
 	INFO("Unhiding link '%s'", oldLinkTitle.c_str());
 
 	if (selLinkApp() != NULL) {
