@@ -1959,8 +1959,10 @@ void GMenu2X::contextMenu() {
 	options.push_back((MenuOption){tr["Add section"],		MakeDelegate(this, &GMenu2X::addSection)});
 	options.push_back((MenuOption){tr["Rename section"],	MakeDelegate(this, &GMenu2X::renameSection)});
 	options.push_back((MenuOption){tr["Delete section"],	MakeDelegate(this, &GMenu2X::deleteSection)});
-	options.push_back((MenuOption){tr["Hide section"],		MakeDelegate(this, &GMenu2X::hideSection)});
-
+	if (menu->selSection()[0] != '.')
+		options.push_back((MenuOption){tr["Hide section"],		MakeDelegate(this, &GMenu2X::hideSection)});
+	else
+		options.push_back((MenuOption){tr["Unhide section"],		MakeDelegate(this, &GMenu2X::unhideSection)});
 #if defined(OPK_SUPPORT)
 	options.push_back((MenuOption){tr["Update OPK links"],	MakeDelegate(this, &GMenu2X::opkScanner)});
 #endif
@@ -2294,6 +2296,15 @@ void GMenu2X::hideSection() {
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() != MANUAL) return;
 	menu->hideSection(menu->selSectionIndex());
+	reinit();
+}
+
+void GMenu2X::unhideSection() {
+	MessageBox mb(this, tr["Unhide section"] + " '" +  menu->selSectionName() + "'\n" + tr["Are you sure?"], menu->getSectionIcon());
+	mb.setButton(MANUAL, tr["Yes"]);
+	mb.setButton(CANCEL,  tr["No"]);
+	if (mb.exec() != MANUAL) return;
+	menu->unhideSection(menu->selSectionIndex());
 	reinit();
 }
 

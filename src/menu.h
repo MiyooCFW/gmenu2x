@@ -116,6 +116,7 @@ public:
 	const vector<string> &getSections() { return sections; }
 	void renameSection(int index, const string &name);
 	void hideSection(int index);
+	void unhideSection(int index);
 	int getSectionIndex(const string &name);
 	const string getSectionIcon(int i = -1);
 

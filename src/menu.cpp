@@ -497,6 +497,17 @@ void Menu::hideSection(int index) {
 
 }
 
+void Menu::unhideSection(int index) {
+	// section directory doesn't exists
+	string oldsection = "sections/" + selSection();
+	string newsection = "sections/" + unhide(selSection());
+
+	if (oldsection != newsection && rename(oldsection.c_str(), newsection.c_str()) == 0) {
+		sections[index] =  unhide(selSection());
+	}
+
+}
+
 int Menu::getSectionIndex(const string &name) {
 	return distance(sections.begin(), find(sections.begin(), sections.end(), name));
 }
