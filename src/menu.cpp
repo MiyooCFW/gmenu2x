@@ -81,6 +81,8 @@ void Menu::readSections() {
 		addSection("applications");
 
 	closedir(dirp);
+	if (sections.empty())
+		addSection("empty");
 	sort(sections.begin(),sections.end(), case_less());
 }
 
