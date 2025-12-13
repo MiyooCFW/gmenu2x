@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <algorithm>
+#include <stdint.h>
 
 #include "filelister.h"
 #include "utilities.h"
