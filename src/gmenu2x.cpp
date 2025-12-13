@@ -1947,6 +1947,7 @@ void GMenu2X::contextMenu() {
 		options.push_back((MenuOption){tr["Edit"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::editLink)});
 		options.push_back((MenuOption){tr["Delete"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::deleteLink)});
 		options.push_back((MenuOption){tr["Hide"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::hideLink)});
+		options.push_back((MenuOption){tr["Unhide"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::unhideLink)});
 	}
 
 	options.push_back((MenuOption){tr["Add link"], 			MakeDelegate(this, &GMenu2X::addLink)});
@@ -2226,6 +2227,23 @@ void GMenu2X::hideLink() {
 	switch (mb.exec()) {
 		case MANUAL:
 			menu->hideSelectedLink();
+			break;
+		default:
+			return;
+	}
+}
+
+void GMenu2X::unhideLink() {
+	int package_type = 0;
+	MessageBox mb(this, tr["Unhide"] + " " + menu->selLink()->getTitle() + "\n" + tr["Are you sure?"], menu->selLink()->getIconPath());
+	string package = menu->selLinkApp()->getExec();
+
+	mb.setButton(MANUAL, tr["Unhide link"]);
+	mb.setButton(CANCEL, tr["No"]);
+
+	switch (mb.exec()) {
+		case MANUAL:
+			menu->unhideSelectedLink();
 			break;
 		default:
 			return;

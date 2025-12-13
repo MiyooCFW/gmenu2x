@@ -328,6 +328,22 @@ void Menu::hideSelectedLink() {
 	}
 }
 
+void Menu::unhideSelectedLink() {
+	string oldLinkTitle = selLink()->getTitle();
+	string newLinkTitle = unhide(selLink()->getTitle());
+	string newFileName = "sections/" +  selSectionName(false) + "/" + newLinkTitle;
+	INFO("Unhiding link '%s'", oldLinkTitle.c_str());
+
+	if (selLinkApp() != NULL) {
+		rename(selLinkApp()->getFile().c_str(), newFileName.c_str());
+		selLinkApp()->renameFile(newFileName);
+		selLinkApp()->setTitle(newLinkTitle);
+		selLinkApp()->save();
+		sync();
+		gmenu2x->reinit();
+	}
+}
+
 void Menu::deleteSelectedSection() {
 	INFO("Deleting section '%s'", selSection().c_str());
 

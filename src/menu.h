@@ -93,6 +93,7 @@ public:
 	bool addSection(const string &sectionName);
 	void deleteSelectedLink();
 	void hideSelectedLink();
+	void unhideSelectedLink();
 	void deleteSelectedSection();
 	bool allyRead = false;
 

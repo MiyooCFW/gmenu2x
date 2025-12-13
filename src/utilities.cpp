@@ -52,6 +52,16 @@ string trim(const string &s) {
 	return string(s, b, e - b + 1);
 }
 
+string unhide(const string &s) {
+	if (s.length() == 0)
+		return s;
+	int b = s.find_first_not_of(".");
+	int e = s.size() - 1;
+	if (b == -1) // Not prefixed with dot
+		return "";
+	return string(s, b, e - b + 1);
+}
+
 void string_copy(const string &s, char **cs) {
 	*cs = (char*)malloc(s.length());
 	strcpy(*cs, s.c_str());
