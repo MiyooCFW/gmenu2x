@@ -92,6 +92,7 @@ public:
 	bool addLink(string exec);
 	bool addSection(const string &sectionName);
 	void deleteSelectedLink();
+	void favSelectedLink();
 	void hideSelectedLink();
 	void unhideSelectedLink();
 	void deleteSelectedSection();

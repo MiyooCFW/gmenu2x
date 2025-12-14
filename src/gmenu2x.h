@@ -224,6 +224,7 @@ public:
 	void addLink();
 	void editLink();
 	void deleteLink();
+	void favLink();
 	void hideLink();
 	void unhideLink();
 	void addSection();

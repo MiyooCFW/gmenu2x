@@ -1948,6 +1948,7 @@ void GMenu2X::contextMenu() {
 		string linkName = base_name(menu->selLinkApp()->getFile());
 		options.push_back((MenuOption){tr["Edit"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::editLink)});
 		options.push_back((MenuOption){tr["Delete"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::deleteLink)});
+		options.push_back((MenuOption){tr["Favoritise"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::favLink)});
 		//INFO("selfilename=%s", base_name(menu->selLinkApp()->getFile()).c_str());
 		if (linkName[0] != '.')
 			options.push_back((MenuOption){tr["Hide"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::hideLink)});
@@ -2221,6 +2222,12 @@ void GMenu2X::deleteLink() {
 		default:
 			return;
 	}
+}
+
+void GMenu2X::favLink() {
+	MessageBox mb(this, tr["Favoritise"] + " " + menu->selLink()->getTitle() + "\n" + tr["Are you sure?"], menu->selLink()->getIconPath());
+
+	menu->favSelectedLink();
 }
 
 void GMenu2X::hideLink() {

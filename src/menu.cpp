@@ -313,6 +313,24 @@ void Menu::deleteSelectedLink() {
 	gmenu2x->sc.del(iconpath);
 }
 
+void Menu::favSelectedLink() {
+	addSection("favorites");
+	string currLinkTitle = selLink()->getTitle();
+	string src = selLinkApp()->getFile();
+	string dst = unique_filename("sections/favorites/" + base_name(src), "");
+
+	//LinkApp *link = new LinkApp(gmenu2x, dst.c_str());
+	if (file_copy(src, dst)) {
+		INFO("Adding to favorite link: '%s'", dst.c_str());
+		//link->save();
+		MessageBox mb(gmenu2x, gmenu2x->tr["App Link created"]);
+		mb.setAutoHide(1000);
+		mb.exec();
+		gmenu2x->reinit();
+	}
+}
+
+
 void Menu::hideSelectedLink() {
 	string oldLinkTitle = selLink()->getTitle();
 	string newLinkTitle = "." + selLink()->getTitle();
