@@ -1010,9 +1010,9 @@ void Menu::exec() {
 		} else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) {
 			if (selLinkApp() != NULL || selLink() != NULL) gmenu2x->allyTTS(iconDescription.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 			continue;
-		} else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed)) {
+		} else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed)  && gmenu2x->confInt["enableHotkeys"]) {
 			gmenu2x->settings();
-		} else if (gmenu2x->input[MENU]) {
+		} else if (gmenu2x->input[MENU]  && gmenu2x->confInt["enableHotkeys"]) {
 			gmenu2x->contextMenu();
 		}
 		// LINK NAVIGATION

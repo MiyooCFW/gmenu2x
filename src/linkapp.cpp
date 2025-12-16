@@ -337,7 +337,7 @@ bool LinkApp::save() {
 
 void LinkApp::run() {
 	uint32_t start = SDL_GetTicks();
-	while (gmenu2x->input[CONFIRM]) {
+	while (gmenu2x->input[CONFIRM] && gmenu2x->confInt["enableHotkeys"]) {
 		gmenu2x->input.update();
 		SDL_Delay(1);
 		if (SDL_GetTicks() - start > 1400) {

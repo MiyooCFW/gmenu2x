@@ -549,7 +549,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	int wasActive = 0;
 
-	while (input[MODIFIER]) { // MODIFIER HOLD
+	while (input[MODIFIER] && confInt["enableHotkeys"]) { // MODIFIER HOLD
 		wasActive = MODIFIER;
 		
 		input.update();
@@ -575,7 +575,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		break;
 	}
 
-	while (input[MANUAL]) { // MANUAL HOLD
+	while (input[MANUAL] && confInt["enableHotkeys"]) { // MANUAL HOLD
 		wasActive = MANUAL;
 
 		input.update();
@@ -586,7 +586,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		}
 	}
 
-	while (input[SETTINGS]) { // SETTINGS HOLD
+	while (input[SETTINGS] && confInt["enableHotkeys"]) { // SETTINGS HOLD
 		wasActive = SETTINGS;
 
 		input.update();
@@ -600,7 +600,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	}
 	
 
-	while (input[MENU]) { // MENU HOLD
+	while (input[MENU] && confInt["enableHotkeys"]) { // MENU HOLD
 		wasActive = MENU;
 
 		input.update();
@@ -850,6 +850,7 @@ void GMenu2X::settings() {
 	int prevShowHidden = confInt["showHidden"];
 	sd.addSetting(new MenuSettingBool(this, tr["Show hidden"], tr["Show hidden files, sections & links"], &confInt["showHidden"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Show/Hide"] + " " + tr["Action Links"], tr["Choose ActionLinks to show or hide"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::hideActionLinks)));
+	sd.addSetting(new MenuSettingBool(this, tr["Hotkeys"], tr["Activate in menu hotkeys"], &confInt["enableHotkeys"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Text To Speech"], tr["Use TTS engine to read menu out loud"], &confInt["enableTTS"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
@@ -1149,6 +1150,7 @@ void GMenu2X::readConfig() {
 	confInt["hidePower"] = 0;
 	confInt["hideCpuSettings"] = 0;
 	confInt["showHints"] = 1;
+	confInt["enableHotkeys"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;

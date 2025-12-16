@@ -222,7 +222,7 @@ bool BrowseDialog::exec() {
 			alphanum_timer = SDL_AddTimer(1500, hideAlphaNum, (void*)false);
 			selected = (rand() % fileCount()) + dirCount();
 			preview = getPreview(selected);
-		} else if (gmenu2x->input[MENU] && !(gmenu2x->confInt["saveAutoStart"])) {
+		} else if (gmenu2x->input[MENU] && !(gmenu2x->confInt["saveAutoStart"])  && gmenu2x->confInt["enableHotkeys"]) {
 			contextMenu();
 			preview = getPreview(selected);
 		}
