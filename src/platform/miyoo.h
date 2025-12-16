@@ -350,40 +350,42 @@ private:
 		if (udcStatus == UDC_HOST) option = -1;
 		
 
-		if (option == CANCEL) {
+		if (option == CANCEL && !(udcStatus == -1 && confStr["usbMode"] == "Ask")) {
 			INFO("Continuing with default USB mode");
-		} else {
-			string usbcommand = "";
-			MessageBox mb(this, tr["Loading"]);
-			mb.setAutoHide(1);
-			mb.setBgAlpha(0);
-			mb.exec();
-			input.update(false);
-			if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
-				INFO("Enabling MTP storage device");
-				usbcommand = "mtp";
-			} else if (option == MODIFIER) { // hid
-				INFO("Enabling HID device");
-				usbcommand = "hid";
-			} else if (option == MANUAL) { // serial
-				INFO("Enabling Serial Console on device");
-				usbcommand = "serial";
-			} else if (option == MENU) { // networking
-				INFO("Enabling USB Networking on device");
-				usbcommand = "net";
-			} else { // host
-				// if (option == -1)
-				INFO("Enabling host device");
-				usbcommand = "host";
-			}
-			pid_t son = fork();
-			if (!son) {
-				execlp("/bin/sh", "/bin/sh", "-c", ("exec /usr/bin/usb-mode " + usbcommand).c_str(), NULL);
-			}
-			wait(NULL);
-			sysUSBmode = usbcommand;
-			writeTmp();
+			return;
 		}
+		
+		string usbcommand = "";
+		MessageBox mb(this, tr["Loading"]);
+		mb.setAutoHide(1);
+		mb.setBgAlpha(0);
+		mb.exec();
+		input.update(false);
+		if (option == CONFIRM || (udcStatus == -1 && confStr["usbMode"] == "Ask")) { // storage
+			INFO("Enabling MTP storage device");
+			usbcommand = "mtp";
+		} else if (option == MODIFIER) { // hid
+			INFO("Enabling HID device");
+			usbcommand = "hid";
+		} else if (option == MANUAL) { // serial
+			INFO("Enabling Serial Console on device");
+			usbcommand = "serial";
+		} else if (option == MENU) { // networking
+			INFO("Enabling USB Networking on device");
+			usbcommand = "net";
+		} else { // host
+			// if (option == -1)
+			INFO("Enabling host device");
+			usbcommand = "host";
+		}
+		pid_t son = fork();
+		if (!son) {
+			execlp("/bin/sh", "/bin/sh", "-c", ("exec /usr/bin/usb-mode " + usbcommand).c_str(), NULL);
+		}
+		wait(NULL);
+		sysUSBmode = usbcommand;
+		writeTmp();
+	
 		return;
 	}
 
