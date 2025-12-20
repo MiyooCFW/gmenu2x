@@ -292,13 +292,13 @@ private:
 
 	void tvOutDialog(int16_t mode) {
 			if (mode < 0) {
-				int option;
+				int option = -1;
 
 				mode = TV_OFF;
 
 				if (confStr["tvMode"] == "NTSC") option = CONFIRM;
 				else if (confStr["tvMode"] == "PAL") option = MANUAL;
-				else if (confStr["tvMode"] == "OFF") option = CANCEL;
+				else if (confStr["tvMode"] == "OFF") ;
 				else {
 					MessageBox mb(this, tr["JACK connection detected.\nEnable TV-output?"], "skin:icons/tv.png");
 					mb.setButton(CONFIRM, tr["TV-NTSC"]);
@@ -314,7 +314,8 @@ private:
 					case MANUAL:
 						mode = TV_PAL;
 						break;
-						
+					case CANCEL:
+						return;
 				}
 			}
 
