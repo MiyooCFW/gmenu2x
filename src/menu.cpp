@@ -62,9 +62,10 @@ void Menu::readSections() {
 	links.clear();
 
 	while ((dptr = readdir(dirp))) {
-		if (dptr->d_name[0] == '.') {
+		if ((!(gmenu2x->confInt["showHidden"])) && dptr->d_name[0] == '.')
+			continue; 
+		else if (strlen(dptr->d_name) == 1 && dptr->d_name[0] == '.' || strlen(dptr->d_name) == 2 && dptr->d_name[0] == '.' && dptr->d_name[1] == '.')
 			continue;
-		}
 
 		string filepath = (string)"sections/" + dptr->d_name;
 		if (dir_exists(filepath)) {
@@ -74,10 +75,14 @@ void Menu::readSections() {
 		}
 	}
 
-	addSection("settings");
-	addSection("applications");
+	if (!(dir_exists("sections/settings") || dir_exists("sections/.settings")))
+		addSection("settings");
+	if (!(dir_exists("sections/applications") || dir_exists("sections/.applications")))	
+		addSection("applications");
 
 	closedir(dirp);
+	if (sections.empty())
+		addSection("empty");
 	sort(sections.begin(),sections.end(), case_less());
 }
 
@@ -99,13 +104,13 @@ void Menu::readLinks() {
 		}
 
 		while ((dptr = readdir(dirp))) {
-			if (dptr->d_name[0] == '.') {
+			if ((!(gmenu2x->confInt["showHidden"])) && dptr->d_name[0] == '.')
 				continue;
-			}
+			else if (strlen(dptr->d_name) == 1 && dptr->d_name[0] == '.' || strlen(dptr->d_name) == 2 && dptr->d_name[0] == '.' && dptr->d_name[1] == '.')
+				continue;
 			string filepath = sectionPath(i) + dptr->d_name;
-			if (filepath.substr(filepath.size() - 5, 5) == "-opkg") {
+			if (filepath.substr(filepath.size() - 5, 5) == "-opkg")
 				continue;
-			}
 
 			linkfiles.push_back(filepath);
 		}
@@ -169,15 +174,15 @@ const string &Menu::selSection() {
 	return sections[iSection];
 }
 
-const string Menu::selSectionName() {
+const string Menu::selSectionName(bool realname) {
 	string sectionname = sections[iSection];
 	string::size_type pos = sectionname.find(".");
 
-	if (sectionname == "applications") {
+	if (sectionname == "applications" && realname) {
 		return "apps";
 	}
 
-	if (sectionname == "emulators") {
+	if (sectionname == "emulators" && realname) {
 		return "emus";
 	}
 
@@ -306,6 +311,58 @@ void Menu::deleteSelectedLink() {
 	}
 
 	gmenu2x->sc.del(iconpath);
+}
+
+void Menu::favSelectedLink() {
+	addSection("favorites");
+	string currLinkTitle = selLink()->getTitle();
+	string src = selLinkApp()->getFile();
+	string dst = unique_filename("sections/favorites/" + base_name(src), "");
+
+	//LinkApp *link = new LinkApp(gmenu2x, dst.c_str());
+	if (file_copy(src, dst)) {
+		INFO("Adding to favorite link: '%s'", dst.c_str());
+		//link->save();
+		MessageBox mb(gmenu2x, gmenu2x->tr["App Link created"]);
+		mb.setAutoHide(1000);
+		mb.exec();
+		gmenu2x->reinit();
+	}
+}
+
+
+void Menu::hideSelectedLink() {
+	string oldLinkTitle = selLink()->getTitle();
+	string newLinkTitle = "." + selLink()->getTitle();
+	string newLinkName = "." + base_name(selLinkApp()->getFile());
+	string newFileName = "sections/" +  selSectionName(false) + "/" + newLinkName;
+	INFO("Hiding link '%s'", oldLinkTitle.c_str());
+
+	if (selLinkApp() != NULL) {
+		rename(selLinkApp()->getFile().c_str(), newFileName.c_str());
+		selLinkApp()->renameFile(newFileName);
+		selLinkApp()->setTitle(newLinkTitle);
+		selLinkApp()->save();
+		sync();
+		gmenu2x->reinit();
+	}
+}
+
+void Menu::unhideSelectedLink() {
+	string oldLinkTitle = selLink()->getTitle();
+	string newLinkTitle = unhide(selLink()->getTitle());
+	string newLinkName = unhide(base_name(selLinkApp()->getFile()));
+	string newFileName = "sections/" +  selSectionName(false) + "/" + newLinkName;
+	INFO("Unhiding link '%s'", oldLinkTitle.c_str());
+
+	if (selLinkApp() != NULL) {
+		rename(selLinkApp()->getFile().c_str(), newFileName.c_str());
+		selLinkApp()->renameFile(newFileName);
+		selLinkApp()->setTitle(newLinkTitle);
+		selLinkApp()->save();
+		sync();
+		gmenu2x->reinit();
+	}
 }
 
 void Menu::deleteSelectedSection() {
@@ -447,6 +504,28 @@ void Menu::renameSection(int index, const string &name) {
 
 }
 
+void Menu::hideSection(int index) {
+	// section directory doesn't exists
+	string oldsection = "sections/" + selSection();
+	string newsection = "sections/." + selSection();
+
+	if (oldsection != newsection && rename(oldsection.c_str(), newsection.c_str()) == 0) {
+		sections[index] = "." + selSection();
+	}
+
+}
+
+void Menu::unhideSection(int index) {
+	// section directory doesn't exists
+	string oldsection = "sections/" + selSection();
+	string newsection = "sections/" + unhide(selSection());
+
+	if (oldsection != newsection && rename(oldsection.c_str(), newsection.c_str()) == 0) {
+		sections[index] =  unhide(selSection());
+	}
+
+}
+
 int Menu::getSectionIndex(const string &name) {
 	return distance(sections.begin(), find(sections.begin(), sections.end(), name));
 }
@@ -540,11 +619,15 @@ void Menu::drawList() {
 		if (gmenu2x->skinConfInt["showLinkIcon"])
 			icon->blit(gmenu2x->s, {ix + 2, iy + 2, 32, linkHeight - 4}, HAlignCenter | VAlignMiddle);
 #if !defined(CHECK_TRANSLATION)
-		gmenu2x->s->write(gmenu2x->titlefont, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
-		gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getDescription()], ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
+		if (gmenu2x->skinConfInt["linkLabel"])
+			gmenu2x->s->write(gmenu2x->titlefont, gmenu2x->tr[sectionLinks()->at(i)->getTitle()], ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
+		if (gmenu2x->skinConfInt["linkDescriptionLabel"])
+			gmenu2x->s->write(gmenu2x->font, gmenu2x->tr[sectionLinks()->at(i)->getDescription()], ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
 #else
-		gmenu2x->s->write(gmenu2x->titlefont, sectionLinks()->at(i)->getTitle(), ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
-		gmenu2x->s->write(gmenu2x->font, sectionLinks()->at(i)->getDescription(), ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
+		if (gmenu2x->skinConfInt["linkLabel"])
+			gmenu2x->s->write(gmenu2x->titlefont, sectionLinks()->at(i)->getTitle(), ix + linkSpacing + 36, iy + gmenu2x->titlefont->getHeight()/2, VAlignMiddle);
+		if (gmenu2x->skinConfInt["linkDescriptionLabel"])
+			gmenu2x->s->write(gmenu2x->font, sectionLinks()->at(i)->getDescription(), ix + linkSpacing + 36, iy + linkHeight - linkSpacing/2, VAlignBottom);
 #endif
 	}
 
@@ -927,9 +1010,9 @@ void Menu::exec() {
 		} else if (gmenu2x->input[MODIFIER] && !gmenu2x->input[MANUAL]) {
 			if (selLinkApp() != NULL || selLink() != NULL) gmenu2x->allyTTS(iconDescription.c_str(), MEDIUM_GAP_TTS, MEDIUM_SPEED_TTS, 0);
 			continue;
-		} else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed)) {
+		} else if (gmenu2x->input[SETTINGS] && !(gmenu2x->actionPerformed)  && gmenu2x->confInt["enableHotkeys"]) {
 			gmenu2x->settings();
-		} else if (gmenu2x->input[MENU]) {
+		} else if (gmenu2x->input[MENU]  && gmenu2x->confInt["enableHotkeys"]) {
 			gmenu2x->contextMenu();
 		}
 		// LINK NAVIGATION

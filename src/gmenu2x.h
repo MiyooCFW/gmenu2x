@@ -181,6 +181,7 @@ public:
 	void reinit(bool showDialog = false, bool quitSave = false);
 	void poweroffDialog();
 	void resetSettings();
+	void hideActionLinks();
 	void cpuSettings();
 #if defined(HW_UDC)
 	void usbSettings();
@@ -223,9 +224,14 @@ public:
 	void addLink();
 	void editLink();
 	void deleteLink();
+	void favLink();
+	void hideLink();
+	void unhideLink();
 	void addSection();
 	void renameSection();
 	void deleteSection();
+	void hideSection();
+	void unhideSection();
 
 	void allyTTS(const char* text);
 	void allyTTS(const char* file, int gap, int speed);

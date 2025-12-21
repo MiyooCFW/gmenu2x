@@ -79,7 +79,7 @@ public:
 	int sectionNumItems();
 
 	const string &selSection();
-	const string selSectionName();
+	const string selSectionName(bool realname = true);
 	void decSectionIndex();
 	void incSectionIndex();
 	void setSectionIndex(int i);
@@ -92,6 +92,9 @@ public:
 	bool addLink(string exec);
 	bool addSection(const string &sectionName);
 	void deleteSelectedLink();
+	void favSelectedLink();
+	void hideSelectedLink();
+	void unhideSelectedLink();
 	void deleteSelectedSection();
 	bool allyRead = false;
 
@@ -113,6 +116,8 @@ public:
 
 	const vector<string> &getSections() { return sections; }
 	void renameSection(int index, const string &name);
+	void hideSection(int index);
+	void unhideSection(int index);
 	int getSectionIndex(const string &name);
 	const string getSectionIcon(int i = -1);
 

@@ -549,7 +549,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 
 	int wasActive = 0;
 
-	while (input[MODIFIER]) { // MODIFIER HOLD
+	while (input[MODIFIER] && confInt["enableHotkeys"]) { // MODIFIER HOLD
 		wasActive = MODIFIER;
 		
 		input.update();
@@ -575,7 +575,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		break;
 	}
 
-	while (input[MANUAL]) { // MANUAL HOLD
+	while (input[MANUAL] && confInt["enableHotkeys"]) { // MANUAL HOLD
 		wasActive = MANUAL;
 
 		input.update();
@@ -586,7 +586,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 		}
 	}
 
-	while (input[SETTINGS]) { // SETTINGS HOLD
+	while (input[SETTINGS] && confInt["enableHotkeys"]) { // SETTINGS HOLD
 		wasActive = SETTINGS;
 
 		input.update();
@@ -600,7 +600,7 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 	}
 	
 
-	while (input[MENU]) { // MENU HOLD
+	while (input[MENU] && confInt["enableHotkeys"]) { // MENU HOLD
 		wasActive = MENU;
 
 		input.update();
@@ -746,17 +746,17 @@ void GMenu2X::initMenu() {
 
 	for (uint32_t i = 0; i < menu->getSections().size(); i++) {
 		// Add virtual links in the applications section
-		if (menu->getSections()[i] == "applications") {
-			menu->addActionLink(i, tr["Explorer"], MakeDelegate(this, &GMenu2X::explorer), tr["Browse files and launch apps"], "explorer.png");
+		if (menu->getSections()[i] == "applications" || menu->getSections()[i] == ".applications") {
+			if (!(confInt["hideExplorer"])) menu->addActionLink(i, tr["Explorer"], MakeDelegate(this, &GMenu2X::explorer), tr["Browse files and launch apps"], "explorer.png");
 
 #if defined(HW_EXT_SD)
-			menu->addActionLink(i, tr["Umount"], MakeDelegate(this, &GMenu2X::umountSdDialog), tr["Umount external media device"], "eject.png");
+			if (!(confInt["hideUmount"])) menu->addActionLink(i, tr["Umount"], MakeDelegate(this, &GMenu2X::umountSdDialog), tr["Umount external media device"], "eject.png");
 #endif
 		}
 		// Add virtual links in the setting section
-		else if (menu->getSections()[i] == "settings") {
-			menu->addActionLink(i, tr["Settings"], MakeDelegate(this, &GMenu2X::settings), tr["Configure system"], "configure.png");
-			menu->addActionLink(i, tr["Skin"], MakeDelegate(this, &GMenu2X::skinMenu), tr["Appearance & skin settings"], "skin.png");
+		else if (menu->getSections()[i] == "settings" || menu->getSections()[i] == ".settings") {
+			if (!(confInt["hideSettings"])) menu->addActionLink(i, tr["Settings"], MakeDelegate(this, &GMenu2X::settings), tr["Configure system"], "configure.png");
+			if (!(confInt["hideSkin"])) menu->addActionLink(i, tr["Skin"], MakeDelegate(this, &GMenu2X::skinMenu), tr["Appearance & skin settings"], "skin.png");
 #if defined(TARGET_GP2X)
 			if (fwType == "open2x") {
 				menu->addActionLink(i, "Open2x", MakeDelegate(this, &GMenu2X::settingsOpen2x), tr["Configure Open2x system settings"], "o2xconfigure.png");
@@ -770,14 +770,14 @@ void GMenu2X::initMenu() {
 				menu->addActionLink(i, tr["Log Viewer"], MakeDelegate(this, &GMenu2X::viewLog), tr["Displays last launched program's output"], "ebook.png");
 			}
 
-			menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenu2X"], "about.png");
-			menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
-			menu->addActionLink(i, tr["CPU Settings"], MakeDelegate(this, &GMenu2X::cpuSettings), tr["Config CPU clock"], "cpu.png");
+			if (!(confInt["hideAbout"])) menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenu2X"], "about.png");
+			if (!(confInt["hidePower"])) menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
+			if (!(confInt["hideCpuSettings"])) menu->addActionLink(i, tr["CPU Settings"], MakeDelegate(this, &GMenu2X::cpuSettings), tr["Config CPU clock"], "cpu.png");
 #if defined(HW_UDC)
-			menu->addActionLink(i, tr["USB Settings"], MakeDelegate(this, &GMenu2X::usbSettings), tr["Config USB mode"], "usb.png");
+			if (!(confInt["hideUsbSettings"])) menu->addActionLink(i, tr["USB Settings"], MakeDelegate(this, &GMenu2X::usbSettings), tr["Config USB mode"], "usb.png");
 #endif
 #if defined(HW_TVOUT)
-			menu->addActionLink(i, tr["TV Settings"], MakeDelegate(this, &GMenu2X::tvSettings), tr["Config TV mode"], "tv.png");
+			if (!(confInt["hideTvSettings"])) menu->addActionLink(i, tr["TV Settings"], MakeDelegate(this, &GMenu2X::tvSettings), tr["Config TV mode"], "tv.png");
 #endif
 		}
 	}
@@ -847,6 +847,10 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Hints"], tr["Show \"Hint\" messages"], &confInt["showHints"]));
+	int prevShowHidden = confInt["showHidden"];
+	sd.addSetting(new MenuSettingBool(this, tr["Show hidden"], tr["Show hidden files, sections & links"], &confInt["showHidden"]));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Show/Hide"] + " " + tr["Action Links"], tr["Choose ActionLinks to show or hide"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::hideActionLinks)));
+	sd.addSetting(new MenuSettingBool(this, tr["Hotkeys"], tr["Activate in menu hotkeys"], &confInt["enableHotkeys"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Text To Speech"], tr["Use TTS engine to read menu out loud"], &confInt["enableTTS"]));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
@@ -880,6 +884,38 @@ void GMenu2X::settings() {
 	
 	powerManager->setSuspendTimeout(confInt["backlightTimeout"]);
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
+
+	if (prevShowHidden != confInt["showHidden"])
+		reinit();
+}
+
+void GMenu2X::hideActionLinks() {
+
+	SettingsDialog sd(this, ts, tr["Show/Hide"] + " " + tr["Action Links"], "skin:icons/configure.png");
+	sd.allowCancel_link_nomb = true;
+	sd.addSetting(new MenuSettingBool(this, tr["Explorer"], tr["Hide"] + " " + tr["Explorer"], &confInt["hideExplorer"]));
+#if defined(HW_EXT_SD)
+	sd.addSetting(new MenuSettingBool(this, tr["Umount"], tr["Hide"] + " " + tr["Umount"], &confInt["hideUmount"]));
+#endif
+	sd.addSetting(new MenuSettingBool(this, tr["Settings"], tr["Hide"] + " " + tr["Settings"], &confInt["hideSettings"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Skin"], tr["Hide"] + " " + tr["Skin"], &confInt["hideSkin"]));
+	sd.addSetting(new MenuSettingBool(this, tr["About"], tr["Hide"] + " " + tr["About"], &confInt["hideAbout"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Power"], tr["Hide"] + " " + tr["Power"], &confInt["hidePower"]));
+	sd.addSetting(new MenuSettingBool(this, tr["CPU Settings"], tr["Hide"] + " " + tr["CPU Settings"], &confInt["hideCpuSettings"]));
+#if defined(HW_UDC)
+	sd.addSetting(new MenuSettingBool(this, tr["USB Settings"], tr["Hide"] + " " + tr["USB Settings"], &confInt["hideUsbSettings"]));
+#endif
+#if defined(HW_TVOUT)
+	sd.addSetting(new MenuSettingBool(this, tr["TV Settings"], tr["Hide"] + " " + tr["TV Settings"], &confInt["hideTvSettings"]));
+#endif
+
+	if (sd.exec() && sd.edited() && sd.save) {
+		MessageBox mb(this, tr["Show/Hide"] + " " + tr["selected"] + " " + tr["Action Links"] + "\n" + tr["Are you sure?"], "skin:icons/exit.png");
+		mb.setButton(CANCEL, tr["Cancel"]);
+		mb.setButton(MANUAL,  tr["Yes"]);
+		if (mb.exec() != MANUAL) return;
+		reinit(false, true);
+	}
 }
 
 void GMenu2X::resetSettings() {
@@ -1105,7 +1141,16 @@ void GMenu2X::readConfig() {
 	confInt["saveSelection"] = 1;
 	confInt["dialogAutoStart"] = 1;
 	confInt["enableTTS"] = 0;
+	confInt["showHidden"] = 0;
+	confInt["hideExplorer"] = 0;
+	confInt["hideUmount"] = 0;
+	confInt["hideSettings"] = 0;
+	confInt["hideSkin"] = 0;
+	confInt["hideAbout"] = 0;
+	confInt["hidePower"] = 0;
+	confInt["hideCpuSettings"] = 0;
 	confInt["showHints"] = 1;
+	confInt["enableHotkeys"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
 	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
@@ -1128,10 +1173,12 @@ void GMenu2X::readConfig() {
 #if defined(HW_UDC)
 	confStr["usbMode"] = "Ask";
 	confInt["usbHost"] = 0;
+	confInt["hideUsbSettings"] = 0;
 #endif
 #if defined(HW_TVOUT)
 	confStr["tvMode"] = "Ask";
 	confInt["tvOutForce"] = 0;
+	confInt["hideTvSettings"] = 0;
 #endif
 	confInt["cpuMenu"] = CPU_MENU;
 	confInt["cpuMax"] = CPU_MAX;
@@ -1243,6 +1290,7 @@ void GMenu2X::writeConfig() {
 				curr->first == "sectionBackdrops" ||
 				curr->first == "sectionLabel" ||
 				curr->first == "linkLabel" ||
+				curr->first == "linkDescriptionLabel" ||
 				curr->first == "showLinkIcon" ||
 
 				// defaults
@@ -1303,6 +1351,7 @@ void GMenu2X::writeSkinConfig() {
 			(curr->first == "searchBackdrops" && curr->second == SBAK_OFF) ||
 			(curr->first == "sectionBackdrops" && curr->second == 0) ||
 			(curr->first == "linkLabel" && curr->second == 1) ||
+			(curr->first == "linkDescriptionLabel" && curr->second == 1) ||
 			(curr->first == "showLinkIcon" && curr->second == 1) ||
 			(curr->first == "showDialogIcon" && curr->second == 1) ||
 
@@ -1339,6 +1388,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	skinConfInt["searchBackdrops"] = SBAK_OFF;
 	skinConfInt["sectionBackdrops"] = 0;
 	skinConfInt["linkLabel"] = 1;
+	skinConfInt["linkDescriptionLabel"] = 1;
 	skinConfInt["showLinkIcon"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
 
@@ -1545,6 +1595,7 @@ void GMenu2X::skinMenu() {
 		sd.addSetting(new MenuSettingInt(this, tr["Menu rows"], tr["Number of rows of links in main menu"], &skinConfInt["linkRows"], 4, 1, 8));
 		sd.addSetting(new MenuSettingBool(this, tr["Show link icon"], tr["Show link icon in main menu"], &skinConfInt["showLinkIcon"]));
 		sd.addSetting(new MenuSettingBool(this, tr["Link label"], tr["Show link labels in main menu"], &skinConfInt["linkLabel"]));
+		sd.addSetting(new MenuSettingBool(this, tr["Link description label"], tr["Show description label in menu list view"], &skinConfInt["linkDescriptionLabel"]));
 		sd.addSetting(new MenuSettingBool(this, tr["Section label"], tr["Show the active section label in main menu"], &skinConfInt["sectionLabel"]));
 		sd.exec();
 
@@ -1895,15 +1946,26 @@ void GMenu2X::umountSdDialog() {
 void GMenu2X::contextMenu() {
 	vector<MenuOption> options;
 	if (menu->selLinkApp() != NULL) {
-		options.push_back((MenuOption){tr["Edit"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::editLink)});
-		options.push_back((MenuOption){tr["Delete"] + " " + menu->selLink()->getTitle(), MakeDelegate(this, &GMenu2X::deleteLink)});
+		string linkTitle = menu->selLink()->getTitle();
+		string linkName = base_name(menu->selLinkApp()->getFile());
+		options.push_back((MenuOption){tr["Edit"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::editLink)});
+		options.push_back((MenuOption){tr["Delete"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::deleteLink)});
+		options.push_back((MenuOption){tr["Favoritise"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::favLink)});
+		//INFO("selfilename=%s", base_name(menu->selLinkApp()->getFile()).c_str());
+		if (linkName[0] != '.')
+			options.push_back((MenuOption){tr["Hide"] + " " + linkTitle, MakeDelegate(this, &GMenu2X::hideLink)});
+		else 
+			options.push_back((MenuOption){tr["Unhide"] + " " +linkTitle, MakeDelegate(this, &GMenu2X::unhideLink)});
 	}
 
 	options.push_back((MenuOption){tr["Add link"], 			MakeDelegate(this, &GMenu2X::addLink)});
 	options.push_back((MenuOption){tr["Add section"],		MakeDelegate(this, &GMenu2X::addSection)});
 	options.push_back((MenuOption){tr["Rename section"],	MakeDelegate(this, &GMenu2X::renameSection)});
 	options.push_back((MenuOption){tr["Delete section"],	MakeDelegate(this, &GMenu2X::deleteSection)});
-
+	if (menu->selSection()[0] != '.')
+		options.push_back((MenuOption){tr["Hide section"],		MakeDelegate(this, &GMenu2X::hideSection)});
+	else
+		options.push_back((MenuOption){tr["Unhide section"],		MakeDelegate(this, &GMenu2X::unhideSection)});
 #if defined(OPK_SUPPORT)
 	options.push_back((MenuOption){tr["Update OPK links"],	MakeDelegate(this, &GMenu2X::opkScanner)});
 #endif
@@ -2164,6 +2226,42 @@ void GMenu2X::deleteLink() {
 	}
 }
 
+void GMenu2X::favLink() {
+	MessageBox mb(this, tr["Favoritise"] + " " + menu->selLink()->getTitle() + "\n" + tr["Are you sure?"], menu->selLink()->getIconPath());
+
+	menu->favSelectedLink();
+}
+
+void GMenu2X::hideLink() {
+	MessageBox mb(this, tr["Hide"] + " " + menu->selLink()->getTitle() + "\n" + tr["Are you sure?"], menu->selLink()->getIconPath());
+
+	mb.setButton(MANUAL, tr["Hide link"]);
+	mb.setButton(CANCEL, tr["No"]);
+
+	switch (mb.exec()) {
+		case MANUAL:
+			menu->hideSelectedLink();
+			break;
+		default:
+			return;
+	}
+}
+
+void GMenu2X::unhideLink() {
+	MessageBox mb(this, tr["Unhide"] + " " + menu->selLink()->getTitle() + "\n" + tr["Are you sure?"], menu->selLink()->getIconPath());
+
+	mb.setButton(MANUAL, tr["Unhide link"]);
+	mb.setButton(CANCEL, tr["No"]);
+
+	switch (mb.exec()) {
+		case MANUAL:
+			menu->unhideSelectedLink();
+			break;
+		default:
+			return;
+	}
+}
+
 void GMenu2X::addSection() {
 	InputDialog id(this, /*ts,*/ tr["Insert a name for the new section"], "", tr["Add section"], "skin:icons/section.png");
 	if (id.exec()) {
@@ -2199,6 +2297,24 @@ void GMenu2X::deleteSection() {
 		sync();
 	}
 	ledOff();
+}
+
+void GMenu2X::hideSection() {
+	MessageBox mb(this, tr["Hide section"] + " '" +  menu->selSectionName() + "'\n" + tr["Are you sure?"], menu->getSectionIcon());
+	mb.setButton(MANUAL, tr["Yes"]);
+	mb.setButton(CANCEL,  tr["No"]);
+	if (mb.exec() != MANUAL) return;
+	menu->hideSection(menu->selSectionIndex());
+	reinit();
+}
+
+void GMenu2X::unhideSection() {
+	MessageBox mb(this, tr["Unhide section"] + " '" +  menu->selSectionName() + "'\n" + tr["Are you sure?"], menu->getSectionIcon());
+	mb.setButton(MANUAL, tr["Yes"]);
+	mb.setButton(CANCEL,  tr["No"]);
+	if (mb.exec() != MANUAL) return;
+	menu->unhideSection(menu->selSectionIndex());
+	reinit();
 }
 
 #if defined(OPK_SUPPORT)

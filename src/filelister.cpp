@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <algorithm>
+#include <stdint.h>
 
 #include "filelister.h"
 #include "utilities.h"
@@ -60,7 +61,9 @@ void FileLister::browse(bool dirup) {
 
 		while (++i < n) {
 			string file = dptr[i]->d_name;
-			if (file[0] == '.' || (find(excludes.begin(), excludes.end(), file) != excludes.end()))
+			if ((!(GMenu2X::instance->confInt["showHidden"])) && file[0] == '.' || (find(excludes.begin(), excludes.end(), file) != excludes.end()))
+				continue;
+			else if (strlen(file.c_str()) == 1 && file[0] == '.' || strlen(file.c_str()) == 2 && file[0] == '.' && file[1] == '.')
 				continue;
 
 			if (!((dptr[i]->d_type & DT_REG) || (dptr[i]->d_type & DT_DIR)) || (dptr[i]->d_type & DT_LNK)) {

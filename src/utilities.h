@@ -45,6 +45,7 @@ public:
 };
 
 string trim(const string& s);
+string unhide(const string& s);
 string strreplace (string orig, const string &search, const string &replace);
 string cmdclean (string cmdline);
 

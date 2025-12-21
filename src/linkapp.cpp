@@ -281,9 +281,6 @@ void LinkApp::setGamma(int gamma) {
 #endif
 
 bool LinkApp::targetExists() {
-#if defined(TARGET_LINUX)
-	return true; //For displaying elements during testing on pc
-#endif
 	string target = exec;
 	if (!exec.empty() && exec[0] != '/' && !homedir.empty())
 		target = homedir + "/" + exec;
@@ -340,7 +337,7 @@ bool LinkApp::save() {
 
 void LinkApp::run() {
 	uint32_t start = SDL_GetTicks();
-	while (gmenu2x->input[CONFIRM]) {
+	while (gmenu2x->input[CONFIRM] && gmenu2x->confInt["enableHotkeys"]) {
 		gmenu2x->input.update();
 		SDL_Delay(1);
 		if (SDL_GetTicks() - start > 1400) {

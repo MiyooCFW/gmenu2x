@@ -21,6 +21,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdarg.h>
+#include <stdint.h>
 #if defined(CHECK_TRANSLATION)
 #include <set>
 #include <algorithm>
