@@ -849,7 +849,7 @@ void GMenu2X::settings() {
 	sd.addSetting(new MenuSettingBool(this, tr["Hints"], tr["Show \"Hint\" messages"], &confInt["showHints"]));
 	int prevShowHidden = confInt["showHidden"];
 	sd.addSetting(new MenuSettingBool(this, tr["Show hidden"], tr["Show hidden files, sections & links"], &confInt["showHidden"]));
-	sd.addSetting(new MenuSettingMultiString(this, tr["Show/Hide"] + " " + tr["Action Links"], tr["Choose ActionLinks to show or hide"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::hideActionLinks)));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Show/Hide Action Links"], tr["Choose ActionLinks to show or hide"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::hideActionLinks)));
 	sd.addSetting(new MenuSettingBool(this, tr["Hotkeys"], tr["Activate in menu hotkeys"], &confInt["enableHotkeys"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Text To Speech"], tr["Use TTS engine to read menu out loud"], &confInt["enableTTS"]));
@@ -891,7 +891,7 @@ void GMenu2X::settings() {
 
 void GMenu2X::hideActionLinks() {
 
-	SettingsDialog sd(this, ts, tr["Show/Hide"] + " " + tr["Action Links"], "skin:icons/configure.png");
+	SettingsDialog sd(this, ts, tr["Show/Hide Action Links"], "skin:icons/configure.png");
 	sd.allowCancel_link_nomb = true;
 	sd.addSetting(new MenuSettingBool(this, tr["Explorer"], tr["Hide"] + " " + tr["Explorer"], &confInt["hideExplorer"]));
 #if defined(HW_EXT_SD)
@@ -910,7 +910,7 @@ void GMenu2X::hideActionLinks() {
 #endif
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		MessageBox mb(this, tr["Show/Hide"] + " " + tr["selected"] + " " + tr["Action Links"] + "\n" + tr["Are you sure?"], "skin:icons/exit.png");
+		MessageBox mb(this, tr["Show/Hide preselected Action Links"] + "\n" + tr["Are you sure?"], "skin:icons/exit.png");
 		mb.setButton(CANCEL, tr["Cancel"]);
 		mb.setButton(MANUAL,  tr["Yes"]);
 		if (mb.exec() != MANUAL) return;
