@@ -56,6 +56,12 @@ The current in use messages from U.S. English language can be read from: [transl
 
 You can run `tools/gen_translate.sh` to generate above list providing argument in form of txt file with list of #define for your platform and target platform name. Otherwise you can rebuild GMenu2X with `-DCHECK_TRANSLATION` CFLAG in Makefile. Then after running binary with selected language you will find `untraslated.txt`file with list of missing translation strings which failed to be generated at the time of using GMenu2X.
 
+To check your newly translated strings in custom translation file, we recommend to perform manual check with [`languagetool`](https://github.com/languagetool-org/languagetool) CLI app, e.g. for French(fr):
+```sh
+sed 's/^[^=]*=//' French | \
+java -jar languagetool-commandline.jar -b -l fr
+``` 
+
 ### Special strings in translation file
 The "\_about\_" assigns corresponding text file for displaying _About_ message, e.g. "\_about\_=\_about\_en" means _about_en.txt is being used for English translation.
 
