@@ -1023,7 +1023,6 @@ void GMenu2X::raSettings() {
 	//raMode.push_back("History");
 
 	//string racommand = "";
-	string prevRAmode = confStr["raMode"];
 	string rewind = "RA_REWIND=";
 	string frontend = "FRONTEND=gmenu2x";
 	string command = "exec /usr/bin/retroarch-setup";
@@ -1034,24 +1033,22 @@ void GMenu2X::raSettings() {
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		writeConfig();
-		if (prevRAmode != confStr["raMode"]) {
-			MessageBox mb(this, tr["Updating cores..."]);
-			mb.setAutoHide(1);
-			mb.setBgAlpha(0);
-			mb.exec();
-			input.update(false);
-			if (confStr["raMode"] != "default")
-				command += " " + confStr["raMode"];
-			rewind += confInt["raRewind"] ? "true" : "false";
-			pid_t son = fork();
-			if (!son) {
-				char *env[] = {const_cast<char*>(frontend.c_str()), const_cast<char*>(home_var.c_str()),const_cast<char*>(rewind.c_str()), NULL};
-				execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, env);
-				ERROR("execlp of shell cmd \"%s\" failed", command.c_str());
-			}
-			wait(NULL);
-			reinit();
+		MessageBox mb(this, tr["Updating cores..."]);
+		mb.setAutoHide(1);
+		mb.setBgAlpha(0);
+		mb.exec();
+		input.update(false);
+		if (confStr["raMode"] != "default")
+			command += " " + confStr["raMode"];
+		rewind += confInt["raRewind"] ? "true" : "false";
+		pid_t son = fork();
+		if (!son) {
+			char *env[] = {const_cast<char*>(frontend.c_str()), const_cast<char*>(home_var.c_str()),const_cast<char*>(rewind.c_str()), NULL};
+			execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, env);
+			ERROR("execlp of shell cmd \"%s\" failed", command.c_str());
 		}
+		wait(NULL);
+		reinit();
 	}
 }
 
