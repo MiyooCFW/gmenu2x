@@ -773,8 +773,8 @@ void GMenu2X::initMenu() {
 			if (!(confInt["hideAbout"])) menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenu2X"], "about.png");
 			if (!(confInt["hidePower"])) menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
 			if (!(confInt["hideCpuSettings"])) menu->addActionLink(i, tr["CPU Settings"], MakeDelegate(this, &GMenu2X::cpuSettings), tr["Config CPU clock"], "cpu.png");
-			if (file_exists("/usr/bin/retroarch-setup") && !(confInt["hideRaSettings"]))
-				menu->addActionLink(i, tr["RetroArch Settings"], MakeDelegate(this, &GMenu2X::raSettings), tr["Config RetroArch mode"], "retroarch.png");
+			if (file_exists("/usr/bin/retroarch-setup") &&
+				!(confInt["hideRaSettings"])) menu->addActionLink(i, tr["RetroArch Settings"], MakeDelegate(this, &GMenu2X::raSettings), tr["Config RetroArch cores"], "retroarch.png");
 #if defined(HW_UDC)
 			if (!(confInt["hideUsbSettings"])) menu->addActionLink(i, tr["USB Settings"], MakeDelegate(this, &GMenu2X::usbSettings), tr["Config USB mode"], "usb.png");
 #endif
@@ -1020,16 +1020,16 @@ void GMenu2X::raSettings() {
 	raMode.push_back("default");
 	raMode.push_back("minimal");
 	raMode.push_back("kiosk");
-	//raMode.push_back("History");
+	//raMode.push_back("history");
 
 	//string racommand = "";
 	string frontend = "FRONTEND=gmenu2x";
 	string command = "exec /usr/bin/retroarch-setup";
 	string home_var = "HOME=" + confStr["homePath"];
 	
-	sd.addSetting(new MenuSettingMultiString(this, tr["RetroArch mode"], tr["Define default RetroArch mode"], &confStr["raMode"], &raMode));
-	sd.addSetting(new MenuSettingBool(this, tr["Rewind"], tr["Enable Rewind support"], &confInt["raRewind"]));
-	sd.addSetting(new MenuSettingFile(this, tr["Custom cfg"], tr["File with custom RA configurations"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["File with custom RA configurations"], "skin:icons/retroarch.png"));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Menu mode"], tr["Set RetroArch GUI mode"], &confStr["raMode"], &raMode));
+	sd.addSetting(new MenuSettingBool(this, tr["Rewind"], tr["Enable Rewind support (if available)"], &confInt["raRewind"]));
+	sd.addSetting(new MenuSettingFile(this, tr["Custom config"], tr["Select a custom Configuration file"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["File with custom RA configurations"], "skin:icons/retroarch.png"));
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		writeConfig();
