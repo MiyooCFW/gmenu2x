@@ -1023,13 +1023,13 @@ void GMenu2X::raSettings() {
 	//raMode.push_back("History");
 
 	//string racommand = "";
-	string rewind = "RA_REWIND=";
 	string frontend = "FRONTEND=gmenu2x";
 	string command = "exec /usr/bin/retroarch-setup";
 	string home_var = "HOME=" + confStr["homePath"];
 	
 	sd.addSetting(new MenuSettingMultiString(this, tr["RetroArch mode"], tr["Define default RetroArch mode"], &confStr["raMode"], &raMode));
 	sd.addSetting(new MenuSettingBool(this, tr["Rewind"], tr["Enable Rewind support"], &confInt["raRewind"]));
+	sd.addSetting(new MenuSettingFile(this, tr["Custom cfg"], tr["File with custom RA configurations"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["File with custom RA configurations"], "skin:icons/retroarch.png"));
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		writeConfig();
@@ -1038,16 +1038,21 @@ void GMenu2X::raSettings() {
 		mb.setBgAlpha(0);
 		mb.exec();
 		input.update(false);
+		if (confInt["raRewind"])
+			command += " -r";
+		if (!confStr["raConfig"].empty())
+			command += " -c " + confStr["raConfig"];
 		if (confStr["raMode"] != "default")
 			command += " " + confStr["raMode"];
-		rewind += confInt["raRewind"] ? "true" : "false";
 		pid_t son = fork();
 		if (!son) {
-			char *env[] = {const_cast<char*>(frontend.c_str()), const_cast<char*>(home_var.c_str()),const_cast<char*>(rewind.c_str()), NULL};
+			char *env[] = {const_cast<char*>(frontend.c_str()), const_cast<char*>(home_var.c_str()), NULL};
 			execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, env);
-			ERROR("execlp of shell cmd \"%s\" failed", command.c_str());
+			ERROR("execle of shell cmd \"%s\" failed", command.c_str());
 		}
-		wait(NULL);
+		int status;
+		waitpid(son, &status, 0);
+		INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
 		reinit();
 	}
 }
