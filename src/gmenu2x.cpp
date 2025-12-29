@@ -1012,7 +1012,16 @@ void GMenu2X::cpuSettings() {
 	}
 }
 
-void GMenu2X::raSettings() {  
+void GMenu2X::raSettings() {
+
+	// sanity check for libretro cores section presence
+	if (!dir_exists("sections/cores")) {
+		MessageBox mb(this, tr["No cores to apply settings..."]);
+		mb.setButton(CONFIRM,  tr["Exit"]);
+		mb.exec();
+		return;
+	}
+
 	SettingsDialog sd(this, ts, tr["RetroArch setup"], "skin:icons/retroarch.png");
 	sd.allowCancel = true;
 
@@ -1026,7 +1035,7 @@ void GMenu2X::raSettings() {
 	string frontend = "FRONTEND=gmenu2x";
 	string command = "exec /usr/bin/retroarch-setup";
 	string home_var = "HOME=" + confStr["homePath"];
-	
+
 	sd.addSetting(new MenuSettingMultiString(this, tr["Menu mode"], tr["Set RetroArch GUI mode"], &confStr["raMode"], &raMode));
 	sd.addSetting(new MenuSettingBool(this, tr["Rewind"], tr["Enable Rewind support (if available)"], &confInt["raRewind"]));
 	sd.addSetting(new MenuSettingFile(this, tr["Custom config"], tr["Select a custom Configuration file"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["File with custom RA configurations"], "skin:icons/retroarch.png"));
