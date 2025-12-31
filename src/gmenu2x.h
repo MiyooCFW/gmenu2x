@@ -183,6 +183,7 @@ public:
 	void resetSettings();
 	void hideActionLinks();
 	void cpuSettings();
+	void raSettings();
 #if defined(HW_UDC)
 	void usbSettings();
 #endif

@@ -773,6 +773,8 @@ void GMenu2X::initMenu() {
 			if (!(confInt["hideAbout"])) menu->addActionLink(i, tr["About"], MakeDelegate(this, &GMenu2X::about), tr["Info about GMenu2X"], "about.png");
 			if (!(confInt["hidePower"])) menu->addActionLink(i, tr["Power"], MakeDelegate(this, &GMenu2X::poweroffDialog), tr["Power menu"], "exit.png");
 			if (!(confInt["hideCpuSettings"])) menu->addActionLink(i, tr["CPU Settings"], MakeDelegate(this, &GMenu2X::cpuSettings), tr["Config CPU clock"], "cpu.png");
+			if (file_exists("/usr/bin/retroarch-setup") &&
+				!(confInt["hideRaSettings"])) menu->addActionLink(i, tr["RetroArch Settings"], MakeDelegate(this, &GMenu2X::raSettings), tr["Config RetroArch cores"], "retroarch.png");
 #if defined(HW_UDC)
 			if (!(confInt["hideUsbSettings"])) menu->addActionLink(i, tr["USB Settings"], MakeDelegate(this, &GMenu2X::usbSettings), tr["Config USB mode"], "usb.png");
 #endif
@@ -902,6 +904,8 @@ void GMenu2X::hideActionLinks() {
 	sd.addSetting(new MenuSettingBool(this, tr["About"], tr["Hide"] + " " + tr["About"], &confInt["hideAbout"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Power"], tr["Hide"] + " " + tr["Power"], &confInt["hidePower"]));
 	sd.addSetting(new MenuSettingBool(this, tr["CPU Settings"], tr["Hide"] + " " + tr["CPU Settings"], &confInt["hideCpuSettings"]));
+	if (file_exists("/usr/bin/retroarch-setup"))
+		sd.addSetting(new MenuSettingBool(this, tr["RetroArch Settings"], tr["Hide"] + " " + tr["RetroArch Settings"], &confInt["hideRaSettings"]));
 #if defined(HW_UDC)
 	sd.addSetting(new MenuSettingBool(this, tr["USB Settings"], tr["Hide"] + " " + tr["USB Settings"], &confInt["hideUsbSettings"]));
 #endif
@@ -1005,6 +1009,60 @@ void GMenu2X::cpuSettings() {
 	if (sd.exec() && sd.edited() && sd.save) {
 		setCPU(confInt["cpuMenu"]);
 		writeConfig();
+	}
+}
+
+void GMenu2X::raSettings() {
+
+	// sanity check for libretro cores section presence
+	if (!dir_exists("sections/cores")) {
+		MessageBox mb(this, tr["No cores to apply settings..."]);
+		mb.setButton(CONFIRM,  tr["Exit"]);
+		mb.exec();
+		return;
+	}
+
+	SettingsDialog sd(this, ts, tr["RetroArch setup"], "skin:icons/retroarch.png");
+	sd.allowCancel = true;
+
+	vector<string> raMode;
+	raMode.push_back("default");
+	raMode.push_back("minimal");
+	raMode.push_back("kiosk");
+	//raMode.push_back("history");
+
+	//string racommand = "";
+	string frontend = "FRONTEND=gmenu2x";
+	string command = "exec /usr/bin/retroarch-setup";
+	string home_var = "HOME=" + confStr["homePath"];
+
+	sd.addSetting(new MenuSettingMultiString(this, tr["Menu mode"], tr["Set RetroArch GUI mode"], &confStr["raMode"], &raMode));
+	sd.addSetting(new MenuSettingBool(this, tr["Rewind"], tr["Enable Rewind support (if available)"], &confInt["raRewind"]));
+	sd.addSetting(new MenuSettingFile(this, tr["Custom config"], tr["Select a custom Configuration file"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["File with custom RA configurations"], "skin:icons/retroarch.png"));
+
+	if (sd.exec() && sd.edited() && sd.save) {
+		writeConfig();
+		MessageBox mb(this, tr["Updating cores..."]);
+		mb.setAutoHide(1);
+		mb.setBgAlpha(0);
+		mb.exec();
+		input.update(false);
+		if (confInt["raRewind"])
+			command += " -r";
+		if (!confStr["raConfig"].empty())
+			command += " -c " + confStr["raConfig"];
+		if (confStr["raMode"] != "default")
+			command += " " + confStr["raMode"];
+		pid_t son = fork();
+		if (!son) {
+			char *env[] = {const_cast<char*>(frontend.c_str()), const_cast<char*>(home_var.c_str()), NULL};
+			execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, env);
+			ERROR("execle of shell cmd \"%s\" failed", command.c_str());
+		}
+		int status;
+		waitpid(son, &status, 0);
+		INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
+		reinit();
 	}
 }
 
@@ -1149,6 +1207,8 @@ void GMenu2X::readConfig() {
 	confInt["hideAbout"] = 0;
 	confInt["hidePower"] = 0;
 	confInt["hideCpuSettings"] = 0;
+	confInt["hideRaSettings"] = 0;
+	confInt["raRewind"] = 0;
 	confInt["showHints"] = 1;
 	confInt["enableHotkeys"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
