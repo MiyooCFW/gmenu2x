@@ -1404,14 +1404,14 @@ void GMenu2X::writeSkinConfig() {
 			curr->first == "topBarHeight" ||
 
 			(curr->first == "previewWidth" && curr->second == 128) ||
-			(curr->first == "linkCols" && curr->second == 4) ||
-			(curr->first == "linkRows" && curr->second == 4) ||
+			(curr->first == "linkCols" && curr->second == 1) ||
+			(curr->first == "linkRows" && curr->second == 8) ||
 			(curr->first == "sectionBar" && curr->second == SB_CLASSIC) ||
 			(curr->first == "sectionLabel" && curr->second == 1) ||
 			(curr->first == "searchBackdrops" && curr->second == SBAK_OFF) ||
 			(curr->first == "sectionBackdrops" && curr->second == 0) ||
 			(curr->first == "linkLabel" && curr->second == 1) ||
-			(curr->first == "linkDescriptionLabel" && curr->second == 1) ||
+			(curr->first == "linkDescriptionLabel" && curr->second == 0) ||
 			(curr->first == "showLinkIcon" && curr->second == 1) ||
 			(curr->first == "showDialogIcon" && curr->second == 1) ||
 
@@ -1448,7 +1448,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	skinConfInt["searchBackdrops"] = SBAK_OFF;
 	skinConfInt["sectionBackdrops"] = 0;
 	skinConfInt["linkLabel"] = 1;
-	skinConfInt["linkDescriptionLabel"] = 1;
+	skinConfInt["linkDescriptionLabel"] = 0;
 	skinConfInt["showLinkIcon"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
 
@@ -1527,10 +1527,10 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	evalIntConf(&skinConfInt["bottomBarHeight"], 16, 1, this->h);
 	evalIntConf(&skinConfInt["previewWidth"], 128, 1, this->w);
 	evalIntConf(&skinConfInt["fontSize"], 14, 6, 60);
-	evalIntConf(&skinConfInt["fontSizeTitle"], 20, 1, 60);
+	evalIntConf(&skinConfInt["fontSizeTitle"], 17, 1, 60);
 	evalIntConf(&skinConfInt["sectionBar"], SB_CLASSIC, 0, 5);
-	evalIntConf(&skinConfInt["linkCols"], 4, 1, 8);
-	evalIntConf(&skinConfInt["linkRows"], 4, 1, 8);
+	evalIntConf(&skinConfInt["linkCols"], 1, 1, 8);
+	evalIntConf(&skinConfInt["linkRows"], 8, 1, 8);
 
 	initFont(false);
 }
