@@ -838,23 +838,15 @@ void GMenu2X::settings() {
 
 	string prevDateTime = confStr["datetime"] = get_date_time();
 	sd.addSetting(new MenuSettingDateTime(this, tr["Date & Time"], tr["Set system's date & time"], &confStr["datetime"]));
-	sd.addSetting(new MenuSettingDir(this, tr["Home path"],	tr["Set as home for launched links"], &confStr["homePath"]));
 
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Suspend timeout"], tr["Seconds until suspend the device when inactive"], &confInt["backlightTimeout"], 30, 0, 300))->setOff(9));
 	sd.addSetting((MenuSettingInt *)(new MenuSettingInt(this, tr["Power timeout"], tr["Minutes to poweroff system if inactive"], &confInt["powerTimeout"], 10, 0, 60))->setOff(0));
 	sd.addSetting(new MenuSettingInt(this, tr["Backlight"], tr["Set LCD backlight"], &confInt["backlight"], 50, 10, 100, 10));
 	sd.addSetting(new MenuSettingInt(this, tr["Audio volume"], tr["Set the default audio volume"], &confInt["globalVolume"], 50, 0, 90, 10));
-	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], DEFAULT_LAYOUT, 1, confInt["keyboardLayoutMax"]));
-	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], DEFAULT_TEFIX, 0, confInt["tefixMax"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Remember selection"], tr["Remember the last selected section, link and file"], &confInt["saveSelection"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Autostart"], tr["Run last app on restart"], &confInt["saveAutoStart"]));
-	sd.addSetting(new MenuSettingBool(this, tr["Hints"], tr["Show \"Hint\" messages"], &confInt["showHints"]));
-	int prevShowHidden = confInt["showHidden"];
-	sd.addSetting(new MenuSettingBool(this, tr["Show hidden"], tr["Show hidden files, sections & links"], &confInt["showHidden"]));
-	sd.addSetting(new MenuSettingMultiString(this, tr["Show/Hide Action Links"], tr["Choose ActionLinks to show or hide"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::hideActionLinks)));
-	sd.addSetting(new MenuSettingBool(this, tr["Hotkeys"], tr["Activate in menu hotkeys"], &confInt["enableHotkeys"]));
-	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
 	sd.addSetting(new MenuSettingBool(this, tr["Text To Speech"], tr["Use TTS engine to read menu out loud"], &confInt["enableTTS"]));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Advanced settings"], tr["Enter extra settings menu"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::advancedSettings)));
 	sd.addSetting(new MenuSettingMultiString(this, tr["Reset settings"], tr["Choose settings to reset back to defaults"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::resetSettings)));
 
 	if (sd.exec() && sd.edited() && sd.save) {
@@ -886,7 +878,31 @@ void GMenu2X::settings() {
 	
 	powerManager->setSuspendTimeout(confInt["backlightTimeout"]);
 	powerManager->setPowerTimeout(confInt["powerTimeout"]);
+}
 
+void GMenu2X::advancedSettings() {
+
+	int prevShowHidden = confInt["showHidden"];
+
+	vector<string> opFactory;
+	opFactory.push_back(">>");
+	string tmp = ">>";
+	
+	SettingsDialog sd(this, ts, tr["Advanced Settings"], "skin:icons/configure.png");
+	sd.allowCancel_nomb = true;
+
+	sd.addSetting(new MenuSettingDir(this, tr["Home path"],	tr["Set as home for launched links"], &confStr["homePath"]));
+	sd.addSetting(new MenuSettingInt(this, tr["Keyboard layout"], tr["Set the default A/B/X/Y layout"], &confInt["keyboardLayoutMenu"], DEFAULT_LAYOUT, 1, confInt["keyboardLayoutMax"]));
+	sd.addSetting(new MenuSettingInt(this, tr["TEfix method"], tr["Set the default tearing FIX method"], &confInt["tefixMenu"], DEFAULT_TEFIX, 0, confInt["tefixMax"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Hints"], tr["Show \"Hint\" messages"], &confInt["showHints"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Hotkeys"], tr["Activate in menu hotkeys"], &confInt["enableHotkeys"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Output logs"], tr["Logs the link's output to read with Log Viewer"], &confInt["outputLogs"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Show hidden"], tr["Show hidden files, sections & links"], &confInt["showHidden"]));
+	sd.addSetting(new MenuSettingMultiString(this, tr["Show/Hide Action Links"], tr["Choose ActionLinks to show or hide"], &tmp, &opFactory, 0, MakeDelegate(this, &GMenu2X::hideActionLinks)));
+
+	if (sd.exec() && sd.edited() && sd.save) {
+		writeConfig();
+	}
 	if (prevShowHidden != confInt["showHidden"])
 		reinit();
 }
@@ -894,7 +910,7 @@ void GMenu2X::settings() {
 void GMenu2X::hideActionLinks() {
 
 	SettingsDialog sd(this, ts, tr["Show/Hide Action Links"], "skin:icons/configure.png");
-	sd.allowCancel_link_nomb = true;
+	sd.allowCancel_nomb = true;
 	sd.addSetting(new MenuSettingBool(this, tr["Explorer"], tr["Hide"] + " " + tr["Explorer"], &confInt["hideExplorer"]));
 #if defined(HW_EXT_SD)
 	sd.addSetting(new MenuSettingBool(this, tr["Umount"], tr["Hide"] + " " + tr["Umount"], &confInt["hideUmount"]));
@@ -917,8 +933,8 @@ void GMenu2X::hideActionLinks() {
 		MessageBox mb(this, tr["Show/Hide preselected Action Links"] + "\n" + tr["Are you sure?"], "skin:icons/exit.png");
 		mb.setButton(CANCEL, tr["Cancel"]);
 		mb.setButton(MANUAL,  tr["Yes"]);
-		if (mb.exec() != MANUAL) return;
-		reinit(false, true);
+		if (mb.exec() == MANUAL)
+			reinit(false, true);
 	}
 }
 

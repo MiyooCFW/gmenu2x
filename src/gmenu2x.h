@@ -180,6 +180,7 @@ public:
 	void settings_date();
 	void reinit(bool showDialog = false, bool quitSave = false);
 	void poweroffDialog();
+	void advancedSettings();
 	void resetSettings();
 	void hideActionLinks();
 	void cpuSettings();
