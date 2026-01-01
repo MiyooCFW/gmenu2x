@@ -1105,7 +1105,6 @@ void GMenu2X::raSettings() {
 	sd.addSetting(new MenuSettingFile(this, tr["Custom config"], tr["Select a custom Configuration file"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["File with custom RA configurations"], "skin:icons/retroarch.png"));
 
 	if (sd.exec() && sd.edited() && sd.save) {
-		writeConfig();
 		MessageBox mb(this, tr["Updating cores..."]);
 		mb.setAutoHide(1);
 		mb.setBgAlpha(0);
@@ -1125,8 +1124,12 @@ void GMenu2X::raSettings() {
 		}
 		int status;
 		waitpid(son, &status, 0);
-		INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
-		reinit();
+		if (status == 0) {
+			writeConfig();
+			initMenu();
+		} else {
+			INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
+		}
 	}
 }
 
