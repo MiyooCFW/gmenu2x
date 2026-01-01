@@ -2429,7 +2429,7 @@ void GMenu2X::hideSection() {
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() != MANUAL) return;
 	menu->hideSection(menu->selSectionIndex());
-	reinit();
+	initMenu();
 }
 
 void GMenu2X::unhideSection() {
@@ -2438,7 +2438,7 @@ void GMenu2X::unhideSection() {
 	mb.setButton(CANCEL,  tr["No"]);
 	if (mb.exec() != MANUAL) return;
 	menu->unhideSection(menu->selSectionIndex());
-	reinit();
+	initMenu();
 }
 
 #if defined(OPK_SUPPORT)

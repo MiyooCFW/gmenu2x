@@ -326,7 +326,7 @@ void Menu::favSelectedLink() {
 		MessageBox mb(gmenu2x, gmenu2x->tr["App Link created"]);
 		mb.setAutoHide(1000);
 		mb.exec();
-		gmenu2x->reinit();
+		gmenu2x->initMenu();
 	}
 }
 
@@ -344,7 +344,7 @@ void Menu::hideSelectedLink() {
 		selLinkApp()->setTitle(newLinkTitle);
 		selLinkApp()->save();
 		sync();
-		gmenu2x->reinit();
+		gmenu2x->initMenu();
 	}
 }
 
@@ -361,7 +361,7 @@ void Menu::unhideSelectedLink() {
 		selLinkApp()->setTitle(newLinkTitle);
 		selLinkApp()->save();
 		sync();
-		gmenu2x->reinit();
+		gmenu2x->initMenu();
 	}
 }
 
