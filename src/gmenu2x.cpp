@@ -909,32 +909,80 @@ void GMenu2X::advancedSettings() {
 
 void GMenu2X::hideActionLinks() {
 
+	bool hide_all = false,
+		unhide_all = false;
+
 	SettingsDialog sd(this, ts, tr["Show/Hide Action Links"], "skin:icons/configure.png");
 	sd.allowCancel_nomb = true;
-	sd.addSetting(new MenuSettingBool(this, tr["Explorer"], tr["Hide"] + " " + tr["Explorer"], &confInt["hideExplorer"]));
+	if (
+		confInt["hideExplorer"] &&
 #if defined(HW_EXT_SD)
-	sd.addSetting(new MenuSettingBool(this, tr["Umount"], tr["Hide"] + " " + tr["Umount"], &confInt["hideUmount"]));
+		confInt["hideUmount"] &&
 #endif
-	sd.addSetting(new MenuSettingBool(this, tr["Settings"], tr["Hide"] + " " + tr["Settings"], &confInt["hideSettings"]));
-	sd.addSetting(new MenuSettingBool(this, tr["Skin"], tr["Hide"] + " " + tr["Skin"], &confInt["hideSkin"]));
-	sd.addSetting(new MenuSettingBool(this, tr["About"], tr["Hide"] + " " + tr["About"], &confInt["hideAbout"]));
-	sd.addSetting(new MenuSettingBool(this, tr["Power"], tr["Hide"] + " " + tr["Power"], &confInt["hidePower"]));
-	sd.addSetting(new MenuSettingBool(this, tr["CPU Settings"], tr["Hide"] + " " + tr["CPU Settings"], &confInt["hideCpuSettings"]));
-	if (file_exists("/usr/bin/retroarch-setup"))
-		sd.addSetting(new MenuSettingBool(this, tr["RetroArch Settings"], tr["Hide"] + " " + tr["RetroArch Settings"], &confInt["hideRaSettings"]));
+		confInt["hideSkin"] && confInt["hideSettings"] && confInt["hideAbout"] && confInt["hidePower"] && confInt["hideCpuSettings"] && confInt["hideRaSettings"] &&
 #if defined(HW_UDC)
-	sd.addSetting(new MenuSettingBool(this, tr["USB Settings"], tr["Hide"] + " " + tr["USB Settings"], &confInt["hideUsbSettings"]));
+		confInt["hideUsbSettings"] &&
 #endif
 #if defined(HW_TVOUT)
-	sd.addSetting(new MenuSettingBool(this, tr["TV Settings"], tr["Hide"] + " " + tr["TV Settings"], &confInt["hideTvSettings"]));
+		confInt["hideTvSettings"]
 #endif
+		) sd.addSetting(new MenuSettingBool(this, tr["Show ALL"], tr["Unhide all Action links"], &unhide_all));
+	else {
+		sd.addSetting(new MenuSettingBool(this, tr["Hide ALL"], tr["Hide all Action links"], &hide_all));
+		sd.addSetting(new MenuSettingBool(this, tr["Explorer"], tr["Hide"] + " " + tr["Explorer"], &confInt["hideExplorer"]));
+#if defined(HW_EXT_SD)
+		sd.addSetting(new MenuSettingBool(this, tr["Umount"], tr["Hide"] + " " + tr["Umount"], &confInt["hideUmount"]));
+#endif
+		sd.addSetting(new MenuSettingBool(this, tr["Settings"], tr["Hide"] + " " + tr["Settings"], &confInt["hideSettings"]));
+		sd.addSetting(new MenuSettingBool(this, tr["Skin"], tr["Hide"] + " " + tr["Skin"], &confInt["hideSkin"]));
+		sd.addSetting(new MenuSettingBool(this, tr["About"], tr["Hide"] + " " + tr["About"], &confInt["hideAbout"]));
+		sd.addSetting(new MenuSettingBool(this, tr["Power"], tr["Hide"] + " " + tr["Power"], &confInt["hidePower"]));
+		sd.addSetting(new MenuSettingBool(this, tr["CPU Settings"], tr["Hide"] + " " + tr["CPU Settings"], &confInt["hideCpuSettings"]));
+		if (file_exists("/usr/bin/retroarch-setup"))
+			sd.addSetting(new MenuSettingBool(this, tr["RetroArch Settings"], tr["Hide"] + " " + tr["RetroArch Settings"], &confInt["hideRaSettings"]));
+#if defined(HW_UDC)
+		sd.addSetting(new MenuSettingBool(this, tr["USB Settings"], tr["Hide"] + " " + tr["USB Settings"], &confInt["hideUsbSettings"]));
+#endif
+#if defined(HW_TVOUT)
+		sd.addSetting(new MenuSettingBool(this, tr["TV Settings"], tr["Hide"] + " " + tr["TV Settings"], &confInt["hideTvSettings"]));
+#endif
+	}
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		MessageBox mb(this, tr["Show/Hide preselected Action Links"] + "\n" + tr["Are you sure?"], "skin:icons/exit.png");
 		mb.setButton(CANCEL, tr["Cancel"]);
 		mb.setButton(MANUAL,  tr["Yes"]);
-		if (mb.exec() == MANUAL)
+		if (mb.exec() == MANUAL) {
+			if (hide_all) {
+				confInt["hideExplorer"] =
+#if defined(HW_EXT_SD)
+				confInt["hideUmount"] =
+#endif
+				confInt["hideSkin"] = confInt["hideSettings"] = confInt["hideAbout"] = confInt["hidePower"] = confInt["hideCpuSettings"] = confInt["hideRaSettings"] =
+#if defined(HW_UDC)
+				confInt["hideUsbSettings"] =
+#endif
+#if defined(HW_TVOUT)
+				confInt["hideTvSettings"] =
+#endif
+				1;
+			} else if (unhide_all) {
+				confInt["hideExplorer"] =
+#if defined(HW_EXT_SD)
+				confInt["hideUmount"] =
+#endif
+				confInt["hideSkin"] = confInt["hideSettings"] = confInt["hideAbout"] = confInt["hidePower"] = confInt["hideCpuSettings"] = confInt["hideRaSettings"] =
+#if defined(HW_UDC)
+				confInt["hideUsbSettings"] =
+#endif
+#if defined(HW_TVOUT)
+				confInt["hideTvSettings"] =
+#endif
+				0;
+			}
 			reinit(false, true);
+			//initMenu();
+		}
 	}
 }
 
