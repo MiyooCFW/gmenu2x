@@ -705,9 +705,9 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 			wallpaper = "skins/Default/wallpapers/" + fl.getFiles()[0];
 		}
 		if (sc[wallpaper] == NULL) return "";
-		if (confStr["bgscale"] == "Stretch") sc[wallpaper]->softStretch(this->w, this->h, SScaleStretch);
-		else if (confStr["bgscale"] == "Crop") sc[wallpaper]->softStretch(this->w, this->h, SScaleMax);
-		else if (confStr["bgscale"] == "Aspect") sc[wallpaper]->softStretch(this->w, this->h, SScaleFit);
+		if (skinConfStr["bgscale"] == "Stretch") sc[wallpaper]->softStretch(this->w, this->h, SScaleStretch);
+		else if (skinConfStr["bgscale"] == "Crop") sc[wallpaper]->softStretch(this->w, this->h, SScaleMax);
+		else if (skinConfStr["bgscale"] == "Aspect") sc[wallpaper]->softStretch(this->w, this->h, SScaleFit);
 	}
 
 	cls(bg, false);
@@ -1280,7 +1280,6 @@ void GMenu2X::readConfig() {
 	confInt["keyboardLayoutMax"] = LAYOUT_VERSION_MAX;
 	confInt["tefixMenu"] = TEFIX;
 	confInt["tefixMax"] = TEFIX_MAX;
-	confStr["bgscale"] = "Crop";
 	confStr["skinFont"] = "Custom";
 #if defined(TARGET_LINUX)
 	confInt["backlightTimeout"] = 0; // TODO: inconsistent interval tracking for doSuspend in PC build
@@ -1379,15 +1378,11 @@ void GMenu2X::writeConfig() {
 				(curr->first == "datetime" && curr->second == xstr(__BUILDTIME__)) ||
 				(curr->first == "homePath" && curr->second == CARD_ROOT) ||
 				(curr->first == "skin" && curr->second == "Default") ||
-				(curr->first == "previewMode" && curr->second == "Miniature") ||
 				(curr->first == "skinFont" && curr->second == "Custom") ||
 				(curr->first == "usbHost" && curr->second.empty()) ||
 				(curr->first == "usbMode" && curr->second == "Ask") ||
 				(curr->first == "tvMode" && curr->second == "Ask") ||
 				(curr->first == "lang" && curr->second.empty()) ||
-				(curr->first == "lang" && curr->second.empty()) ||
-				(curr->first == "bgscale" && curr->second.empty()) ||
-				(curr->first == "bgscale" && curr->second == "Crop") ||
 
 				curr->first.empty() || curr->second.empty()
 			) continue;
@@ -1445,7 +1440,10 @@ void GMenu2X::writeSkinConfig() {
 	if (!inf.is_open()) return;
 
 	for (ConfStrHash::iterator curr = skinConfStr.begin(); curr != skinConfStr.end(); curr++) {
-		if (curr->first.empty() || curr->second.empty()) {
+		if (
+			(curr->first == "bgscale" && curr->second == "Crop") ||
+			(curr->first == "previewMode" && curr->second == "Miniature") ||
+			curr->first.empty() || curr->second.empty()) {
 			continue;
 		}
 
@@ -1515,6 +1513,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	skinConfInt["showLinkIcon"] = 1;
 	skinConfInt["skinBackdrops"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
+	skinConfStr["bgscale"] = "Crop";
 
 	// clear collection and change the skin path
 	if (clearSC) {
@@ -1631,7 +1630,7 @@ void GMenu2X::skinMenu() {
 	bgScale.push_back("Crop");
 	bgScale.push_back("Aspect");
 	bgScale.push_back("Stretch");
-	string bgScalePrev = confStr["bgscale"];
+	string bgScalePrev = skinConfStr["bgscale"];
 
 	vector<string> bdStr;
 	bdStr.push_back("OFF");
@@ -1703,8 +1702,8 @@ void GMenu2X::skinMenu() {
 		sd.allowCancel_nomb = true;
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin"], tr["Set the skin used by GMenu2X"], &confStr["skin"], &fl_sk.getDirectories(), MakeDelegate(this, &GMenu2X::onChangeSkin)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], &confStr["tmp_wallpaper"], &wallpapers, MakeDelegate(this, &GMenu2X::onChangeSkin), MakeDelegate(this, &GMenu2X::changeWallpaper)));
-		sd.addSetting(new MenuSettingMultiString(this, tr["Background"], tr["How to scale wallpaper, backdrops and game art"], &confStr["bgscale"], &bgScale));
-		sd.addSetting(new MenuSettingMultiString(this, tr["Preview mode"], tr["How to show image preview and game art"], &confStr["previewMode"], &previewMode));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Background"], tr["How to scale wallpaper, backdrops and game art"], &skinConfStr["bgscale"], &bgScale));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Preview mode"], tr["How to show image preview and game art"], &skinConfStr["previewMode"], &previewMode));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin colors"], tr["Customize skin colors"], &tmp, &wpLabel, MakeDelegate(this, &GMenu2X::onChangeSkin), MakeDelegate(this, &GMenu2X::skinColors)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin backdrops"], tr["Automatic load backdrops from skin pack"], &skinBackdrops, &bdStr));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Search backdrops"], tr["Narrow backdrops searching"], &searchBackdrops, &sbdStr));
@@ -1752,7 +1751,7 @@ void GMenu2X::skinMenu() {
 		bdPrev != skinConfInt["skinBackdrops"] ||
 		sbdPrev != skinConfInt["searchBackdrops"] ||
 		initSkin != confStr["skin"] ||
-		bgScalePrev != confStr["bgscale"] ||
+		bgScalePrev != skinConfStr["bgscale"] ||
 		linkColsPrev != skinConfInt["linkCols"] ||
 		linkRowsPrev != skinConfInt["linkRows"] ||
 		sbPrev != skinConfInt["sectionBar"]

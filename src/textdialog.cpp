@@ -122,7 +122,7 @@ void TextDialog::exec() {
 	drawDialog(gmenu2x->s);
 
 	while (true) {
-		if (gmenu2x->confStr["previewMode"] == "Backdrop") {
+		if (gmenu2x->skinConfStr["previewMode"] == "Backdrop") {
 			if (!backdrop.empty())
 				gmenu2x->setBackground(this->bg, backdrop);
 			else

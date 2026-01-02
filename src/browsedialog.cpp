@@ -71,13 +71,6 @@ bool BrowseDialog::exec() {
 
 			if (showDirectories && allowDirUp && path != "/")
 				buttons.push_back({"x", gmenu2x->tr["Folder up"]});
-
-			// if (gmenu2x->confStr["previewMode"] == "Backdrop") {
-			// 	if (!(preview.empty() || preview == "#"))
-			// 		gmenu2x->setBackground(this->bg, preview);
-			// 	else
-			// 		gmenu2x->bg->blit(this->bg,0,0);
-			// }
 		}
 
 		this->description = path;
@@ -117,7 +110,7 @@ bool BrowseDialog::exec() {
 
 			gmenu2x->allyTTS(getFileName(selected).c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 0);
 
-			if (gmenu2x->confStr["previewMode"] != "Backdrop") {
+			if (gmenu2x->skinConfStr["previewMode"] != "Backdrop") {
 				Surface anim = new Surface(gmenu2x->s);
 				if (preview.empty() || preview == "#") { // hide preview
 					 while (animation > 0) {
@@ -135,9 +128,9 @@ bool BrowseDialog::exec() {
 					if (!gmenu2x->sc.exists(preview + "scaled")) {
 						Surface *previm = new Surface(preview);
 						gmenu2x->sc.add(previm, preview + "scaled");
-						if (gmenu2x->confStr["bgscale"] == "Stretch") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleStretch);
-						else if (gmenu2x->confStr["bgscale"] == "Crop") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleMax);
-						else if (gmenu2x->confStr["bgscale"] == "Aspect") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleFit);
+						if (gmenu2x->skinConfStr["bgscale"] == "Stretch") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleStretch);
+						else if (gmenu2x->skinConfStr["bgscale"] == "Crop") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleMax);
+						else if (gmenu2x->skinConfStr["bgscale"] == "Aspect") gmenu2x->sc[preview + "scaled"]->softStretch(gmenu2x->skinConfInt["previewWidth"], gmenu2x->listRect.h - 2 * padding, SScaleFit);
 					}
 
 					do {
@@ -215,7 +208,7 @@ bool BrowseDialog::exec() {
 		} else if (gmenu2x->input[SETTINGS] && allowSelectDirectory) {
 			return true;
 		} else if (gmenu2x->input[CANCEL] || gmenu2x->input[SETTINGS]) {
-			if (!((gmenu2x->confStr["previewMode"] != "Backdrop") && !(preview.empty() || preview == "#") || gmenu2x->confInt["saveAutoStart"]))
+			if (!((gmenu2x->skinConfStr["previewMode"] != "Backdrop") && !(preview.empty() || preview == "#") || gmenu2x->confInt["saveAutoStart"]))
 				return false; // close only if preview is empty or not running AutoStart.
 			preview = "";
 		} else if (gmenu2x->input[MANUAL] && !gmenu2x->input[MODIFIER]) {
