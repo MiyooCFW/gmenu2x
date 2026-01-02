@@ -559,11 +559,11 @@ bool GMenu2X::inputCommonActions(bool &inputAction) {
 			settings_date();
 		} else if (input[MANUAL] && skinFont == "skins/Default/font.ttf") {
 				wasActive = 0;
-				initFont(false);
+				initFont(false, skinConfStr["skinFont"]);
 				sc.setSkin(confStr["skin"]);
 		} else if (input[MANUAL]) {
 				wasActive = 0;
-				initFont(true);
+				initFont(true, skinConfStr["skinFont"]);
 				sc.setSkin(confStr["skin"]);			
 		} else {
 			continue;
@@ -715,9 +715,9 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 	return wallpaper;
 }
 
-void GMenu2X::initFont(bool deffont) {
+void GMenu2X::initFont(bool deffont, string cusfont) {
 	if (deffont) skinFont = "skins/Default/font.ttf";
-	else skinFont = skinConfStr["skinFont"] == "Default" ? "skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
+	else skinFont = cusfont != "Default" ? sc.getSkinFilePath("font.ttf") : "skins/Default/font.ttf";
 
 	delete font;
 	font = new FontHelper(skinFont, skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
@@ -1492,7 +1492,7 @@ void GMenu2X::writeSkinConfig() {
 	sync();
 }
 
-void GMenu2X::setSkin(string skin, bool clearSC) {
+void GMenu2X::setSkin(string skin, bool clearSC, string font) {
 	input.update(false);
 	if (input[SETTINGS]) skin = "Default";
 
@@ -1513,7 +1513,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	skinConfInt["skinBackdrops"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
 	skinConfStr["bgscale"] = "Crop";
-	//skinConfStr["skinFont"] = "Custom";
+	skinConfStr["skinFont"] = "Custom";
 
 	// clear collection and change the skin path
 	if (clearSC) {
@@ -1595,7 +1595,9 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	evalIntConf(&skinConfInt["linkCols"], 1, 1, 8);
 	evalIntConf(&skinConfInt["linkRows"], 8, 1, 8);
 
-	initFont(false);
+	
+	if (font.empty()) font = skinConfStr["skinFont"];
+	initFont(false, font);
 }
 
 void GMenu2X::skinMenu() {
@@ -1664,9 +1666,12 @@ void GMenu2X::skinMenu() {
 		if (prevSkin != confStr["skin"] || skinFontPrev != skinConfStr["skinFont"]) {
 
 			prevSkin = confStr["skin"];
-			skinFontPrev = skinConfStr["skinFont"];
-
-			setSkin(confStr["skin"], false);
+			if (skinFontPrev != skinConfStr["skinFont"]) {
+				skinFontPrev = skinConfStr["skinFont"];
+				initFont(false,skinConfStr["skinFont"]);
+			} else
+				setSkin(confStr["skin"], false);
+				
 			sectionBar = sbStr[skinConfInt["sectionBar"]];
 			searchBackdrops = sbdStr[skinConfInt["searchBackdrops"]];
 
