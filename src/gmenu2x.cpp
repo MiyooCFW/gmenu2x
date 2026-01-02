@@ -717,7 +717,7 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 
 void GMenu2X::initFont(bool deffont) {
 	if (deffont) skinFont = "skins/Default/font.ttf";
-	else skinFont = confStr["skinFont"] == "Default" ? "skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
+	else skinFont = skinConfStr["skinFont"] == "Default" ? "skins/Default/font.ttf" : sc.getSkinFilePath("font.ttf");
 
 	delete font;
 	font = new FontHelper(skinFont, skinConfInt["fontSize"], skinConfColors[COLOR_FONT], skinConfColors[COLOR_FONT_OUTLINE]);
@@ -1280,7 +1280,6 @@ void GMenu2X::readConfig() {
 	confInt["keyboardLayoutMax"] = LAYOUT_VERSION_MAX;
 	confInt["tefixMenu"] = TEFIX;
 	confInt["tefixMax"] = TEFIX_MAX;
-	confStr["skinFont"] = "Custom";
 #if defined(TARGET_LINUX)
 	confInt["backlightTimeout"] = 0; // TODO: inconsistent interval tracking for doSuspend in PC build
 #else
@@ -1378,7 +1377,6 @@ void GMenu2X::writeConfig() {
 				(curr->first == "datetime" && curr->second == xstr(__BUILDTIME__)) ||
 				(curr->first == "homePath" && curr->second == CARD_ROOT) ||
 				(curr->first == "skin" && curr->second == "Default") ||
-				(curr->first == "skinFont" && curr->second == "Custom") ||
 				(curr->first == "usbHost" && curr->second.empty()) ||
 				(curr->first == "usbMode" && curr->second == "Ask") ||
 				(curr->first == "tvMode" && curr->second == "Ask") ||
@@ -1443,6 +1441,7 @@ void GMenu2X::writeSkinConfig() {
 		if (
 			(curr->first == "bgscale" && curr->second == "Crop") ||
 			(curr->first == "previewMode" && curr->second == "Miniature") ||
+			(curr->first == "skinFont" && curr->second == "Custom") ||
 			curr->first.empty() || curr->second.empty()) {
 			continue;
 		}
@@ -1514,6 +1513,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	skinConfInt["skinBackdrops"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
 	skinConfStr["bgscale"] = "Crop";
+	//skinConfStr["skinFont"] = "Custom";
 
 	// clear collection and change the skin path
 	if (clearSC) {
@@ -1650,7 +1650,7 @@ void GMenu2X::skinMenu() {
 	vector<string> skinFont;
 	skinFont.push_back("Custom");
 	skinFont.push_back("Default");
-	string skinFontPrev = confStr["skinFont"];
+	string skinFontPrev = skinConfStr["skinFont"];
 
 	vector<string> previewMode;
 	previewMode.push_back("Miniature");
@@ -1661,10 +1661,10 @@ void GMenu2X::skinMenu() {
 	confStr["tmp_wallpaper"] = "";
 
 	do {
-		if (prevSkin != confStr["skin"] || skinFontPrev != confStr["skinFont"]) {
+		if (prevSkin != confStr["skin"] || skinFontPrev != skinConfStr["skinFont"]) {
 
 			prevSkin = confStr["skin"];
-			skinFontPrev = confStr["skinFont"];
+			skinFontPrev = skinConfStr["skinFont"];
 
 			setSkin(confStr["skin"], false);
 			sectionBar = sbStr[skinConfInt["sectionBar"]];
@@ -1707,7 +1707,7 @@ void GMenu2X::skinMenu() {
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin colors"], tr["Customize skin colors"], &tmp, &wpLabel, MakeDelegate(this, &GMenu2X::onChangeSkin), MakeDelegate(this, &GMenu2X::skinColors)));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Skin backdrops"], tr["Automatic load backdrops from skin pack"], &skinBackdrops, &bdStr));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Search backdrops"], tr["Narrow backdrops searching"], &searchBackdrops, &sbdStr));
-		sd.addSetting(new MenuSettingMultiString(this, tr["Font face"], tr["Override the skin font face"], &confStr["skinFont"], &skinFont, MakeDelegate(this, &GMenu2X::onChangeSkin)));
+		sd.addSetting(new MenuSettingMultiString(this, tr["Font face"], tr["Override the skin font face"], &skinConfStr["skinFont"], &skinFont, MakeDelegate(this, &GMenu2X::onChangeSkin)));
 		sd.addSetting(new MenuSettingInt(this, tr["Font size"], tr["Size of text font"], &skinConfInt["fontSize"], 12, 6, 60));
 		sd.addSetting(new MenuSettingInt(this, tr["Title font size"], tr["Size of title's text font"], &skinConfInt["fontSizeTitle"], 20, 1, 60));
 		sd.addSetting(new MenuSettingMultiString(this, tr["Section bar layout"], tr["Set the layout and position of the Section Bar"], &sectionBar, &sbStr));
