@@ -515,10 +515,6 @@ void GMenu2X::main() {
 
 	// recover last session
 	if (lastSelectorElement >= 0 && menu->selLinkApp() != NULL && (!menu->selLinkApp()->getSelectorDir().empty() || !lastSelectorDir.empty())) {
-		if (confInt["skinBackdrops"] & BD_DIALOG)
-			setBackground(bg, menu->selLinkApp()->getBackdropPath());
-		else
-			setBackground(bg, confStr["wallpaper"]);
 		menu->selLinkApp()->selector(lastSelectorElement, lastSelectorDir);
 	}
 

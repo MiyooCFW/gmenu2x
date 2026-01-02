@@ -1,6 +1,8 @@
 #include "dialog.h"
 #include "gmenu2x.h"
 #include "debug.h"
+#include "menu.h"
+#include "linkapp.h"
 
 Dialog::Dialog(GMenu2X *gmenu2x, const std::string &title, const std::string &description, const std::string &icon):
 gmenu2x(gmenu2x), title(title), description(description), icon(icon) {
@@ -77,8 +79,16 @@ void Dialog::drawBottomBar(Surface *s, buttons_t buttons) {
 
 void Dialog::drawDialog(Surface *s, bool top, bool bottom) {
 	if (s == NULL) s = gmenu2x->s;
-
-	this->bg->blit(s, 0, 0);
+	string linkBackdrop = "";
+	if (gmenu2x->menu->selLink() != NULL && !(gmenu2x->menu->selLink()->getBackdropPath().empty()))
+		linkBackdrop = gmenu2x->menu->selLink()->getBackdropPath();
+	if (gmenu2x->menu->selLinkApp() != NULL && !(gmenu2x->menu->selLinkApp()->getBackdropPath().empty()))
+		linkBackdrop = gmenu2x->menu->selLinkApp()->getBackdropPath();
+	if (linkBackdrop != "" && gmenu2x->confInt["skinBackdrops"] & BD_DIALOG)
+		gmenu2x->setBackground(s, linkBackdrop);
+	else
+		gmenu2x->setBackground(s, gmenu2x->confStr["wallpaper"]); // workaround for BD_DIALOG ovewriting bg in Dialog
+		//this->bg->blit(s, 0, 0);
 
 	if (top) {
 		// Replace '\n' with " "
