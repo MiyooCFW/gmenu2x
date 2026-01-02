@@ -86,7 +86,7 @@ void Dialog::drawDialog(Surface *s, bool top, bool bottom, const std::string &pr
 		linkBackdrop = gmenu2x->menu->selLinkApp()->getBackdropPath();
 	if (gmenu2x->confStr["previewMode"] == "Backdrop" && !(previewBg.empty() || previewBg == "#"))
 		gmenu2x->setBackground(s, previewBg);
-	else if (linkBackdrop != "" && gmenu2x->confInt["skinBackdrops"] & BD_DIALOG)
+	else if (linkBackdrop != "" && gmenu2x->skinConfInt["skinBackdrops"] & BD_DIALOG)
 		gmenu2x->setBackground(s, linkBackdrop);
 	else
 		gmenu2x->setBackground(s, gmenu2x->confStr["wallpaper"]); // workaround for BD_DIALOG ovewriting bg in Dialog

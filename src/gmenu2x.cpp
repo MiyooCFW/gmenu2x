@@ -1275,7 +1275,6 @@ void GMenu2X::readConfig() {
 	confInt["showHints"] = 1;
 	confInt["enableHotkeys"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
-	confInt["skinBackdrops"] = 1;
 	confStr["homePath"] = CARD_ROOT;
 	confInt["keyboardLayoutMenu"] = LAYOUT_VERSION;
 	confInt["keyboardLayoutMax"] = LAYOUT_VERSION_MAX;
@@ -1415,9 +1414,9 @@ void GMenu2X::writeConfig() {
 				curr->first == "linkLabel" ||
 				curr->first == "linkDescriptionLabel" ||
 				curr->first == "showLinkIcon" ||
+				curr->first == "skinBackdrops" ||
 
 				// defaults
-				(curr->first == "skinBackdrops" && curr->second == 1) ||
 				(curr->first == "backlightTimeout" && curr->second == 30) ||
 				(curr->first == "powerTimeout" && curr->second == 10) ||
 				(curr->first == "outputLogs" && curr->second == 0) ||
@@ -1477,6 +1476,7 @@ void GMenu2X::writeSkinConfig() {
 			(curr->first == "linkDescriptionLabel" && curr->second == 0) ||
 			(curr->first == "showLinkIcon" && curr->second == 1) ||
 			(curr->first == "showDialogIcon" && curr->second == 1) ||
+			(curr->first == "skinBackdrops" && curr->second == 1) ||
 
 			curr->first.empty()
 		) {
@@ -1513,6 +1513,7 @@ void GMenu2X::setSkin(string skin, bool clearSC) {
 	skinConfInt["linkLabel"] = 1;
 	skinConfInt["linkDescriptionLabel"] = 0;
 	skinConfInt["showLinkIcon"] = 1;
+	skinConfInt["skinBackdrops"] = 1;
 	skinConfInt["showDialogIcon"] = 1;
 
 	// clear collection and change the skin path
@@ -1637,8 +1638,8 @@ void GMenu2X::skinMenu() {
 	bdStr.push_back("Menu only");
 	bdStr.push_back("Dialog only");
 	bdStr.push_back("Menu & Dialog");
-	int bdPrev = confInt["skinBackdrops"];
-	string skinBackdrops = bdStr[confInt["skinBackdrops"]];
+	int bdPrev = skinConfInt["skinBackdrops"];
+	string skinBackdrops = bdStr[skinConfInt["skinBackdrops"]];
 
 	vector<string> sbdStr;
 	sbdStr.push_back("OFF");
@@ -1726,10 +1727,10 @@ void GMenu2X::skinMenu() {
 		save = sd.save;
 	} while (!save);
 
-	if (skinBackdrops == "OFF") confInt["skinBackdrops"] = BD_OFF;
-	else if (skinBackdrops == "Menu & Dialog") confInt["skinBackdrops"] = BD_MENU | BD_DIALOG;
-	else if (skinBackdrops == "Menu only") confInt["skinBackdrops"] = BD_MENU;
-	else if (skinBackdrops == "Dialog only") confInt["skinBackdrops"] = BD_DIALOG;
+	if (skinBackdrops == "OFF") skinConfInt["skinBackdrops"] = BD_OFF;
+	else if (skinBackdrops == "Menu & Dialog") skinConfInt["skinBackdrops"] = BD_MENU | BD_DIALOG;
+	else if (skinBackdrops == "Menu only") skinConfInt["skinBackdrops"] = BD_MENU;
+	else if (skinBackdrops == "Dialog only") skinConfInt["skinBackdrops"] = BD_DIALOG;
 
 	if (sectionBar == "OFF") skinConfInt["sectionBar"] = SB_OFF;
 	else if (sectionBar == "Right") skinConfInt["sectionBar"] = SB_RIGHT;
@@ -1748,7 +1749,7 @@ void GMenu2X::skinMenu() {
 	writeConfig();
 
 	if (
-		bdPrev != confInt["skinBackdrops"] ||
+		bdPrev != skinConfInt["skinBackdrops"] ||
 		sbdPrev != skinConfInt["searchBackdrops"] ||
 		initSkin != confStr["skin"] ||
 		bgScalePrev != confStr["bgscale"] ||
@@ -1881,14 +1882,11 @@ void GMenu2X::showManual() {
 	string linkDescription = menu->selLinkApp()->getDescription();
 	string linkIcon = menu->selLinkApp()->getIcon();
 	string linkManual = menu->selLinkApp()->getManualPath();
-	// string linkBackdrop = "";
-	// if (confInt["skinBackdrops"] & BD_DIALOG)
-	// 	linkBackdrop = menu->selLinkApp()->getBackdropPath();
 	string linkExec = menu->selLinkApp()->getExec();
 
 	if (linkManual == "") return;
 
-	TextDialog td(this, linkTitle, linkDescription, linkIcon); //, linkBackdrop); TODO: fix link Backdrops in Manual
+	TextDialog td(this, linkTitle, linkDescription, linkIcon);
 
 	if (file_exists(linkManual)) {
 		string ext = linkManual.substr(linkManual.size() - 4, 4);
