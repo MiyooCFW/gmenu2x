@@ -80,10 +80,10 @@ bool WallpaperDialog::exec() {
 			skin = gmenu2x->confStr["skin"];
 		}
 
-		gmenu2x->setBackground(this->bg, "skins/" + skin + "/wallpapers/" + wallpapers[selected]);
+		//gmenu2x->setBackground(this->bg, "skins/" + skin + "/wallpapers/" + wallpapers[selected]);
 		gmenu2x->allyTTS(wallpapers[selected].c_str(), FAST_GAP_TTS, FAST_SPEED_TTS, 0);
 
-		drawDialog(gmenu2x->s);
+		drawDialog(gmenu2x->s, true, true, "skins/" + skin + "/wallpapers/" + wallpapers[selected]);
 
 		if (wallpaper.size() < 1) {
 			MessageBox mb(gmenu2x, gmenu2x->tr["No wallpapers available"]);
