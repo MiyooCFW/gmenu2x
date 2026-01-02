@@ -666,7 +666,7 @@ void Menu::drawGrid() {
 			if (gmenu2x->skinConfInt["showLinkIcon"])
 				icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 
-			if (gmenu2x->skinConfInt["linkLabel"] || i == (uint32_t)selLinkIndex() && gmenu2x->skinConfInt["skinBackdrops"] && (gmenu2x->currBackdrop == gmenu2x->sc.getSkinFilePath("backdrops/generic.png", false) /*|| gmenu2x->currBackdrop == gmenu2x->confStr["wallpaper"]*/)) {
+			if (gmenu2x->skinConfInt["linkLabel"] || i == (uint32_t)selLinkIndex() && gmenu2x->skinConfInt["skinBackdrops"] && (gmenu2x->currBackdrop == gmenu2x->sc.getSkinFilePath("backdrops/generic.png", false) /*|| gmenu2x->currBackdrop == gmenu2x->skinConfStr["wallpaper"]*/)) {
 				SDL_Rect labelRect;
 				labelRect.x = ix + 2 + linkWidth/2;
 				labelRect.y = iy + (linkHeight + min(linkHeight, icon->height()))/2;
@@ -909,7 +909,7 @@ void Menu::exec() {
 
 	while (true) {
 		// BACKGROUND
-		gmenu2x->currBackdrop = gmenu2x->confStr["wallpaper"];
+		gmenu2x->currBackdrop = gmenu2x->skinConfStr["wallpaper"];
 		if (gmenu2x->skinConfInt["skinBackdrops"] & BD_MENU) {
 			if (selLink() != NULL && !selLink()->getBackdropPath().empty()) {
 				gmenu2x->currBackdrop = selLink()->getBackdropPath();
@@ -1001,7 +1001,7 @@ void Menu::exec() {
 				gmenu2x->currBackdrop = selLink()->getBackdropPath();
 				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->currBackdrop);
 			} else {
-				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->confStr["wallpaper"]);
+				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->skinConfStr["wallpaper"]);
 			}
 			selLink()->run();
 		}

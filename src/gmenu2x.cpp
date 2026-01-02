@@ -499,8 +499,8 @@ void GMenu2X::main() {
 		viewAutoStart();
 	}
 
-	currBackdrop = confStr["wallpaper"];
-	confStr["wallpaper"] = setBackground(s, currBackdrop);
+	currBackdrop = skinConfStr["wallpaper"];
+	skinConfStr["wallpaper"] = setBackground(s, currBackdrop);
 	bg = new Surface(s);
 	
 	if (confInt["outputLogs"]) {
@@ -1333,7 +1333,7 @@ void GMenu2X::readConfig() {
 		INFO("voice is set to %s",voiceTTS.c_str());
 		if (voiceTTS != "_TTS_voice_" && !voiceTTS.empty()) VOICE_TTS = voiceTTS;
 	}
-	if (!confStr["wallpaper"].empty() && !file_exists(confStr["wallpaper"])) confStr["wallpaper"] = "";
+	if (!skinConfStr["wallpaper"].empty() && !file_exists(skinConfStr["wallpaper"])) skinConfStr["wallpaper"] = "";
 	if (confStr["skin"].empty() || !dir_exists("skins/" + confStr["skin"])) confStr["skin"] = "Default";
 
 	evalIntConf(&confInt["backlightTimeout"], 30, 0, 300);
@@ -1658,7 +1658,7 @@ void GMenu2X::skinMenu() {
 	previewMode.push_back("Backdrop");
 
 	vector<string> wallpapers;
-	string wpPath = confStr["wallpaper"];
+	string wpPath = skinConfStr["wallpaper"];
 	confStr["tmp_wallpaper"] = "";
 
 	do {
@@ -1671,7 +1671,7 @@ void GMenu2X::skinMenu() {
 			sectionBar = sbStr[skinConfInt["sectionBar"]];
 			searchBackdrops = sbdStr[skinConfInt["searchBackdrops"]];
 
-			confStr["tmp_wallpaper"] = (confStr["tmp_wallpaper"].empty() || skinConfStr["wallpaper"].empty()) ? base_name(confStr["wallpaper"]) : skinConfStr["wallpaper"];
+			confStr["tmp_wallpaper"] = (confStr["tmp_wallpaper"].empty() || skinConfStr["wallpaper"].empty()) ? base_name(skinConfStr["wallpaper"]) : skinConfStr["wallpaper"];
 			wallpapers.clear();
 
 			FileLister fl_wp("skins/" + confStr["skin"] + "/wallpapers");
@@ -1744,7 +1744,7 @@ void GMenu2X::skinMenu() {
 	else if (searchBackdrops == "Exec name/path only") skinConfInt["searchBackdrops"] = SBAK_EXEC;
 
 	confStr["tmp_wallpaper"] = "";
-	confStr["wallpaper"] = wpPath;
+	skinConfStr["wallpaper"] = wpPath;
 	writeSkinConfig();
 	writeConfig();
 
@@ -1871,9 +1871,9 @@ void GMenu2X::viewAutoStart() {
 
 void GMenu2X::changeWallpaper() {
 	WallpaperDialog wp(this, tr["Wallpaper"], tr["Select an image to use as a wallpaper"], "skin:icons/wallpaper.png");
-	if (wp.exec() && confStr["wallpaper"] != wp.wallpaper) {
-		confStr["wallpaper"] = wp.wallpaper;
-		confStr["tmp_wallpaper"] = base_name(confStr["wallpaper"]);
+	if (wp.exec() && skinConfStr["wallpaper"] != wp.wallpaper) {
+		skinConfStr["wallpaper"] = wp.wallpaper;
+		confStr["tmp_wallpaper"] = base_name(skinConfStr["wallpaper"]);
 	}
 }
 

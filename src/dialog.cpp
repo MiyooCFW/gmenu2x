@@ -89,8 +89,8 @@ void Dialog::drawDialog(Surface *s, bool top, bool bottom, const std::string &pr
 	else if (linkBackdrop != "" && gmenu2x->skinConfInt["skinBackdrops"] & BD_DIALOG)
 		gmenu2x->setBackground(s, linkBackdrop);
 	else
-		gmenu2x->setBackground(s, gmenu2x->confStr["wallpaper"]); // workaround for BD_DIALOG ovewriting bg in Dialog
-	//this->bg->blit(s, 0, 0);	
+		//gmenu2x->setBackground(s, gmenu2x->skinConfStr["wallpaper"]); // workaround for BD_DIALOG ovewriting bg in Dialog
+		this->bg->blit(s, 0, 0);
 
 	if (top) {
 		// Replace '\n' with " "
