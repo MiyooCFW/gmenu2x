@@ -997,12 +997,12 @@ void Menu::exec() {
 		}
 
 		if (gmenu2x->input[CONFIRM] && selLink() != NULL) {
-			if (gmenu2x->confInt["skinBackdrops"] & BD_DIALOG) {
+			if (gmenu2x->confInt["skinBackdrops"] & BD_DIALOG && !selLink()->getBackdropPath().empty()) {
+				gmenu2x->currBackdrop = selLink()->getBackdropPath();
 				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->currBackdrop);
 			} else {
 				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->confStr["wallpaper"]);
 			}
-
 			selLink()->run();
 		}
 		else if (gmenu2x->input[CANCEL]) {

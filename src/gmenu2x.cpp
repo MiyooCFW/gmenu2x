@@ -516,7 +516,7 @@ void GMenu2X::main() {
 	// recover last session
 	if (lastSelectorElement >= 0 && menu->selLinkApp() != NULL && (!menu->selLinkApp()->getSelectorDir().empty() || !lastSelectorDir.empty())) {
 		if (confInt["skinBackdrops"] & BD_DIALOG)
-			setBackground(bg, currBackdrop);
+			setBackground(bg, menu->selLinkApp()->getBackdropPath());
 		else
 			setBackground(bg, confStr["wallpaper"]);
 		menu->selLinkApp()->selector(lastSelectorElement, lastSelectorDir);
@@ -1885,12 +1885,14 @@ void GMenu2X::showManual() {
 	string linkDescription = menu->selLinkApp()->getDescription();
 	string linkIcon = menu->selLinkApp()->getIcon();
 	string linkManual = menu->selLinkApp()->getManualPath();
-	string linkBackdrop = confInt["skinBackdrops"] | BD_DIALOG ? menu->selLinkApp()->getBackdropPath() : "";
+	// string linkBackdrop = "";
+	// if (confInt["skinBackdrops"] & BD_DIALOG)
+	// 	linkBackdrop = menu->selLinkApp()->getBackdropPath();
 	string linkExec = menu->selLinkApp()->getExec();
 
 	if (linkManual == "") return;
 
-	TextDialog td(this, linkTitle, linkDescription, linkIcon); //, linkBackdrop);
+	TextDialog td(this, linkTitle, linkDescription, linkIcon); //, linkBackdrop); TODO: fix link Backdrops in Manual
 
 	if (file_exists(linkManual)) {
 		string ext = linkManual.substr(linkManual.size() - 4, 4);
