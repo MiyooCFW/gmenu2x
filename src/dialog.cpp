@@ -77,18 +77,20 @@ void Dialog::drawBottomBar(Surface *s, buttons_t buttons) {
 	}
 }
 
-void Dialog::drawDialog(Surface *s, bool top, bool bottom) {
+void Dialog::drawDialog(Surface *s, bool top, bool bottom, const std::string &previewBg) {
 	if (s == NULL) s = gmenu2x->s;
 	string linkBackdrop = "";
 	if (gmenu2x->menu->selLink() != NULL && !(gmenu2x->menu->selLink()->getBackdropPath().empty()))
 		linkBackdrop = gmenu2x->menu->selLink()->getBackdropPath();
 	if (gmenu2x->menu->selLinkApp() != NULL && !(gmenu2x->menu->selLinkApp()->getBackdropPath().empty()))
 		linkBackdrop = gmenu2x->menu->selLinkApp()->getBackdropPath();
-	if (linkBackdrop != "" && gmenu2x->confInt["skinBackdrops"] & BD_DIALOG)
+	if (gmenu2x->confStr["previewMode"] == "Backdrop" && !(previewBg.empty() || previewBg == "#"))
+		gmenu2x->setBackground(s, previewBg);
+	else if (linkBackdrop != "" && gmenu2x->confInt["skinBackdrops"] & BD_DIALOG)
 		gmenu2x->setBackground(s, linkBackdrop);
 	else
 		gmenu2x->setBackground(s, gmenu2x->confStr["wallpaper"]); // workaround for BD_DIALOG ovewriting bg in Dialog
-		//this->bg->blit(s, 0, 0);
+	//this->bg->blit(s, 0, 0);	
 
 	if (top) {
 		// Replace '\n' with " "

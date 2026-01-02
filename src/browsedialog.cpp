@@ -72,17 +72,17 @@ bool BrowseDialog::exec() {
 			if (showDirectories && allowDirUp && path != "/")
 				buttons.push_back({"x", gmenu2x->tr["Folder up"]});
 
-			if (gmenu2x->confStr["previewMode"] == "Backdrop") {
-				if (!(preview.empty() || preview == "#"))
-					gmenu2x->setBackground(this->bg, preview);
-				else
-					gmenu2x->bg->blit(this->bg,0,0);
-			}
+			// if (gmenu2x->confStr["previewMode"] == "Backdrop") {
+			// 	if (!(preview.empty() || preview == "#"))
+			// 		gmenu2x->setBackground(this->bg, preview);
+			// 	else
+			// 		gmenu2x->bg->blit(this->bg,0,0);
+			// }
 		}
 
 		this->description = path;
 
-		drawDialog(gmenu2x->s);
+		drawDialog(gmenu2x->s, true, true, preview);
 
 		if (!size()) {
 			MessageBox mb(gmenu2x, gmenu2x->tr["This directory is empty"]);
