@@ -1473,7 +1473,7 @@ void GMenu2X::writeSkinConfig() {
 			(curr->first == "linkDescriptionLabel" && curr->second == 0) ||
 			(curr->first == "showLinkIcon" && curr->second == 1) ||
 			(curr->first == "showDialogIcon" && curr->second == 1) ||
-			(curr->first == "skinBackdrops" && curr->second == 1) ||
+			(curr->first == "skinBackdrops" && curr->second == 0) ||
 
 			curr->first.empty()
 		) {
@@ -1510,7 +1510,7 @@ void GMenu2X::setSkin(string skin, bool clearSC, string font) {
 	skinConfInt["linkLabel"] = 1;
 	skinConfInt["linkDescriptionLabel"] = 0;
 	skinConfInt["showLinkIcon"] = 1;
-	skinConfInt["skinBackdrops"] = 1;
+	skinConfInt["skinBackdrops"] = 0;
 	skinConfInt["showDialogIcon"] = 1;
 	skinConfStr["bgscale"] = "Crop";
 	skinConfStr["skinFont"] = "Custom";
@@ -1674,6 +1674,7 @@ void GMenu2X::skinMenu() {
 				
 			sectionBar = sbStr[skinConfInt["sectionBar"]];
 			searchBackdrops = sbdStr[skinConfInt["searchBackdrops"]];
+			skinBackdrops = bdStr[skinConfInt["skinBackdrops"]];
 
 			confStr["tmp_wallpaper"] = (confStr["tmp_wallpaper"].empty() || skinConfStr["wallpaper"].empty()) ? base_name(skinConfStr["wallpaper"]) : skinConfStr["wallpaper"];
 			wallpapers.clear();
