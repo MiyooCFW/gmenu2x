@@ -656,7 +656,7 @@ void Menu::drawGrid() {
 			if (i == (uint32_t)selLinkIndex()) {
 				if (iconBGon != NULL && icon->width() <= iconBGon->width() && icon->height() <= iconBGon->height()) {
 					iconBGon->blit(gmenu2x->s, ix + (linkWidth + iconPadding) / 2, iy + (linkHeight + iconPadding) / 2, HAlignCenter | VAlignMiddle, 50);
-				} else {
+				} else if (!(linkCols == 1 && linkRows == 1)) { //drawBackdrop()
 					gmenu2x->s->box(ix + (linkWidth - min(linkWidth, icon->width())) / 2 - 4, iy + (linkHeight - min(linkHeight, icon->height())) / 2 - 4, min(linkWidth, icon->width()) + 8, min(linkHeight, icon->height()) + 8, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
 				}
 
