@@ -1015,7 +1015,7 @@ void GMenu2X::cpuSettings() {
 void GMenu2X::raSettings() {
 
 	// sanity check for libretro cores section presence
-	if (!dir_exists("sections/cores")) {
+	if (!dir_exists("sections/cores") && !dir_exists("sections/.cores")) {
 		MessageBox mb(this, tr["No cores to apply settings..."]);
 		mb.setButton(CONFIRM,  tr["Exit"]);
 		mb.exec();
