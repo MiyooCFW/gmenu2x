@@ -26,6 +26,7 @@
 #include "menu.h"
 #include "selector.h"
 #include "messagebox.h"
+#include "terminaldialog.h"
 #include "debug.h"
 
 using namespace std;
@@ -412,7 +413,9 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		}
 	}
 
-	INFO("Executing '%s' (%s %s)", title.c_str(), exec.c_str(), params.c_str());
+	string execcmd = exec + " " + params;
+
+	INFO("Executing '%s' (%s)", title.c_str(), execcmd.c_str());
 
 #if defined(OPK_SUPPORT)
 	if (isOPK()) {
@@ -478,28 +481,39 @@ void LinkApp::launch(const string &selectedFile, string dir) {
 		command = "HOME=" + params + " " + command;
 	}
 
-	gmenu2x->quit(false);
-
-	if (getTerminal()) gmenu2x->enableTerminal();
-
-	// execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, environ);
-	pid_t son = fork();
-	if (!son) {
-		execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
-		ERROR("execlp of shell cmd \"%s\" failed", command.c_str());
-	}
-	int status;
-	waitpid(son, &status, 0);
-	INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
-	
-	if (gmenu2x->confInt["saveAutoStart"]) {
-		// gmenu2x->confStr["datetime"] = get_date_time();
-		// gmenu2x->writeConfig();
-		gmenu2x->shutdownOS();
-	} else {
-		//we already called SDL_Quit try relaunching gmenu2x
-		chdir(exe_path().c_str());
-		execlp("./gmenu2x", "./gmenu2x", NULL); // can't use gmenu2x->reinit() since we've called quit()
+	if (getTerminal())
+#if defined(CUS_TERM)
+		gmenu2x->enableTerminal();
+#else
+	{
+		chdir(exe_path().c_str()); // we're returrning to menu so change cur wdir back to gmenu2x
+		TerminalDialog td(gmenu2x, this->getTitle().c_str(), execcmd, "icons/configure.png");
+		td.exec(command);
+		gmenu2x->initMenu();
+		return;
+	} else
+#endif
+	{
+		gmenu2x->quit(false);
+		// execle("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL, environ);
+		pid_t son = fork();
+		if (!son) {
+			execlp("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
+			ERROR("execlp of shell cmd \"%s\" failed", command.c_str());
+		}
+		int status;
+		waitpid(son, &status, 0);
+		INFO("Last launched app \"%s\" exited with status=%i", command.c_str(), status);
+		
+		if (gmenu2x->confInt["saveAutoStart"]) {
+			// gmenu2x->confStr["datetime"] = get_date_time();
+			// gmenu2x->writeConfig();
+			gmenu2x->shutdownOS();
+		} else {
+			//we already called SDL_Quit try relaunching gmenu2x
+			chdir(exe_path().c_str());
+			execlp("./gmenu2x", "./gmenu2x", NULL); // can't use gmenu2x->reinit() since we've called quit()
+		}
 	}
 }
 
