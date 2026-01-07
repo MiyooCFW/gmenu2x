@@ -76,6 +76,7 @@ Description=软件概述
 Directories=目录
 Directory of the box art for the selector=为模拟器添加游戏预览图目录
 Directory to start the selector=文件选择器的初始目录
+Display program's output via a Terminal Dialog=
 Displays last launched program's output=显示最后运行的程序输出日志
 Done processing.=处理完成.
 Edit=编辑

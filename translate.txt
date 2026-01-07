@@ -76,6 +76,7 @@ Description=
 Directories=
 Directory of the box art for the selector=
 Directory to start the selector=
+Display program's output via a Terminal Dialog=
 Displays last launched program's output=
 Done processing.=
 Edit=

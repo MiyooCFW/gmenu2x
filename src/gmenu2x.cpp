@@ -2164,7 +2164,7 @@ void GMenu2X::editLink() {
 	sd.addSetting(new MenuSettingFile(			this, tr["Aliases"],		tr["File containing a list of aliases for the selector"], &linkSelAliases, ".txt,.dat", linkExec, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingImage(			this, tr["Backdrop"],		tr["Select an image backdrop"], &linkBackdrop, ".png,.bmp,.jpg,.jpeg", linkExec, dialogTitle, dialogIcon));
 	sd.addSetting(new MenuSettingFile(			this, tr["Manual"],			tr["Select a Manual or Readme file"], &linkManual, ".png,.bmp,.jpg,.jpeg,.txt,.me", linkExec, dialogTitle, dialogIcon));
-	sd.addSetting(new MenuSettingBool(			this, tr["Terminal"],		tr["Output app via Terminal Dialog"], &linkTerminal));
+	sd.addSetting(new MenuSettingBool(			this, tr["Terminal"],		tr["Display program's output via a Terminal Dialog"], &linkTerminal));
 #if defined(TARGET_WIZ) || defined(TARGET_CAANOO)
 	bool linkUseGinge = menu->selLinkApp()->getUseGinge();
 	string ginge_prep = exe_path() + "/ginge/ginge_prep";

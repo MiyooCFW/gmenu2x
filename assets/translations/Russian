@@ -76,6 +76,7 @@ Description=Описание
 Directories=Каталоги
 Directory of the box art for the selector=Каталог с миниатюрами для показа в селекторе
 Directory to start the selector=Начальный каталог селектора
+Display program's output via a Terminal Dialog=
 Displays last launched program's output=Сообщения последнего запущенного ярлыка
 Done processing.=Выполнение завершено.
 Edit=Изменить

@@ -76,6 +76,7 @@ Description=Opis
 Directories=Katalogi
 Directory of the box art for the selector=Katalog okładki dla selektora
 Directory to start the selector=Katalog początkowy dla selektora
+Display program's output via a Terminal Dialog=
 Displays last launched program's output=Pokazuje dziennik z ostatnio uruchomionego programu
 Done processing.=Skończono przetwarzanie.
 Edit=Edytuj

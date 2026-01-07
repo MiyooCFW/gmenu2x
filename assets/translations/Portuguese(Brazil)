@@ -76,6 +76,7 @@ Description=Descrição
 Directories=Diretórios
 Directory of the box art for the selector=Diretório da arte da caixa do seletor
 Directory to start the selector=
+Display program's output via a Terminal Dialog=
 Displays last launched program's output=Mostra a saída do último programa executado
 Done processing.=Processamento finalizado.
 Edit=Editar

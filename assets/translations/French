@@ -76,6 +76,7 @@ Description=Description
 Directories=Répertoires
 Directory of the box art for the selector=Répertoire de la jaquette pour le sélecteur
 Directory to start the selector=Répertoire de démarrage du sélecteur
+Display program's output via a Terminal Dialog=
 Displays last launched program's output=Affiche la sortie du dernier programme lancé
 Done processing.=Traitement terminé.
 Edit=Éditer
