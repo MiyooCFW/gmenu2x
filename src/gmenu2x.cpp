@@ -1099,7 +1099,7 @@ void GMenu2X::raSettings() {
 
 	sd.addSetting(new MenuSettingMultiString(this, tr["Menu mode"], tr["Set RetroArch GUI mode"], &confStr["raMode"], &raMode));
 	sd.addSetting(new MenuSettingBool(this, tr["Rewind"], tr["Enable Rewind support (if available)"], &confInt["raRewind"]));
-	sd.addSetting(new MenuSettingFile(this, tr["Custom config"], tr["Select a custom Configuration file"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["File with custom RA configurations"], "skin:icons/retroarch.png"));
+	sd.addSetting(new MenuSettingFile(this, tr["Custom config"], tr["Select a custom Configuration file"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["Select a custom Configuration file"], "skin:icons/retroarch.png"));
 
 	if (sd.exec() && sd.edited() && sd.save) {
 		MessageBox mb(this, tr["Updating cores..."]);
