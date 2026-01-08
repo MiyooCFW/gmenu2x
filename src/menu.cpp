@@ -326,7 +326,7 @@ void Menu::favSelectedLink() {
 		MessageBox mb(gmenu2x, gmenu2x->tr["App Link created"]);
 		mb.setAutoHide(1000);
 		mb.exec();
-		gmenu2x->reinit();
+		gmenu2x->initMenu();
 	}
 }
 
@@ -344,7 +344,7 @@ void Menu::hideSelectedLink() {
 		selLinkApp()->setTitle(newLinkTitle);
 		selLinkApp()->save();
 		sync();
-		gmenu2x->reinit();
+		gmenu2x->initMenu();
 	}
 }
 
@@ -361,7 +361,7 @@ void Menu::unhideSelectedLink() {
 		selLinkApp()->setTitle(newLinkTitle);
 		selLinkApp()->save();
 		sync();
-		gmenu2x->reinit();
+		gmenu2x->initMenu();
 	}
 }
 
@@ -656,7 +656,7 @@ void Menu::drawGrid() {
 			if (i == (uint32_t)selLinkIndex()) {
 				if (iconBGon != NULL && icon->width() <= iconBGon->width() && icon->height() <= iconBGon->height()) {
 					iconBGon->blit(gmenu2x->s, ix + (linkWidth + iconPadding) / 2, iy + (linkHeight + iconPadding) / 2, HAlignCenter | VAlignMiddle, 50);
-				} else {
+				} else if (!(linkCols == 1 && linkRows == 1)) { //drawBackdrop()
 					gmenu2x->s->box(ix + (linkWidth - min(linkWidth, icon->width())) / 2 - 4, iy + (linkHeight - min(linkHeight, icon->height())) / 2 - 4, min(linkWidth, icon->width()) + 8, min(linkHeight, icon->height()) + 8, gmenu2x->skinConfColors[COLOR_SELECTION_BG]);
 				}
 
@@ -666,7 +666,7 @@ void Menu::drawGrid() {
 			if (gmenu2x->skinConfInt["showLinkIcon"])
 				icon->blit(gmenu2x->s, {ix + iconPadding/2, iy + iconPadding/2, linkWidth - iconPadding, linkHeight - iconPadding}, HAlignCenter | VAlignMiddle);
 
-			if (gmenu2x->skinConfInt["linkLabel"] || i == (uint32_t)selLinkIndex() && gmenu2x->confInt["skinBackdrops"] && (gmenu2x->currBackdrop == gmenu2x->sc.getSkinFilePath("backdrops/generic.png", false) /*|| gmenu2x->currBackdrop == gmenu2x->confStr["wallpaper"]*/)) {
+			if (gmenu2x->skinConfInt["linkLabel"] || i == (uint32_t)selLinkIndex() && gmenu2x->skinConfInt["skinBackdrops"] && (gmenu2x->currBackdrop == gmenu2x->sc.getSkinFilePath("backdrops/generic.png", false) /*|| gmenu2x->currBackdrop == gmenu2x->skinConfStr["wallpaper"]*/)) {
 				SDL_Rect labelRect;
 				labelRect.x = ix + 2 + linkWidth/2;
 				labelRect.y = iy + (linkHeight + min(linkHeight, icon->height()))/2;
@@ -909,8 +909,8 @@ void Menu::exec() {
 
 	while (true) {
 		// BACKGROUND
-		gmenu2x->currBackdrop = gmenu2x->confStr["wallpaper"];
-		if (gmenu2x->confInt["skinBackdrops"] & BD_MENU) {
+		gmenu2x->currBackdrop = "skins/" + gmenu2x->confStr["skin"] + "/wallpapers/" + gmenu2x->skinConfStr["wallpaper"];
+		if (gmenu2x->skinConfInt["skinBackdrops"] & BD_MENU) {
 			if (selLink() != NULL && !selLink()->getBackdropPath().empty()) {
 				gmenu2x->currBackdrop = selLink()->getBackdropPath();
 			} else if (selLinkApp() != NULL && !selLinkApp()->getBackdropPath().empty()) {
@@ -997,12 +997,12 @@ void Menu::exec() {
 		}
 
 		if (gmenu2x->input[CONFIRM] && selLink() != NULL) {
-			if (gmenu2x->confInt["skinBackdrops"] & BD_DIALOG) {
+			if (gmenu2x->skinConfInt["skinBackdrops"] & BD_DIALOG && !selLink()->getBackdropPath().empty()) {
+				gmenu2x->currBackdrop = selLink()->getBackdropPath();
 				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->currBackdrop);
 			} else {
-				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->confStr["wallpaper"]);
+				gmenu2x->setBackground(gmenu2x->bg, "skins/" + gmenu2x->confStr["skin"] + "/wallpapers/" + gmenu2x->skinConfStr["wallpaper"]);
 			}
-
 			selLink()->run();
 		}
 		else if (gmenu2x->input[CANCEL]) {

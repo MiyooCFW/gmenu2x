@@ -25,7 +25,7 @@ protected:
 
 	void drawTopBar(Surface *s, const std::string &title = "", const std::string &description = "", const std::string &icon = "");
 	void drawBottomBar(Surface *s, buttons_t buttons = {});
-	void drawDialog(Surface *s, bool top = true, bool bottom = true);
+	void drawDialog(Surface *s, bool top = true, bool bottom = true, const std::string &previewBg = "");
 };
 
 #endif

@@ -151,7 +151,7 @@ const string LinkApp::searchManual() {
 }
 
 const string LinkApp::searchBackdrop() {
-	if (!backdropPath.empty() || !gmenu2x->confInt["skinBackdrops"]) return backdropPath;
+	if (!backdropPath.empty() || !gmenu2x->skinConfInt["skinBackdrops"]) return backdropPath;
 	string execicon = exec;
 	string::size_type pos = exec.rfind(".");
 	if (pos != string::npos) execicon = exec.substr(0, pos);

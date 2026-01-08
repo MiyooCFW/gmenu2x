@@ -19,6 +19,7 @@
  ***************************************************************************/
 
 #include <fstream>
+#include <sys/stat.h>
 #include "messagebox.h"
 #include "linkapp.h"
 #include "selector.h"
@@ -156,7 +157,21 @@ void Selector::customOptions(vector<MenuOption> &options) {
 
 void Selector::addFavorite() {
 	string favicon = getPreview(selected);
+	string favbackdrop = getPreview(selected);
+	string skinpath = exe_path() + "/skins/" + gmenu2x->confStr["skin"];
+
 	if (favicon.empty() || favicon == "#") favicon = this->icon;
+	if (favbackdrop.empty() || favbackdrop == "#") favbackdrop = "";
+
+	if (favbackdrop == favicon) {
+		//TODO: workaround for favicon & favbackdrop living in the same path (point in SurfaceCollection sc[])
+		if (!dir_exists(skinpath + "/favorites"))
+			(mkdir((skinpath + "/favorites").c_str(), 0777) != 0);
+		if (file_copy(favbackdrop, skinpath + "/favorites/" + base_name(favbackdrop,true) + "-BD" + file_ext(favbackdrop)))
+			favbackdrop = skinpath + "/favorites/" + base_name(favbackdrop,true) + "-BD" + file_ext(favbackdrop);
+		else
+			favbackdrop ="";
+	}
 
 	gmenu2x->menu->addSection("favorites");
 	string title = base_name(getFileName(selected), true);
@@ -168,6 +183,7 @@ void Selector::addFavorite() {
 	fav->setTitle(title);
 	fav->setDescription(link->getDescription());
 	fav->setIcon(favicon);
+	fav->setBackdrop(favbackdrop);
 
 	string selFullPath = cmdclean(getFilePath(selected));
 	string params = link->getParams();
