@@ -909,7 +909,7 @@ void Menu::exec() {
 
 	while (true) {
 		// BACKGROUND
-		gmenu2x->currBackdrop = gmenu2x->skinConfStr["wallpaper"];
+		gmenu2x->currBackdrop = "skins/" + gmenu2x->confStr["skin"] + "/wallpapers/" + gmenu2x->skinConfStr["wallpaper"];
 		if (gmenu2x->skinConfInt["skinBackdrops"] & BD_MENU) {
 			if (selLink() != NULL && !selLink()->getBackdropPath().empty()) {
 				gmenu2x->currBackdrop = selLink()->getBackdropPath();
@@ -1001,7 +1001,7 @@ void Menu::exec() {
 				gmenu2x->currBackdrop = selLink()->getBackdropPath();
 				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->currBackdrop);
 			} else {
-				gmenu2x->setBackground(gmenu2x->bg, gmenu2x->skinConfStr["wallpaper"]);
+				gmenu2x->setBackground(gmenu2x->bg, "skins/" + gmenu2x->confStr["skin"] + "/wallpapers/" + gmenu2x->skinConfStr["wallpaper"]);
 			}
 			selLink()->run();
 		}

@@ -499,8 +499,8 @@ void GMenu2X::main() {
 		viewAutoStart();
 	}
 
-	currBackdrop = skinConfStr["wallpaper"];
-	skinConfStr["wallpaper"] = setBackground(s, currBackdrop);
+	currBackdrop = "skins/" + confStr["skin"] + "/wallpapers/" + skinConfStr["wallpaper"];
+	skinConfStr["wallpaper"] = base_name(setBackground(s, currBackdrop));
 	bg = new Surface(s);
 	
 	if (confInt["outputLogs"]) {
@@ -696,7 +696,8 @@ void GMenu2X::cls(Surface *s, bool flip) {
 }
 
 string GMenu2X::setBackground(Surface *bg, string wallpaper) {
-	if (!sc.exists(wallpaper)) { // search and scale background
+	//INFO("setBackground() wallpaper=(%s)", wallpaper.c_str());
+	if (!sc.exists(wallpaper) || !file_exists(wallpaper)) { // search and scale background
 		if (wallpaper.empty() || sc[wallpaper] == NULL) {
 			DEBUG("Searching wallpaper");
 			FileLister fl("skins/Default/wallpapers", false, true);
@@ -709,7 +710,7 @@ string GMenu2X::setBackground(Surface *bg, string wallpaper) {
 		else if (skinConfStr["bgscale"] == "Crop") sc[wallpaper]->softStretch(this->w, this->h, SScaleMax);
 		else if (skinConfStr["bgscale"] == "Aspect") sc[wallpaper]->softStretch(this->w, this->h, SScaleFit);
 	}
-
+	//INFO("used wallpaper=(%s)", wallpaper.c_str());
 	cls(bg, false);
 	sc[wallpaper]->blit(bg, (this->w - sc[wallpaper]->width()) / 2, (this->h - sc[wallpaper]->height()) / 2);
 	return wallpaper;
@@ -1697,10 +1698,14 @@ void GMenu2X::skinMenu() {
 		}
 
 		wpPath = "skins/" + confStr["skin"] + "/wallpapers/" + confStr["tmp_wallpaper"];
+		if (!file_exists(wpPath)) wpPath = "skins/" + confStr["skin"] + "/wallpapers/" + base_name(confStr["tmp_wallpaper"]);
 		if (!file_exists(wpPath)) wpPath = "skins/Default/wallpapers/" + confStr["tmp_wallpaper"];
 		if (!file_exists(wpPath)) wpPath = "skins/" + confStr["skin"] + "/wallpapers/" + wallpapers.at(0);
 		if (!file_exists(wpPath)) wpPath = "skins/Default/wallpapers/" + wallpapers.at(0);
+		
+		confStr["tmp_wallpaper"]=base_name(confStr["tmp_wallpaper"]); //to display correctly name on MenuSetting
 
+		//INFO("skinMenu in loop wpPath=(%s)", wpPath.c_str());
 		setBackground(bg, wpPath);
 
 		SettingsDialog sd(this, ts, tr["Skin"], "skin:icons/skin.png");
@@ -1749,7 +1754,7 @@ void GMenu2X::skinMenu() {
 	else if (searchBackdrops == "Exec name/path only") skinConfInt["searchBackdrops"] = SBAK_EXEC;
 
 	confStr["tmp_wallpaper"] = "";
-	skinConfStr["wallpaper"] = wpPath;
+	skinConfStr["wallpaper"] = base_name(wpPath);
 	writeSkinConfig();
 	writeConfig();
 
