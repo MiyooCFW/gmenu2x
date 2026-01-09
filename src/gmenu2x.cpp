@@ -1099,6 +1099,8 @@ void GMenu2X::raSettings() {
 
 	sd.addSetting(new MenuSettingMultiString(this, tr["Menu mode"], tr["Set RetroArch GUI mode"], &confStr["raMode"], &raMode));
 	sd.addSetting(new MenuSettingBool(this, tr["Rewind"], tr["Enable Rewind support (if available)"], &confInt["raRewind"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Quick resume"], tr["Enable AutoSave & Load state (if available)"], &confInt["raQuick"]));
+	sd.addSetting(new MenuSettingBool(this, tr["Save config"], tr["Enable Save Configuration on Quit"], &confInt["raSaveCfg"]));
 	sd.addSetting(new MenuSettingFile(this, tr["Custom config"], tr["Select a custom Configuration file"], &confStr["raConfig"], ".cfg", confStr["homePath"], tr["Select a custom Configuration file"], "skin:icons/retroarch.png"));
 
 	if (sd.exec() && sd.edited() && sd.save) {
@@ -1109,6 +1111,10 @@ void GMenu2X::raSettings() {
 		input.update(false);
 		if (confInt["raRewind"])
 			command += " -r";
+		if (confInt["raQuick"])
+			command += " -q";
+		if (confInt["raSaveCfg"])
+			command += " -s";
 		if (!confStr["raConfig"].empty())
 			command += " -c " + confStr["raConfig"];
 		if (confStr["raMode"] != "default")
@@ -1273,6 +1279,8 @@ void GMenu2X::readConfig() {
 	confInt["hideCpuSettings"] = 0;
 	confInt["hideRaSettings"] = 0;
 	confInt["raRewind"] = 0;
+	confInt["raQuick"] = 0;
+	confInt["raSaveCfg"] = 0;
 	confInt["showHints"] = 1;
 	confInt["enableHotkeys"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
