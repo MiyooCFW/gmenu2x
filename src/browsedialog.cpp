@@ -319,6 +319,7 @@ void BrowseDialog::setWallpaper() {
 	if (file_copy(src, dst)) {
 		gmenu2x->skinConfStr["wallpaper"] = base_name(dst);
 		gmenu2x->setBackground(gmenu2x->bg, dst);
+		gmenu2x->writeSkinConfig();
 		this->exec();
 	}
 }
