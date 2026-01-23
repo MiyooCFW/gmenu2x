@@ -1,6 +1,7 @@
 #!/bin/bash
 
-VER=0.9
+VER=0.10
+PKGCFG_VER=0.9
 MIYOOCFW_VER=2.0.0
 # Help & About info
 help_func() {
@@ -16,7 +17,7 @@ help_func() {
 	 \t -z, --zip       generate ZIP archive
 	 \t -p, --pkg       generate ./package
 	 \t -c, --clean     remove ./package ./opkg_assets ./<target_name>.ipk ./<target_name>.zip ./<link_name>lnk
-	 \t -g, --gencfg    generate standard config \"pkg.cfg\" file in PWD
+	 \t -g, --gencfg    generate standard config \"pkg.cfg\" v${PKGCFG_VER} file in PWD
 	 \t -f, --force     force execution even without present target's binary or incompatible .cfg version
 	 \t -q, --quiet     don't output messages to stdout
 	 Instructions:
@@ -44,7 +45,7 @@ pkg_config_func() {
 	echo "# NOTES:
 ## All variable values should be enclosed within double quotes: \"<value>\"
 ## CONFIGURATION FILE for \`gm2xpkg\` script version:
-PKGVER=\"${VER}\"
+PKGVER=\"${PKGCFG_VER}\"
 
 # EXEC commands (set to \"1\" anyone for desired outcome), you can instead use [OPTIONS] of \`gm2xpkg\`:
 PACKAGE=\"${PACKAGE}\"
@@ -199,7 +200,7 @@ do
 						echo "NO, exiting..."
 						;;
 					[Uu]*)
-						echo "Update, upgrading present ${PKGCFG} file with new config version - ${VER}"
+						echo "Update, upgrading present ${PKGCFG} file with new config version - ${PKGCFG_VER}"
 						UPDATE_PKGCFG=yes
 						pkg_config_func
 						;;
@@ -248,8 +249,8 @@ if test -f "${PKGCFG}"; then
 		echo "<<<EOF>>>"
 	fi
 	source "${PKGCFG}"
-	if test "${VER}" != "${PKGVER}" ; then
-		echo -e "ERROR: GM2X PACKAGER version ${VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option\n"
+	if test "${PKGCFG_VER}" != "${PKGVER}" ; then
+		echo -e "ERROR: GM2X PACKAGER CFG version ${PKGCFG_VER} doesn't match CONFIGURATION FILE version ${PKGVER}\n\n\tPlease update your ${PKGCFG} config file, use [--gencfg] option\n"
 		if test "x${FORCE}" == "xyes"; then
 			echo "WARNING: Force-mode active, running regardless deprecated/incompatible ${PKGCFG}."
 		else
