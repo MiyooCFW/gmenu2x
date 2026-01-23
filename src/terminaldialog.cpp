@@ -41,7 +41,7 @@ void TerminalDialog::exec(string cmd) {
 
 	gmenu2x->s->flip();
 
-	if (file_exists("/usr/bin/script"))
+	if (file_exists("/usr/bin/script")) // WARNING: this shell kills any bg process ran by it
 		cmd = "/usr/bin/script -q -c " + cmdclean(cmd) + " /dev/null 2>&1";
 	else
 		cmd = "/bin/sh -c " + cmdclean(cmd) + " 2>&1";
