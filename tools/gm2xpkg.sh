@@ -466,12 +466,14 @@ fi
 if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || test $IPK -eq 1 >/dev/null 2>&1; then
 	TARGET_INSTALL_DIR=$RELEASEDIR/$DESTDIR/$TARGET_DIR
 	# Create ./package
-	rm -rf $RELEASEDIR/*
+	rm -rf "${RELEASEDIR:?}"/*
 	#mkdir -p $RELEASEDIR
 	#mkdir -p $ASSETSDIR
 	#mkdir -p $OPKG_ASSETSDIR
 	mkdir -p $TARGET_INSTALL_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
+	test -n "$SELDIR" \
+	 && mkdir -p ${RELEASEDIR}${SELDIR}
 	if test "x${FORCE}" != "xyes" || test "x${TARGET_EXIST}" == "xyes"; then
 		cp $TARGET_PATH $TARGET_INSTALL_DIR/
 	else
@@ -530,9 +532,9 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		done
 	fi
 	if test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR; then
-	 	test $PACKAGE -eq 1 && echo "Done packaging ./$RELEASEDIR/ data" || echo "Ready to use ./$RELEASEDIR/ data for deaper packaging"
+	 	test $PACKAGE -eq 1 && echo "Done packaging $RELEASEDIR data" || echo "Ready to use $RELEASEDIR/ data for deaper packaging"
 	else
-		echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in ./$RELEASEDIR/"
+		echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in $RELEASEDIR/"
 	fi
 	
 	# Create ./package/<target_version>.zip
@@ -547,8 +549,8 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	# Create ./package/<target>.ipk
 	if test $IPK -eq 1 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
-		mkdir -p .$HOMEPATH
-		cp -r $RELEASEDIR/* .$HOMEPATH && mv .$HOMEPATH $RELEASEDIR/
+		mkdir -p $RELEASEDIR/$HOMEPATH
+		for f in $RELEASEDIR/*; do test "$f" != "${RELEASEDIR}${HOMEPATH}" && mv "$f" $RELEASEDIR/$HOMEPATH; done
 		mkdir -p $RELEASEDIR/data
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
 		if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
