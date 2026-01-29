@@ -472,8 +472,9 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	#mkdir -p $OPKG_ASSETSDIR
 	mkdir -p $TARGET_INSTALL_DIR
 	mkdir -p $RELEASEDIR/gmenu2x/sections/$SECTION
-	test -n "$SELDIR" \
-	 && mkdir -p ${RELEASEDIR}${SELDIR}
+	# TODO: wait for patch in opkg or fix symlink deletion when unistalling ipk
+	#test -n "$SELDIR" \
+	#&& mkdir -p ${RELEASEDIR}${SELDIR}
 	if test "x${FORCE}" != "xyes" || test "x${TARGET_EXIST}" == "xyes"; then
 		cp $TARGET_PATH $TARGET_INSTALL_DIR/
 	else
@@ -555,8 +556,14 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
 		if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
 			mkdir -p $OPKG_ASSETSDIR/CONTROL
+			#preinst script
 			echo -e "#!/bin/sh\nsync; echo 'Installing new ${TARGET}..'; rm /var/lib/opkg/info/${TARGET}.list; exit 0" > $OPKG_ASSETSDIR/CONTROL/preinst
-			echo -e "#!/bin/sh\nsync; echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" > $OPKG_ASSETSDIR/CONTROL/postinst
+			#postinst script
+			echo -e "#!/bin/sh\nsync;" >> $OPKG_ASSETSDIR/CONTROL/postinst
+			test -n "$SELDIR" \
+			 && echo -e "! test -d ${SELDIR} && mkdir -p ${SELDIR} && echo 'Created ${SELDIR} dir for Selector.';" >> $OPKG_ASSETSDIR/CONTROL/postinst
+			echo -e "echo 'Installation finished.'; echo 'Restarting ${TARGET}..'; sleep 1; killall ${TARGET}; exit 0" >> $OPKG_ASSETSDIR/CONTROL/postinst
+			#control file
 			echo -e $CONTROL > $OPKG_ASSETSDIR/CONTROL/control
 		else
 			OPKG_ASSETSDIR_CUSTOM="yes"
