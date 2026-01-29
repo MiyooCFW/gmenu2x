@@ -115,6 +115,7 @@ Depends: ${DEPENDS}\n\
 Source: ${SOURCE}\n\
 License: ${LICENSE}\n\
 Description: ${DESCRI}\n\
+Installed-Size: ${INSTALLED_SIZE}\n\
 Section: ${SECTION}\n\
 Priority: ${PRIORITY}\n\
 Maintainer: ${MAINTAINER}\n\
@@ -572,8 +573,17 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		cp -r $OPKG_ASSETSDIR/CONTROL $RELEASEDIR
 		sed "s/^Version:.*/Version: ${VERSION}/" $OPKG_ASSETSDIR/CONTROL/control > $RELEASEDIR/CONTROL/control
 		echo 2.0 > $RELEASEDIR/debian-binary
+		#archive data
 		tar --owner=0 --group=0 -czvf $RELEASEDIR/data.tar.gz -C $RELEASEDIR/data/ . >/dev/null 2>&1
+		#archive control
+		INSTALLED_SIZE=$(zcat < $RELEASEDIR/data.tar.gz | wc -c)
+		if grep -q "Installed-Size:" $RELEASEDIR/CONTROL/control; then
+			sed -i -e "s/^Installed-Size: */Installed-Size: $INSTALLED_SIZE/" $RELEASEDIR/CONTROL/control
+		else
+			echo -e "Installed-Size: $INSTALLED_SIZE" >> $RELEASEDIR/CONTROL/control
+		fi
 		tar --owner=0 --group=0 -czvf $RELEASEDIR/control.tar.gz -C $RELEASEDIR/CONTROL/ . >/dev/null 2>&1
+		#create IPK ar archive package with gz compression
 		ar r $TARGET.ipk $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary\
 		 && echo "Done creating ./${TARGET}.ipk package"\
 		 && rm $RELEASEDIR/control.tar.gz $RELEASEDIR/data.tar.gz $RELEASEDIR/debian-binary && rm -r $RELEASEDIR/CONTROL/ $RELEASEDIR/data/
