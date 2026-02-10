@@ -1277,10 +1277,14 @@ void GMenu2X::readConfig() {
 	confInt["hideAbout"] = 0;
 	confInt["hidePower"] = 0;
 	confInt["hideCpuSettings"] = 0;
+//HAVE_RETROARCH
 	confInt["hideRaSettings"] = 0;
+	confStr["raMode"] = "default";
 	confInt["raRewind"] = 0;
 	confInt["raQuick"] = 0;
 	confInt["raSaveCfg"] = 0;
+	confStr["raConfig"] = "";
+//end
 	confInt["showHints"] = 1;
 	confInt["enableHotkeys"] = 1;
 	confStr["datetime"] = xstr(__BUILDTIME__);
