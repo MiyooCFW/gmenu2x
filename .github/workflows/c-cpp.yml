@@ -20,8 +20,6 @@ jobs:
     steps:
     - run: echo "submodule ${{ inputs.submodule }} on ${{ github.event }}"
     - uses: actions/checkout@v4
-      with:
-        submodules: true
     - if: inputs.submodule
       run: git submodule update --init --depth 1 -- ${{ inputs.submodule }}
     - name: generate commit sha 
@@ -64,8 +62,6 @@ jobs:
     steps:
     - run: echo "submodule ${{ inputs.submodule }} on ${{ github.event }}"
     - uses: actions/checkout@v4
-      with:
-        submodules: true
     - if: inputs.submodule
       run: git submodule update --init --depth 1 -- ${{ inputs.submodule }}
     - name: generate commit sha 
