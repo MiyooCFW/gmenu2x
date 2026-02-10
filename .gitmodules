@@ -1,0 +1,3 @@
+[submodule "assets/skins"]
+	path = assets/skins
+	url = https://github.com/MiyooCFW/gmenu2x-skins
