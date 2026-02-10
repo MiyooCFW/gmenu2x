@@ -80,7 +80,7 @@ To generate this list of available strings' aliases you can run from src:
 
 ## Skins & fonts
 
-Please refer to directory containing appropriate skin for detailed information about authors and licensing of specific theme and its fonts. See below schema for general info:
+Please refer to directory (now living under git submodule) containing appropriate skin for detailed information about authors and licensing of specific theme and its fonts. See below schema for general info:
 ```
 assets/skins
 ├── Default

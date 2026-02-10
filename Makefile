@@ -63,8 +63,11 @@ dist: dir libopk shared
 	install -m644 -D CONTRIBUTORS.md $(DISTDIR)/CONTRIBUTORS
 	install -m644 -D ChangeLog.md $(DISTDIR)/ChangeLog
 	cp -RH assets/translations $(DISTDIR)
+	mkdir -p $(DISTDIR)/skins/Default
+	cp -RH assets/skin-Default/* $(DISTDIR)/skins/Default
 	cp -RH assets/skins $(DISTDIR)
 	-find $(DISTDIR)/skins -type d -name "template" -exec rm -rf {} \;
+	-find $(DISTDIR)/skins -type f -name "*.ttf" -not -name "font.ttf" -delete
 ifneq ($(DEFSKIN), Default)
 	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
 	cp -RH assets/skins/$(DEFSKIN)/* $(DISTDIR)/skins/Default
