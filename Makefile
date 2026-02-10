@@ -65,6 +65,7 @@ dist: dir libopk shared
 	cp -RH assets/translations $(DISTDIR)
 	cp -RH assets/skins $(DISTDIR)
 	-find $(DISTDIR)/skins -type d -name "template" -exec rm -rf {} \;
+	-find $(DISTDIR)/skins -type f -name "*.ttf" -not -name "font.ttf" -delete
 ifneq ($(DEFSKIN), Default)
 	cp -RH assets/skins/Default $(DISTDIR)/skins/Legacy
 	cp -RH assets/skins/$(DEFSKIN)/* $(DISTDIR)/skins/Default
