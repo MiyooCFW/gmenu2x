@@ -65,7 +65,10 @@ dist: dir libopk shared
 	cp -RH assets/translations $(DISTDIR)
 	mkdir -p $(DISTDIR)/skins/Default
 	cp -RH assets/skin-Default/* $(DISTDIR)/skins/Default
-	cp -RH assets/skins $(DISTDIR)
+	@if [ -d "assets/skins" ]; then \
+		echo "Copying custom themes from assets/skins to distribution dir..."; \
+		cp -RH assets/skins $(DISTDIR); \
+	fi
 	-find $(DISTDIR)/skins -type d -name "template" -exec rm -rf {} \;
 	-find $(DISTDIR)/skins -type f -name "*.ttf" -not -name "font.ttf" -delete
 ifneq ($(DEFSKIN), Default)
