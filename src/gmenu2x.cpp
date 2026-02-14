@@ -1832,8 +1832,20 @@ void GMenu2X::about() {
 	TextDialog td(this, "GMenu2X", tr["Build"] + ": " + __DATE__ + " " + __TIME__, "skin:icons/about.png");
 #endif
 	// td.appendText(temp);
-	td.appendFile(tr["_about_"] + ".txt");
-	allyTTS((tr["_about_"] + ".txt").c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
+	string aboutPath = "about.txt";
+	if (tr.lang() != "English") {
+		if (aboutPath != tr[aboutPath])
+			aboutPath = tr[aboutPath];
+		else if (tr["_tr_suffix_"] != "_tr_suffix_")
+			aboutPath = "about" + tr["_tr_suffix_"] + ".txt";
+	}
+	// Sanity check
+	if (!file_exists(aboutPath))
+		aboutPath = "about.txt";
+	if (file_exists(aboutPath)) {
+		td.appendFile(aboutPath);
+		allyTTS(aboutPath.c_str(), FAST_GAP_TTS, FAST_SPEED_TTS);
+	}
 	td.exec();
 }
 
@@ -1909,16 +1921,27 @@ void GMenu2X::showManual() {
 	if (linkManual == "") return;
 
 	TextDialog td(this, linkTitle, linkDescription, linkIcon);
-
-	if (file_exists(linkManual)) {
+	string manPath = linkManual;
+	if (tr.lang() != "English") {
+		if (base_name(linkManual) != tr[base_name(linkManual)])
+			manPath = dir_name(linkManual) + "/" + tr[base_name(linkManual)];
+		else if (tr["_tr_suffix_"] != "_tr_suffix_")
+			manPath = dir_name(linkManual) + "/" + base_name(linkManual,true) + tr["_tr_suffix_"] + file_ext(linkManual);
+	}
+	//INFO("Manual path = %s", manPath.c_str());
+	// Sanity check
+	if (!file_exists(manPath))
+		manPath = linkManual;
+		
+	//INFO("Manual path = %s", manPath.c_str());
+	if (file_exists(manPath)) {
 		string ext = linkManual.substr(linkManual.size() - 4, 4);
 		if (ext == ".png" || ext == ".bmp" || ext == ".jpg" || ext == "jpeg") {
 			ImageViewerDialog im(this, linkTitle, linkDescription, linkIcon, linkManual);
 			im.exec();
 			return;
 		}
-
-		td.appendFile(linkManual);
+		td.appendFile(manPath);
 #if defined(OPK_SUPPORT)
 	} else if (file_ext(linkExec, true) == ".opk") {
 		void *buf; size_t len;
