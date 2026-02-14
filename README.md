@@ -63,7 +63,9 @@ java -jar languagetool-commandline.jar -b -l fr
 ``` 
 
 ### Special strings in translation file
-The "\_about\_" assigns corresponding text file for displaying _About_ message, e.g. "\_about\_=\_about\_en" means _about_en.txt is being used for English translation.
+The "\_tr\_suffix\_" assigns sufix for basename of text file (without extension) for displaying translated _About_ message or _Manaual_ , e.g "\_tr\_suffix\_=\_en" means for English translation is being used:
+- `about_en.txt` instead of `about.txt`
+- <manual_name>_en.<manual_extension> in dir of Manual path.
 
 The "\_keyboard_<table_number>_<line_number>\_" string will modify alternative overlay keyboard on Input Dialog (accesed with MODIFY button).
 The "\_keyboard_en_<table_number>_<line_number>\_" string will modify original English overlay keyboard on Input Dialog (accesed directly or with MANUAL button ).
