@@ -1,0 +1,51 @@
+
+name: Update translations (Miyoo)
+
+on:
+  # Run nightly: 8am UTC (only on Saturday) <- use POSIX cron syntax 
+  schedule:
+  - cron: '0 8 * * 6'
+  # Or run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-native:
+    name: Nightly Translations update (miyoo)
+    # only run on the main repo; forks can pull changes from there
+    if: ${{ github.repository == 'MiyooCFW/gmenu2x' }}
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GH_PAT }}
+    - name: install dependencies (unifdef)
+      run: |
+        sudo apt-get update \
+        && sudo apt-get install unifdef
+    - name: update dictionary.txt
+      run: |
+        (grep -o -rn . -P -e "\ttr\["[^]]*"\]" ; \
+         grep -o -rn . -e '>tr\["[^]]*"\]\|(tr\["[^]]*"\]\|\+tr\["[^]]*"\]\|\ tr\["[^]]*"\]\|,tr\["[^]]*"\]') | \
+         sed 's/.*\[\(.*\)\].*/\1/' | \
+         sed 's/\"\(.*\)\"/\1=/' | \
+         sed ':a;N;$!ba;s/\\n/ /g' | \
+         tr -d '\\' | sort | uniq \
+         > dictionary.txt
+    - name: update translate.txt (miyoo)
+      run: |
+        ./tools/gen_translate.sh miyoo_defines miyoo
+    - name: clean & update ALL ./assets/translations/*
+      run: |
+        ./tools/clean_translations.sh ALL
+    - name: Check for git status
+      id: status
+      run: |
+        echo "changes=$(git status -z --porcelain)" >> $GITHUB_OUTPUT
+    - name: Push update changes
+      if: ${{ steps.status.outputs.changes }}
+      run: |
+        git config user.email "action@github.com"
+        git config user.name "GitHub Actions"
+        git status
+        git commit -am "Update Translations' files $(date)"
+        git push
