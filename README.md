@@ -119,32 +119,32 @@ Fonts under OFL license has been expanded with GNU_Unifont.ttf using `font_merge
 
 ## Controls
 
-(Bittboy's specific mapping in round brackets)
+(see "About" link in GMenu2X for the corresponding device's key assignments)
 
-* A: Accept / Launch selected link / Confirm action;
-* B: Back / Cancel action;
-* X: Goes up one directory in file browser;
-* X-hold: Bring up Date&Time quick dialog;
-* X + Y: Switch from/to Default font;
-* Y: Bring up the manual/readme;
-* Y-hold: Restart the GMenu2X;
-* L1(TB), R1(TA): Switch between sections left/right or PageUp/PageDown on lists;
-* L2, R2: Fast Decrement/Increment of selected value;
-* START: GMenu2X settings;
-* START-hold:  Toggle Suspend mode;
-* SELECT: Bring up the contextual menu;
-* SELECT-hold: Disable TV-output;
-* SELECT + L1(TB): Volume control;
-* SELECT + R1(TA): Change screen brightness;
-* SELECT + START: Take a screenshot;
-* RESET: Bring up Poweroff dialog;
+* CONFIRM: Accept / Launch selected link / Confirm action;
+* CANCEL: Back / Cancel action;
+* MODIFIER: Goes up one directory in file browser;
+* MODIFIER-hold: Bring up Date&Time quick dialog;
+* MODIFIER + MANUAL: Switch from/to Default font;
+* MANUAL: Bring up the manual/readme;
+* MANUAL-hold: Restart the GMenu2X;
+* SECTION_PREV/PAGEUP, SECTION_NEXT/PAGEDOWN: Switch between sections left/right or PageUp/PageDown on lists;
+* DEC, INC: Fast Decrement/Increment of selected value;
+* SETTINGS: GMenu2X settings;
+* SETTINGS-hold:  Toggle Suspend mode;
+* MENU: Bring up the contextual menu;
+* MENU-hold: Disable TV-output;
+* MENU + SECTION_PREV: Volume control;
+* MENU + SECTION_NEXT: Change screen brightness;
+* MENU + SETTINGS: Take a screenshot;
+* POWER: Bring up Poweroff dialog;
 
 In settings:
 
-* A, LEFT, RIGHT: Accept, select or toggle setting;
-* B: Back or cancel edits and return;
-* START: Save edits and return;
-* SELECT: Clear or set default value.
+* CONFIRM, LEFT, RIGHT: Accept, select or toggle setting;
+* CANCEL: Back or cancel edits and return;
+* SETTINGS: Save edits and return;
+* MENU: Clear or set default value.
 
 ## AutoStart
 * In Settings - enable AUTOSTART feature.
@@ -152,7 +152,7 @@ In settings:
 * Every time you launch a device you will be welcomed with AutoStart selection menu.
 * Next previously launched app will start with all the settings you provide it with from GMenu2X linkapp config.
 * When you disable AutoStart msgbox there are only 2 ways to turn OFF this feature:
-	* press "X" at startup during GMenu2X loading screen
+	* press "MODIFIER" at startup during GMenu2X loading screen
 	* discard `dialogAutoStart=1` line in gmenu2x.conf file
 	* remove gmenu2x.conf file entirely
 
@@ -165,16 +165,16 @@ You can pass useful variables (which can be treated as arguments for cmd) before
 - **[selFileFull]** - this is a shortcut value that means [selFile][selExt]  
 - **[selFullPath]** - this is a shortcut value that means [selPath][selFile][selExt]  
 
-## How to have previews in Selector Browser
+## How to have images previews in Selector Browser
 
-* Select the link you want to edit and press "menu";
+* Select the link you want to edit and press "MENU";
 * Edit the link;
 * Configure the link to match your directory structure. Important fields:
-	* Selector Directory: The directory of your roms
-	* Selector Browser: Enable selector before launching the app
-	* Selector Filter: Filter extensions to be shown in the selector. Separate multiple extensions with commas.
-	* Selector Screenshots: The directory of the screenshots/preview of your roms. It can be different than your roms directory.
-* The name of the file of rom and preview have to be exactly the same. Supported image types are .png or .jpg;
+	* File Selector: Enable selector before launching the app & select the directory containing loaded content (e.g. ROMs)
+	* File Filter: Filter extensions to be shown in the selector. Separate multiple extensions with commas (e.g. `.gba,.gbc`).
+	* Box Art: The directory of the pictured previews (screenshots/boxarts) e.g. of your games. It can be different than your content directory (default `./.images`).
+* The name of the file of rom and preview have to be exactly the same. Supported image's format are `.png|.jpg`;
+* The preview image can be put either in selected "Box Art" directory OR alongside ROM file OR in `./.images` dir relatively to previewed file.
 
 ## Debugging apps
 

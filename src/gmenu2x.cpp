@@ -2049,6 +2049,7 @@ bool GMenu2X::saveScreenshot(string path) {
 #endif
 
 	path = unique_filename(path + "/screenshot", ".bmp");
+	INFO("Screenshot saved in %s", path.c_str());
 	return SDL_SaveBMP(s->raw, path.c_str()) == 0;
 }
 

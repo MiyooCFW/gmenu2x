@@ -124,6 +124,7 @@ gmenu2x(gmenu2x), text(text), icon(icon) {
 	button[MENU] = "select";
 	button[VOLUP] = "vol+";
 	button[VOLDOWN] = "vol-";
+//	button[POWER] = "power";
 }
 
 MessageBox::~MessageBox() {
