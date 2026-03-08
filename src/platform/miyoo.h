@@ -510,7 +510,7 @@ public:
 	void setTVOut(unsigned int mode) {
 		setBacklight(confInt["backlight"]);
 		writeTmp();
-		quit(false);
+		quit();
 		if (FILE *f = fopen(MIYOO_TVMODE_FILE, "w")) {
 			fprintf(f, "%i", mode); // fputs(val, f);
 			fclose(f);
