@@ -78,9 +78,10 @@ endif
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)
 	cp -RH assets/$(PLATFORM)/input.conf $(DISTDIR)/input_$(PLATFORM).conf
 	cp -RH assets/$(PLATFORM_SUPPORT)/input.conf $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
-	cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input.conf
-	cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input_$(PLATFORM).conf
-	cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
+	@echo "append assets/gamepad/input_$(GAMEPAD).conf setup to distribution input.conf files"
+	@cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input.conf
+	@cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input_$(PLATFORM).conf
+	@cat assets/gamepad/input_$(GAMEPAD).conf >> $(DISTDIR)/input_$(PLATFORM_SUPPORT).conf
 
 ipk: dist
 	mkdir -p .$(HOMEPATH)/gmenu2x && mv $(DISTDIR)/* .$(HOMEPATH)/gmenu2x && mv .$(HOMEPATH) $(DISTDIR)
