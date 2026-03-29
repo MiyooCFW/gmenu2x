@@ -1464,6 +1464,7 @@ void GMenu2X::writeSkinConfig() {
 
 	for (ConfIntHash::iterator curr = skinConfInt.begin(); curr != skinConfInt.end(); curr++) {
 		if (
+			// deprecated
 			curr->first == "titleFontSize" ||
 			curr->first == "sectionBarHeight" ||
 			curr->first == "linkHeight" ||
@@ -1474,7 +1475,8 @@ void GMenu2X::writeSkinConfig() {
 			curr->first == "selectorX" ||
 			curr->first == "linkItemHeight" ||
 			curr->first == "topBarHeight" ||
-
+			
+			// in use
 			(curr->first == "previewWidth" && curr->second == 128) ||
 			(curr->first == "linkCols" && curr->second == 1) ||
 			(curr->first == "linkRows" && curr->second == 8) ||
@@ -1737,6 +1739,7 @@ void GMenu2X::skinMenu() {
 		sd.addSetting(new MenuSettingInt(this, tr["Section bar size"], tr["Size of section and top bar"], &skinConfInt["sectionBarSize"], 40, 1, this->w));
 		sd.addSetting(new MenuSettingBool(this, tr["Section backdrops"], tr["Load section backdrop from skin pack"], &skinConfInt["sectionBackdrops"]));
 		sd.addSetting(new MenuSettingInt(this, tr["Bottom bar height"], tr["Height of bottom bar"], &skinConfInt["bottomBarHeight"], 16, 1, this->h));
+		sd.addSetting(new MenuSettingInt(this, tr["Preview pane width"], tr["Width of preview window"], &skinConfInt["previewWidth"], 128, 1, this->w));
 		sd.addSetting(new MenuSettingInt(this, tr["Menu columns"], tr["Number of columns of links in main menu"], &skinConfInt["linkCols"], 4, 1, 8));
 		sd.addSetting(new MenuSettingInt(this, tr["Menu rows"], tr["Number of rows of links in main menu"], &skinConfInt["linkRows"], 4, 1, 8));
 		sd.addSetting(new MenuSettingBool(this, tr["Show link icon"], tr["Show link icon in main menu"], &skinConfInt["showLinkIcon"]));
