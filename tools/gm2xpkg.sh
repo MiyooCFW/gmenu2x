@@ -551,7 +551,11 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	if test $IPK -eq 1 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
 		mkdir -p $RELEASEDIR/$HOMEPATH
-		for f in $RELEASEDIR/*; do test "$f" != "${RELEASEDIR}${HOMEPATH}" && mv "$f" $RELEASEDIR/$HOMEPATH; done
+		for f in $RELEASEDIR/*; do
+			if test "$f" != "${RELEASEDIR}${HOMEPATH}"; then
+				mv "$f" $RELEASEDIR$HOMEPATH #TODO: this doesn't work for homepath with subdirectories e.g. /user/home
+			fi
+		done
 		mkdir -p $RELEASEDIR/data
 		mv $RELEASEDIR$HOMEPATH $RELEASEDIR/data/
 		if ! { test -d ${OPKG_ASSETSDIR}/CONTROL && test -f ${OPKG_ASSETSDIR}/CONTROL/preinst && test -f ${OPKG_ASSETSDIR}/CONTROL/postinst && test -f ${OPKG_ASSETSDIR}/CONTROL/control; }; then
