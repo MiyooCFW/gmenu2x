@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER=0.10
+VER=0.11
 PKGCFG_VER=0.9
 MIYOOCFW_VER=2.0.0
 # Help & About info
