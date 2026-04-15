@@ -533,7 +533,7 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 		done
 	fi
 	if test -d $RELEASEDIR/gmenu2x && test -d $TARGET_INSTALL_DIR; then
-	 	test $PACKAGE -eq 1 && echo "Done packaging $RELEASEDIR data" || echo "Ready to use $RELEASEDIR/ data for deaper packaging"
+	 	test $PACKAGE -eq 1 && { mv $RELEASEDIR ${TARGET}_${VERSION}_pkg; echo "Done packaging ./${TARGET}_${VERSION}_pkg data"; } || echo "Ready to use $RELEASEDIR/ data for deaper packaging"
 	else
 		echo "WARNING: Upss smth went wrong and I couldn't locate auto-gen data in $RELEASEDIR/"
 	fi
@@ -541,10 +541,10 @@ if test $PACKAGE -eq 1 >/dev/null 2>&1 || test $ZIP -eq 1 >/dev/null 2>&1 || tes
 	# Create ./package/<target_version>.zip
 	if test $ZIP -eq 1 >/dev/null 2>&1; then
 		# rm -rf $RELEASEDIR/*.ipk $RELEASEDIR/*.zip
-		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && mv *.zip ..\
+		#NOTES: for clean ZIP packing without topdir we have to use `cd` cmd
+		cd $RELEASEDIR && zip -rq ${TARGET}_${VERSION}.zip ./* && { cd -; mv $RELEASEDIR/${TARGET}_${VERSION}.zip .;} \
 		 && echo "Done packaging ./${TARGET}_${VERSION}.zip archive"\
 		 || echo "WARNING: Upss smth went wrong and I couldn't create ${TARGET}_${VERSION}.zip"
-		cd ..
 	fi
 	
 	# Create ./package/<target>.ipk
